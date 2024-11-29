@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        
+        const bookName = [
+            '창세기', '출애굽기', '레위기',
+            '민수기', '신명기', '여호수아',
+            '사사기', '룻기', '사무엘상', '사무엘하', 
+            '열왕기상', '열왕기하', '역대상', '역대하', '에스라',
+            '느헤미야', '에스더', '욥기',
+            '시편', '잠언', '전도서',
+            '아가', '이사야', '예레미야',
+            '애가', '에스겔', '다니엘',
+            '호세아', '요엘', '아모스', 
+            '오바댜', '요나', '미가',
+            '나훔', '하박국', '스바냐',
+            '학개', '스가랴', '말라기',
+
+            '마태복음', '마가복음', '누가복음',
+            '요한복음','사도행전', '로마서',
+            '고린도전서', '고린도후서', '갈라디아서','에베소서',
+            '빌립보서', '골로새서', '데살로니가전서', '데살로니가후서',
+            '디모데전서', '디모데후서', '디도서', '빌레몬서',
+            '히브리서', '야고보서', '베드로전서', '베드로후서',
+            '요한일서', '요한이서', '요한삼서', '유다서', '요한계시록'
+        ];
+
+        // const todayBook = '4b20/18b58-59/22b9:8~21/22b10:1~4/59b3';
+        // const todayBook = '4b20/18b58/22b9/59b3';
+        // const todayBook = '4b20-22/18b58:1~80/59b3';
+        const todayBook = '2b25/43b4/19b1/47b13';
+
+        console.log(parseBook(todayBook).join(', '));
+
+        function parseBook(txt){
+            const bookArr1 = txt.split('/');
+            const bookArr2 = [];
+            let finalTxt = '';
+
+            bookArr1.forEach(el => {
+                finalTxt = '';
+                const book = el.split('b');
+                finalTxt += bookName[+book[0] - 1] + ' ';
+
+                if(book[1].indexOf('-') > -1){  //어디부터 어디까지
+                    finalTxt += book[1].split('-')[0] + ' - ' + book[1].split('-')[1] + '장';
+                    // if(book[1].indexOf(':') > -1){
+                    //     if(book[1].indexOf('~') > -1){
+                    //         finalTxt += book[1].split(':')[0] + '장';
+                    //         if(book[1].indexOf('~') > -1){
+                    //             const verses = book[1].split('~');
+                    //             finalTxt += ' ' + verses[0].split(':')[1] + ' ~ ' + verses[1].split('-')[0] + '절';
+                    //         }
+
+                    //     }else{
+
+                    //     }
+
+                    // }else{
+                    //     finalTxt += book[1].split('-')[0] + ' - ' + book[1].split('-')[1] + '장';
+                    // }
+                }else{
+                    if(book[1].indexOf(':') > -1){
+                        finalTxt += book[1].split(':')[0] + '장';
+                        if(book[1].indexOf('~') > -1){
+                            const verses = book[1].split('~');
+                            finalTxt += ' ' + verses[0].split(':')[1] + ' ~ ' + verses[1] + '절';
+                        }
+                    }else{
+                        finalTxt += book[1] + '장';
+                    }
+                }
+                bookArr2.push(finalTxt);
+            })
+
+            return bookArr2;
+        }
+    </script>
+    
+</body>
+</html>

@@ -151,6 +151,7 @@
         .calendar{
             display: flex;
             justify-content: center;
+            padding: 0 10px;
         }
 
         .dim-layer{
@@ -263,7 +264,6 @@
 
         table{
             max-width: 800px;
-            overflow: hidden;
         }
         table tbody tr:first-of-type{
             padding-top: 10px;
@@ -276,10 +276,12 @@
             height: 50px;
         }
         table td.on{
-            box-shadow: inset 0 0 3px #ffb400;
             transform: scale(1.2) rotate(5deg);
             position: relative;
             z-index: 2;
+        }
+        table td.on > div{
+            box-shadow: inset 0 0 8px #ffb400;
         }
         table td > div{
             position: relative;
@@ -293,6 +295,26 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        table .sun{
+            color: #f00;
+        }
+        table .sat{
+            color: #00f;
+        }
+        table td > div strong.today{
+            background: #000;
+            color: #fff;
+            font-size: 12px;
+        }
+        table td > div strong{
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 18px;
         }
         table td > div span{
             background: #aaa;
@@ -331,6 +353,16 @@
                 <button id="nextMonthBtn" class="next-month-btn"></button>
             </header>
             <div id="calendar" class="calendar"></div>
+            <div>
+                <label>
+                    <input type="checkbox" />
+                    <strong>전체</strong>
+                </label>
+                <ul id="bibleList" class="bible-list">
+
+                </ul>
+            </div>
+            <ul></ul>
         </article>
         <aside id="dimLayer" class="dim-layer">
             <div id="datePopup" class="date-popup every-popup">
@@ -371,6 +403,18 @@
     <!-- <script src="./assets/js/FileSaver.min.js"></script> -->
 
     <script>
+        let dailyData;
+        let bible;
+
+        const valueObj = {
+            m_e: 'm',
+            d_e: 'd',
+            r_e: 'where',
+            m_k: '월',
+            d_k: '일',
+            r_k: '어디',
+        }
+
         document.getElementById('yearInput').addEventListener('click', (e) => {
            document.getElementById('dimLayer').classList.toggle('active');
            document.getElementById('datePopup').classList.toggle('active');
@@ -712,7 +756,6 @@
                     style: {
                         textAlign: 'center',
                         borderBottom: '1px solid rgba(0, 0, 0, .5)',
-                        color: '#000',
                         fontWeight: 900
                     },
                     fnc: {
@@ -720,8 +763,8 @@
                     }
                 });
 
-                if(i == 0) week.style.color = '#f0f';
-                if(i == 6) week.style.color = '#0ff';
+                if(i == 0) week.classList.add('sun');
+                if(i == 6) week.classList.add('sat');
             }
 
             //아래 컨텐츠
@@ -742,13 +785,17 @@
 
             for(let i = 0; i < lastDay; i++){
                 const blockTarget = document.querySelector('[data-block-idx="' + (i + dayFirst + 1) + '"]');
-                blockTarget.addEventListener('click', function(){
+                blockTarget.addEventListener('click', e => {
                     const allBlock = document.querySelectorAll('[data-block-idx]');
-                    allBlock.forEach((block) => {
-                        block.classList.remove('on');
-                    })
+
+                    allBlock.forEach(block => block.classList.remove('on'));
                     blockTarget.classList.add('on');
-                    // blockTarget.style.boxShadow = 'inset 0 0 0 3px #ffb400';
+
+                    const thisMonth = +document.getElementById('yearInput').querySelector('strong').textContent;
+                    const thisDate = +e.currentTarget.dataset.date;
+
+                    const nowData = dailyData.filter(d => d[valueObj.m_k] === thisMonth && d[valueObj.d_k] === thisDate);
+                    console.log(nowData[0]);
                 })
                 // blockTarget.insertAdjacentHTML('afterbegin', (i + 1));
                 blockTarget.innerHTML = `<div><strong>${(i + 1)}</strong><span></span></div>`;
@@ -759,15 +806,19 @@
             for(let i = 0; i < 6; i++){	//토일 색 변경
                 const redTarget = document.querySelector('[data-block-idx="' + ((i * 7) + 1) + '"]');
                 const blueTarget = document.querySelector('[data-block-idx="' + ((i * 7) + 7) + '"]');
-                if(redTarget) redTarget.style.color = '#f0f';
-                if(blueTarget) blueTarget.style.color = '#0ff';
+
+                // if(redTarget) redTarget.style.color = '#f0f';
+                // if(blueTarget) blueTarget.style.color = '#0ff';
+
+
+                if(redTarget && redTarget.querySelector('strong')) redTarget.querySelector('strong').classList.add('sun');
+                if(blueTarget && blueTarget.querySelector('strong')) blueTarget.querySelector('strong').classList.add('sat');
             }
 
-            if(!setDate){
+            if(!setDate){   //투데이
                 const todayTarget = document.querySelector('[data-date="' +nowD + '"]');
-                todayTarget.style.boxShadow = 'inset 0 0 0 3px #ffb400';
+                todayTarget.querySelector('strong').classList.add('today');
             }
-
         }
 
         function calcBlockCnt(week, date) {
@@ -814,8 +865,8 @@
         // 페이지 로드 후 자동으로 엑셀 파일을 불러옴
         window.onload = async function () {
             
-            const dailyData = await fetchAndReadExcel('./data/daily-data.xlsx');  // 페이지 로드 시 자동으로 엑셀 파일을 읽음
-            const bible = await fetchAndReadExcel('./data/bible-kr.xlsb');  // 페이지 로드 시 자동으로 엑셀 파일을 읽음
+            dailyData = await fetchAndReadExcel('./data/daily-data.xlsx');  // 페이지 로드 시 자동으로 엑셀 파일을 읽음
+            bible = await fetchAndReadExcel('./data/bible-kr.xlsb');  // 페이지 로드 시 자동으로 엑셀 파일을 읽음
 
             const nowObj = dateFormat(new Date());
 
@@ -823,14 +874,7 @@
             console.log(bible);
             console.log(nowObj);
 
-            const valueObj = {
-                m_e: 'm',
-                d_e: 'd',
-                r_e: 'where',
-                m_k: '월',
-                d_k: '일',
-                r_k: '어디',
-            }
+            
 
             const todayData = dailyData.filter(d => d[valueObj.m_k] === nowObj.m && d[valueObj.d_k] === nowObj.d)[0];
             console.log(todayData);

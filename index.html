@@ -91,6 +91,17 @@
             box-sizing: border-box;
             position: relative;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .calendar-section .year-input span{ /*년*/
+            font-size: 12px;
+            margin-right: 10px;
+            opacity: .5;
+        }
+        .calendar-section .year-input strong{   /*월*/
+            font-size: 30px;
         }
         .calendar-section .year-input:after{
             content: '';
@@ -135,6 +146,11 @@
             border-top: 1px solid #000;
             border-right: 1px solid #000;
             transform: translateX(-2px) rotate(45deg);
+        }
+
+        .calendar{
+            display: flex;
+            justify-content: center;
         }
 
         .dim-layer{
@@ -244,6 +260,56 @@
             background: rgba(0, 0, 255, .1);
             font-weight: 900;
         }
+
+        table{
+            max-width: 800px;
+            overflow: hidden;
+        }
+        table tbody tr:first-of-type{
+            padding-top: 10px;
+            box-sizing: border-box;
+        }
+        table td{
+            text-align: center;
+            font-weight: 900;
+            cursor: pointer;
+            height: 50px;
+        }
+        table td.on{
+            box-shadow: inset 0 0 3px #ffb400;
+            transform: scale(1.2) rotate(5deg);
+            position: relative;
+            z-index: 2;
+        }
+        table td > div{
+            position: relative;
+            background: #fff;
+            box-shadow: 0 0 4px rgba(0, 0, 0, .1);
+            border: 1px solid #222;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        table td > div span{
+            background: #aaa;
+            box-shadow: inset 1px 1px 2px rgba(255, 255, 255, .5);
+            width: 8px;
+            height: 8px;
+            top: 2px;
+            right: 2px;
+            position: absolute;
+            border-radius: 50%;
+        }
+        table td.clear > div span{
+            background: #080;
+        }
+        table td.ing > div span{
+            background: #ee0;
+        }
     </style>
 </head>
 <body>
@@ -264,11 +330,12 @@
                 </div>
                 <button id="nextMonthBtn" class="next-month-btn"></button>
             </header>
+            <div id="calendar" class="calendar"></div>
         </article>
         <aside id="dimLayer" class="dim-layer">
             <div id="datePopup" class="date-popup every-popup">
                 <header>
-                    <span class="close-btn"></span>
+                    <span id="closeDatePopupBtn" class="close-btn"></span>
                 </header>
                 <main>
                     <div>
@@ -294,12 +361,12 @@
                     </div>
                 </main>
                 <footer>
-                    <button>적용</button>
+                    <button id="applyDateBtn">적용</button>
                 </footer>
             </div>
         </aside>
     </main>
-    <!-- <div id="calendar" class="calendar"></div> -->
+    
     <script src="./assets/js/xlsx.full.min.js"></script>
     <!-- <script src="./assets/js/FileSaver.min.js"></script> -->
 
@@ -423,7 +490,50 @@
 
         })
 
+        document.getElementById('closeDatePopupBtn').addEventListener('click', () => {
+            document.getElementById('dimLayer').classList.remove('active');
+            document.getElementById('datePopup').classList.remove('active');
+        })
 
+        document.getElementById('applyDateBtn').addEventListener('click', () => {
+            const yearList = document.getElementById('yearList');
+            const monthList = document.getElementById('monthList');
+
+            const selectedYear = yearList.querySelector('li.active');
+            const selectedMonth = monthList.querySelector('li.active');
+
+            if(!selectedYear){
+                alert('year을 선택해주세요.');
+                return;
+            }
+            if(!selectedMonth){
+                alert('month를 선택해주세요.');
+                return;
+            }
+
+            document.getElementById('dimLayer').classList.remove('active');
+            document.getElementById('datePopup').classList.remove('active');
+            
+            getCalendar('#calendar', {y: selectedYear.textContent, m: selectedMonth.textContent, d: 1});
+        })
+        
+        document.getElementById('prevMonthBtn').addEventListener('click', () => {
+            const yearInput = document.getElementById('yearInput');
+            const thisYear = yearInput.querySelector('span').textContent;
+            const thisMonth = yearInput.querySelector('strong').textContent;
+
+            const thisDate = new Date(+thisYear, (+thisMonth - 1), 1);
+            getCalendar('#calendar', {y: thisDate.getFullYear(), m: (+thisMonth - 1), d: 1});
+        })
+        document.getElementById('nextMonthBtn').addEventListener('click', () => {
+            const yearInput = document.getElementById('yearInput');
+            const thisYear = yearInput.querySelector('span').textContent;
+            const thisMonth = yearInput.querySelector('strong').textContent;
+            const thisDate = new Date(+thisYear, (+thisMonth - 1), 1);
+
+            getCalendar('#calendar', {y: thisDate.getFullYear(), m: (+thisMonth + 1), d: 1});
+        })
+        
         const bookName = [
             '창세기', '출애굽기', '레위기',
             '민수기', '신명기', '여호수아',
@@ -535,6 +645,11 @@
             const dayFirst = tmpDate.getDay();	//금월 첫 요일
             const rowCnt = calcBlockCnt(dayFirst, lastDay);
 
+            document.getElementById('yearInput').innerHTML = `
+                <span>${date.getFullYear()}</span>
+                <strong>${date.getMonth() + 1}<strong>
+            `;
+
             //위에 컨텐츠
             const tableTag = appendTag(calendarTarget, 'table', {
                 style: {
@@ -573,50 +688,6 @@
             });
             const thRightSide = appendTag(thFlexBox, 'DIV');
 
-            //년
-            const yearInput = appendTag(thLeftSide, 'INPUT', {
-                attr: {
-                    list: 'yearData_' + randomTxt,
-                    value: date.getFullYear(),
-                    type: 'month'
-                },
-                style: {width: '60px'},
-                fnc: {
-                    change: () => {
-                        getCalendar('#calendar', {y: yearInput.value, m: monthInput.value, d: 1});
-                    }
-                }
-            });
-            appendTag(thLeftSide, 'SPAN', {
-                html: '년',
-                style: {
-                    marginLeft: '3px',
-                    marginRight: '5px',
-                    color: '#fff'
-                }
-            });
-
-            //월
-            const monthInput = appendTag(thLeftSide, 'INPUT', {
-                attr: {
-                    list: 'monthData_' + randomTxt,
-                    value: date.getMonth() + 1
-                },
-                style: {width: '45px'},
-                fnc: {
-                    change: () => {
-                        getCalendar('#calendar', {y: yearInput.value, m: monthInput.value, d: 1});
-                    }
-                }
-            });
-            appendTag(thLeftSide, 'SPAN', {
-                html: '월',
-                style: {
-                    marginLeft: '3px',
-                    marginRight: '5px',
-                    color: '#fff'
-                }
-            });
             const monthDataList = appendTag(thLeftSide, 'DATALIST', {attr: {id: 'monthData_' + randomTxt}});
 
             for(let i = 0; i < 12; i++){
@@ -627,17 +698,6 @@
                     }
                 });
             }
-
-            const prevBtn = appendTag(thLeftSide, 'BUTTON', {
-                html: '◀',
-                style: {marginLeft: '5px', cusor: 'pointer'},
-                fnc: {click: () => {getCalendar('#calendar', {y: date.getFullYear(), m: (thisMonth - 1), d: 1});}}
-            });
-            const nextBtn = appendTag(thLeftSide, 'BUTTON', {
-                html: '▶',
-                style: {cusor: 'pointer'},
-                fnc: {click: () => {getCalendar('#calendar', {y: date.getFullYear(), m: (thisMonth + 1), d: 1});}}
-            });
             const todayBtn = appendTag(thRightSide, 'BUTTON', {
                 html: 'Today',
                 fnc: {
@@ -651,8 +711,8 @@
                     html: dateKr[i],
                     style: {
                         textAlign: 'center',
-                        border: '1px solid #00ffff80',
-                        color: '#fff',
+                        borderBottom: '1px solid rgba(0, 0, 0, .5)',
+                        color: '#000',
                         fontWeight: 900
                     },
                     fnc: {
@@ -675,13 +735,6 @@
 
                 for(let j = 0; j < 7; j++){
                     const tdTag = appendTag(trTag, 'TD', {
-                        style: {
-                            border: '1px solid #ffffff80',
-                            textAlign: 'center',
-                            padding: '5px',
-                            fontWeight: 900,
-                            cursor: 'pointer'
-                        },
                         attr: {'data-block-idx': ((i * 7) + (j + 1))}
                     });
                 }
@@ -692,13 +745,15 @@
                 blockTarget.addEventListener('click', function(){
                     const allBlock = document.querySelectorAll('[data-block-idx]');
                     allBlock.forEach((block) => {
-                        block.style.boxShadow = 'none';
+                        block.classList.remove('on');
                     })
-                    blockTarget.style.boxShadow = 'inset 0 0 0 3px #ffb400';
+                    blockTarget.classList.add('on');
+                    // blockTarget.style.boxShadow = 'inset 0 0 0 3px #ffb400';
                 })
-                blockTarget.insertAdjacentHTML('afterbegin', (i + 1));
+                // blockTarget.insertAdjacentHTML('afterbegin', (i + 1));
+                blockTarget.innerHTML = `<div><strong>${(i + 1)}</strong><span></span></div>`;
                 blockTarget.setAttribute('data-date', (i + 1));
-                blockTarget.style.cssText += `color: #fff;`;
+                blockTarget.style.cssText += `color: #000;`;
             }
 
             for(let i = 0; i < 6; i++){	//토일 색 변경
@@ -736,7 +791,6 @@
 
             return rtnVal;
         }
-
         
 
         function appendTag(target, tagNm, option){

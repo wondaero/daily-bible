@@ -10,6 +10,8 @@ const valueObj = {
     r_k: '어디',
 }
 
+const localData = {};
+
 const bookName = [
     '창세기', '출애굽기', '레위기',
     '민수기', '신명기', '여호수아',
@@ -387,6 +389,7 @@ function getCalendar(target, setDate){
             allBlock.forEach(block => block.classList.remove('on'));
             blockTarget.classList.add('on');
 
+            const thisYear = +document.getElementById('yearInput').querySelector('span').textContent;
             const thisMonth = +document.getElementById('yearInput').querySelector('strong').textContent;
             const thisDate = +e.currentTarget.dataset.date;
 
@@ -394,10 +397,22 @@ function getCalendar(target, setDate){
 
             console.log(parseBook(nowData[0][valueObj.r_k].split('/')[0]));
 
+            document.getElementById('bibleList').dataset.date = `${thisYear}_${thisMonth}_${thisDate}`;
+
             document.getElementById('bibleList').innerHTML = '';
 
             nowData[0][valueObj.r_k].split('/').forEach(d => {
-                document.getElementById('bibleList').appendChild(bibleTemplate(d));
+                const withRange1 = d.split('-');
+
+                if(withRange1.length === 2){
+                    const start = withRange1[0].split('b')[1];
+                    const bibleCnt = +withRange1[1] - +start;
+                    for(let i = 0; i < bibleCnt + 1; i++){
+                        document.getElementById('bibleList').appendChild(bibleTemplate(withRange1[0].split('b')[0] + 'b' + (+start + i), d));
+                    }
+                }else{
+                    document.getElementById('bibleList').appendChild(bibleTemplate(d));
+                }
 
             });
         })
@@ -425,17 +440,36 @@ function getCalendar(target, setDate){
     }
 }
 
-function bibleTemplate(d){
+function bibleTemplate(d, org){
     const li = document.createElement('li');
     li.innerHTML = `
         <div>
             <div>
-                <input type="checkbox" data-id="chkRead" />
+                <input type="checkbox" value="${d}" data-id="chkRead" />
                 <strong>${parseBook(d)}</strong>
             </div>
             <button>보기</button>
         </div>
     `;
+
+    const outerChkBox = li.querySelector('input');
+
+    if(org !== undefined) outerChkBox.dataset.org = org;
+
+    outerChkBox.addEventListener('change', e => {
+        const thisDate = document.getElementById('bibleList').dataset.date;
+
+        if(e.currentTarget.checked){
+            if(localData.hasOwnProperty(thisDate)) localData[thisDate].push(e.currentTarget.value);
+            else localData[thisDate] = [e.currentTarget.value];
+        }else{
+            localData[thisDate] = localData[thisDate].filter(dd => dd !== e.currentTarget.value);
+        }
+
+        saveData();
+
+        console.log(localData);
+    })
 
     li.querySelector('[data-id="chkRead"]').addEventListener('change', e => {
         //todo 로컬스토리지에 저장하기
@@ -460,7 +494,6 @@ function bibleTemplate(d){
             span.innerHTML = `<strong>${dd.VerseNo}</strong> ${dd.BibleScript}`;
             document.getElementById('bibleScript').appendChild(span);
         });
-
     })
 
     
@@ -507,6 +540,14 @@ function appendTag(target, tagNm, option){
     toTarget.appendChild(tag);
 
     return tag;
+}
+
+function saveData(){
+    window.localStorage.setItem('dailyBible', JSON.stringify(localData));
+}
+function loadData(d){   //거의 한번
+    const loaded = window.localStorage.getItem('dailyBible');
+    localData = {...JSON.parse(loaded)};
 }
 
 

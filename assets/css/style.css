@@ -277,6 +277,7 @@ main > article{
 }
 .dim-layer .bible-popup p{
     margin: 0;
+    text-align: justify;
 }
 .dim-layer .bible-popup p > span{
     display: flex;
@@ -286,7 +287,8 @@ main > article{
     margin-bottom: 0;
 }
 .dim-layer .bible-popup p > span strong{
-    margin-right: 5px;
+    width: 40px;
+    min-width: 40px;
 }
 .dim-layer .date-popup > header{
     display: flex;

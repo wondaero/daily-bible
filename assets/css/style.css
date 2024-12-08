@@ -220,16 +220,28 @@ main > article{
     padding: 10px;
     background: #fff;
     border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.dim-layer .bible-popup.active{
+    display: flex;
 }
 
 .dim-layer .bible-popup{
-    width: 90%;
+    width: calc(100% - 10px - 10px);
     max-width: 800px;
+    max-height: calc(100% - 10px - 10px);
+    flex-direction: column;
+}
+.dim-layer .bible-popup > main{
+    flex: 1;
 }
 .dim-layer .bible-popup > header{
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #111;
 }
 .dim-layer .bible-popup > header label{
     display: flex;
@@ -247,10 +259,10 @@ main > article{
     align-items: center;
     justify-content: center;
     margin-right: 8px;
+    border-radius: 50%;
 }
 .dim-layer .bible-popup > header label input:checked + span{
     box-shadow: inset 0 0 10px rgba(0, 0, 255, .5);
-    border-radius: 50%;
 }
 .dim-layer .bible-popup > header label input:checked + span:after{
     content: '';
@@ -262,6 +274,19 @@ main > article{
     position: relative;
     top: -1px;
     transform: rotate(-45deg);
+}
+.dim-layer .bible-popup p{
+    margin: 0;
+}
+.dim-layer .bible-popup p > span{
+    display: flex;
+    margin-bottom: 5px;
+}
+.dim-layer .bible-popup p > span:last-of-type{
+    margin-bottom: 0;
+}
+.dim-layer .bible-popup p > span strong{
+    margin-right: 5px;
 }
 .dim-layer .date-popup > header{
     display: flex;

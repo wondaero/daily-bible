@@ -356,9 +356,6 @@ function getCalendar(target, setDate){
                 textAlign: 'center',
                 borderBottom: '1px solid rgba(0, 0, 0, .5)',
                 fontWeight: 900
-            },
-            fnc: {
-                click: () => {getCalendar('#calendar');}
             }
         });
 
@@ -448,6 +445,22 @@ function bibleTemplate(d){
         document.getElementById('dimLayer').classList.add('active');
         document.getElementById('biblePopup').classList.add('active');
         document.getElementById('datePopup').classList.remove('active');
+
+        const parseData = d.split('b');
+
+        thisBible = bible.filter(bs => +bs.BibleID === +parseData[0] && +bs.ChapterNo === +parseData[1]);
+
+        document.getElementById('bibleName').textContent = parseBook(d);
+
+        document.getElementById('bibleScript').innerHTML = '';
+        document.getElementById('bibleScript').scrollTop = 0;
+
+        thisBible.forEach(dd => {
+            const span = document.createElement('span');
+            span.innerHTML = `<strong>${dd.VerseNo}</strong> ${dd.BibleScript}`;
+            document.getElementById('bibleScript').appendChild(span);
+        });
+
     })
 
     
@@ -481,7 +494,6 @@ function getRandomTxt(data, len){
 
     return rtnVal;
 }
-
 
 function appendTag(target, tagNm, option){
     const toTarget = typeof target == 'object' ? target : document.querySelector('target');

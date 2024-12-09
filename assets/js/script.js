@@ -10,7 +10,7 @@ const valueObj = {
     r_k: '어디',
 }
 
-const localData = {};
+let localData = {};
 
 const bookName = [
     '창세기', '출애굽기', '레위기',
@@ -397,9 +397,12 @@ function getCalendar(target, setDate){
 
             console.log(parseBook(nowData[0][valueObj.r_k].split('/')[0]));
 
-            document.getElementById('bibleList').dataset.date = `${thisYear}_${thisMonth}_${thisDate}`;
+            const bibleListTag = document.getElementById('bibleList');
+            const combiDate = `${thisYear}_${thisMonth}_${thisDate}`;
 
-            document.getElementById('bibleList').innerHTML = '';
+            bibleListTag.dataset.date = combiDate;
+
+            bibleListTag.innerHTML = '';
 
             nowData[0][valueObj.r_k].split('/').forEach(d => {
                 const withRange1 = d.split('-');
@@ -408,13 +411,23 @@ function getCalendar(target, setDate){
                     const start = withRange1[0].split('b')[1];
                     const bibleCnt = +withRange1[1] - +start;
                     for(let i = 0; i < bibleCnt + 1; i++){
-                        document.getElementById('bibleList').appendChild(bibleTemplate(withRange1[0].split('b')[0] + 'b' + (+start + i), d));
+                        bibleListTag.appendChild(bibleTemplate(withRange1[0].split('b')[0] + 'b' + (+start + i), d));
                     }
                 }else{
-                    document.getElementById('bibleList').appendChild(bibleTemplate(d));
+                    bibleListTag.appendChild(bibleTemplate(d));
                 }
-
             });
+
+            localData
+
+            if(localData.hasOwnProperty(combiDate)){
+                localData[combiDate].forEach(bib => {
+                    console.log(bib);
+                    bibleListTag.querySelector(`input[value="${bib}"]`).checked = true;
+                })
+            };
+
+            console.log(localData);
         })
         // blockTarget.insertAdjacentHTML('afterbegin', (i + 1));
         blockTarget.innerHTML = `<div><strong>${(i + 1)}</strong><span></span></div>`;
@@ -444,10 +457,11 @@ function bibleTemplate(d, org){
     const li = document.createElement('li');
     li.innerHTML = `
         <div>
-            <div>
+            <label class="checkbox1">
                 <input type="checkbox" value="${d}" data-id="chkRead" />
+                <span></span>
                 <strong>${parseBook(d)}</strong>
-            </div>
+            </label>
             <button>보기</button>
         </div>
     `;
@@ -466,9 +480,17 @@ function bibleTemplate(d, org){
             localData[thisDate] = localData[thisDate].filter(dd => dd !== e.currentTarget.value);
         }
 
-        saveData();
+        let isAllChked = true; 
 
-        console.log(localData);
+        document.querySelectorAll('#bibleList input').forEach(inp => {
+            if(!inp.checked) isAllChked = false;
+        })
+
+        console.log(isAllChked);
+
+        if(isAllChked) document.getElementById('allChker').checked = true;
+
+        saveData();
     })
 
     li.querySelector('[data-id="chkRead"]').addEventListener('change', e => {
@@ -499,6 +521,40 @@ function bibleTemplate(d, org){
     
     return li;
 }
+
+document.getElementById('allChker').addEventListener('change', e => {
+    const inps = document.querySelectorAll('#bibleList input');
+
+    if(!inps.length){
+        e.target.checked = false;
+        return;
+    }
+
+    const thisDate = document.getElementById('bibleList').dataset.date;
+    if(e.target.checked){
+        inps.forEach(inp => {
+            inp.checked = true;
+
+            if(localData.hasOwnProperty(thisDate)) localData[thisDate].push(inp.value);
+            else localData[thisDate] = [inp.value];
+        })
+    }else{
+        inps.forEach(inp => {
+            inp.checked = false;
+            delete localData[thisDate];
+        })
+    }
+
+
+    saveData();
+
+
+    // inps.forEach(inp => {
+    //     inp.checked = e.target.checked;
+    // })
+
+    
+})
 
 document.getElementById('closeBiblePopupBtn').addEventListener('click', () => {
     document.getElementById('dimLayer').classList.remove('active');
@@ -547,6 +603,7 @@ function saveData(){
 }
 function loadData(d){   //거의 한번
     const loaded = window.localStorage.getItem('dailyBible');
+    console.log(loaded);
     localData = {...JSON.parse(loaded)};
 }
 
@@ -556,6 +613,8 @@ getCalendar('#calendar');
 
 // 페이지 로드 후 자동으로 엑셀 파일을 불러옴
 window.onload = async function () {
+
+    loadData();
     
     dailyData = await fetchAndReadExcel('./data/daily-data.xlsx');  // 페이지 로드 시 자동으로 엑셀 파일을 읽음
     bible = await fetchAndReadExcel('./data/bible-kr.xlsb');  // 페이지 로드 시 자동으로 엑셀 파일을 읽음

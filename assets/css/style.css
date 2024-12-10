@@ -134,19 +134,21 @@ main > article{
 }
 .calendar-section > header button:after{
     content: '';
-    width: 12px;
-    height: 12px;
-    transform: rotate(45deg);
+    width: 20px;
+    height: 14px;
+    box-sizing: border-box;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
 }
 .calendar-section > header button.prev-month-btn:after{
-    border-bottom: 1px solid #000;
-    border-left: 1px solid #000;
-    transform: translateX(4px) rotate(45deg);
+    border-right: 10px solid #000;
+    border-left: 10px solid transparent;
+    transform: translateX(-5px);
 }
 .calendar-section > header button.next-month-btn:after{
-    border-top: 1px solid #000;
-    border-right: 1px solid #000;
-    transform: translateX(-2px) rotate(45deg);
+    border-left: 10px solid #000;
+    border-right: 10px solid transparent;
+    transform: translateX(5px);
 }
 
 .calendar{

@@ -2,6 +2,8 @@ let dailyData;
 let dailyData2;
 let bible;
 
+let indexeddb;
+
 const valueObj = {
     m_e: 'm',
     d_e: 'd',
@@ -10,8 +12,6 @@ const valueObj = {
     d_k: '일',
     r_k: '어디',
 }
-
-let localData = {};
 
 const bookName = [
     '창세기', '출애굽기', '레위기',
@@ -408,11 +408,7 @@ function getCalendar(target, setDate) {
             const thisMonth = +document.getElementById('yearInput').querySelector('strong').textContent;
             const thisDate = +e.currentTarget.dataset.date;
 
-            console.log(dailyData);
-
             const nowData = dailyData.filter(d => d[valueObj.m_k] === thisMonth && d[valueObj.d_k] === thisDate);
-
-            console.log(parseBook(nowData[0][valueObj.r_k].split('/')[0]));
 
             const bibleListTag = document.getElementById('bibleList');
             const combiDate = `${thisYear}_${thisMonth}_${thisDate}`;
@@ -436,20 +432,21 @@ function getCalendar(target, setDate) {
             });
 
             //저장된 데이터 처리
-            if (localData.hasOwnProperty(combiDate)) {
-                localData[combiDate].forEach(bib => {
-                    bibleListTag.querySelector(`input[value="${bib}"]`).checked = true;
-                })
-            };
-
             document.getElementById('allChker').checked = false;
-
             let isAllChked = true;
-            bibleListTag.querySelectorAll('input').forEach(input => {
-                if(!input.checked) isAllChked = false;
-            })
 
-            if(isAllChked) document.getElementById('allChker').checked = true;
+            indexeddb.query('r', combiDate, {success: (d) => {
+                d.dailyChked.forEach((c) => {
+                    bibleListTag.querySelector(`input[value="${c}"]`).checked = true;
+                })
+                
+                bibleListTag.querySelectorAll('input').forEach(input => {
+                    if(!input.checked) isAllChked = false;
+                })
+    
+                if(isAllChked) document.getElementById('allChker').checked = true;
+            }})
+
         })
         // blockTarget.insertAdjacentHTML('afterbegin', (i + 1));
         blockTarget.innerHTML = `<div><strong>${(i + 1)}</strong><span></span></div>`;
@@ -477,40 +474,67 @@ function getCalendar(target, setDate) {
         })
     }
 
-    const validData = [];
-    
-    for(let key in localData){
-        if(key.indexOf(`${date.getFullYear()}_${date.getMonth() + 1}`) === 0){
-            validData.push({[key]: localData[key]});
+    indexeddb.query('r', undefined, {
+        where: (d) => {
+            return d.id.indexOf(`${date.getFullYear()}_${date.getMonth() + 1}`) === 0
+        },
+        success: (data) => {
+            const mapedData = data.map(d => {
+                const copyId = d.id.split('_').slice(1);
+                return copyId.join('_');
+            })
+            const mapedData2 = data.map(d => {
+                const copyId = d.id.split('_').slice(1);
+                return {...d, id: copyId.join('_')};
+            })
+
+            const set = new Set(mapedData);
+            const targetData = dailyData2.filter(d => set.has(d.id));
+
+            targetData.forEach(dd => {
+                const targetD = mapedData2.filter(ddd => ddd.id === dd.id)[0];
+                const withRange1 = dd.dailyChked.filter(d => d.indexOf('-') > -1);
+
+                withRange1.forEach(wr => {
+                    dd.dailyChked = dd.dailyChked.filter(ddd => ddd !== wr);
+                    const parsedData = wr.split('b');
+                    const ranged = parsedData[1].split('-');
+                    const bookCnt = +ranged[1] - +ranged[0];
+                    
+                    const splittedArr = [];
+                    for(let i = 0; i < (bookCnt + 1); i++){
+                        splittedArr.push(parsedData[0] + 'b' + (+ranged[0] + i));
+                    }
+
+                    dd.dailyChked = [...dd.dailyChked, ...splittedArr];
+                })
+            })
+
+            //가공 후
+            // console.log('체크해야할 것: ', targetData, '체크된 것: ', mapedData2);
+            mapedData2.forEach(d => {
+                if(d.dailyChked.length > 0){
+                    let clsNm = 'ing';
+                    if(isEqualArr(d.dailyChked, targetData.filter(td => td.id === d.id)[0].dailyChked)) clsNm = 'clear';
+                    document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`).classList.add(clsNm);
+                }
+            })
+
+            function isEqualArr(a, b) {
+                const setA = new Set(a);
+                const setB = new Set(b);
+            
+                if (setA.size !== setB.size) return false; // 원소 개수가 다르면 바로 false
+                for (let item of setA) {
+                    if (!setB.has(item)) return false; // 하나라도 없다면 false
+                }
+                return true;
+            }
         }
-    }
-    
-    console.log('그해그달데이터', validData);
-    console.log('그해그달데이터', dailyData2);
+    });
 
-    // validDate.forEach(() => {
-
-    // })
-
-
-    // nowData[0][valueObj.r_k].split('/').forEach(d => {
-    //     const withRange1 = d.split('-');
-
-    //     if (withRange1.length === 2) {
-    //         const start = withRange1[0].split('b')[1];
-    //         const bibleCnt = +withRange1[1] - +start;
-    //         for (let i = 0; i < bibleCnt + 1; i++) {
-    //             bibleListTag.appendChild(bibleTemplate(withRange1[0].split('b')[0] + 'b' + (+start + i), d));
-    //         }
-    //     } else {
-    //         bibleListTag.appendChild(bibleTemplate(d));
-    //     }
-    // });
-    
     document.getElementById('bibleList').innerHTML = '';
     document.getElementById('allChker').checked = false;
-
-
 }
 
 function bibleTemplate(d, org) {
@@ -533,22 +557,21 @@ function bibleTemplate(d, org) {
     outerChkBox.addEventListener('change', e => {
         const thisDate = document.getElementById('bibleList').dataset.date;
 
-        if (e.currentTarget.checked) {
-            if (localData.hasOwnProperty(thisDate)) localData[thisDate].push(e.currentTarget.value);
-            else localData[thisDate] = [e.currentTarget.value];
-        } else {
-            localData[thisDate] = localData[thisDate].filter(dd => dd !== e.currentTarget.value);
-        }
-
         let isAllChked = true;
 
         let chkedCnt = 0;
 
         const inputs = document.querySelectorAll('#bibleList input');
 
+        const chkedData = [];
+
         inputs.forEach(inp => {
-            if(!inp.checked) isAllChked = false;
-            else chkedCnt++;
+            if(!inp.checked){
+                isAllChked = false;
+            }else{
+                chkedData.push(inp.value);
+                chkedCnt++;
+            }
         })
         
         const targetTd = document.querySelector(`#calendar [data-date="${thisDate.split('_')[2]}"]`);
@@ -564,7 +587,8 @@ function bibleTemplate(d, org) {
 
         document.getElementById('allChker').checked = isAllChked;
 
-        saveData();
+        indexeddb.query('u', {id: thisDate, dailyChked: chkedData}, {upsert: true});
+
     })
 
     li.querySelector('[data-id="chkRead"]').addEventListener('change', e => {
@@ -604,7 +628,6 @@ function bibleTemplate(d, org) {
         });
     })
 
-
     return li;
 }
 
@@ -622,25 +645,22 @@ document.getElementById('allChker').addEventListener('change', e => {
     targetTd.classList.remove('clear');
     targetTd.classList.remove('ing');
 
+    const chkedData = [];
+
     if (e.target.checked) {
         targetTd.classList.add('clear');
         inps.forEach(inp => {
             inp.checked = true;
-            if (localData.hasOwnProperty(thisDate)) localData[thisDate].push(inp.value);
-            else localData[thisDate] = [inp.value];
+            chkedData.push(inp.value);
         })
-    } else {
+    }else{
         inps.forEach(inp => {
             inp.checked = false;
         })
-        if (localData.hasOwnProperty(thisDate)) delete localData[thisDate];
     }
+    
+    indexeddb.query('u', {id: thisDate, dailyChked: chkedData}, {upsert: true});
 
-    saveData();
-
-    // inps.forEach(inp => {
-    //     inp.checked = e.target.checked;
-    // })
 })
 
 document.getElementById('closeBiblePopupBtn').addEventListener('click', () => {
@@ -685,35 +705,41 @@ function appendTag(target, tagNm, option) {
     return tag;
 }
 
-function saveData() {
-    window.localStorage.setItem('dailyBible', JSON.stringify(localData));
-}
-function loadData() {   //거의 한번
-    const loaded = window.localStorage.getItem('dailyBible');
-    localData = { ...JSON.parse(loaded) };
-    console.log(localData);
-}
-
 
 // 페이지 로드 후 자동으로 엑셀 파일을 불러옴
 window.onload = async function () {
 
-    loadData();
+    indexeddb = new IndexedDB({
+        dbNm: 'MyDatabase',
+        dbVersion: 1,
+        tableNm: 'MyDailyBible',
+        key: 'id'
+    });
+
     dailyData = await fetchAndReadExcel('./data/daily-data.xlsx');  // 페이지 로드 시 자동으로 엑셀 파일을 읽음
     bible = await fetchAndReadExcel('./data/bible-kr.xlsb');  // 페이지 로드 시 자동으로 엑셀 파일을 읽음
-    dailyData2 = dailyData.map(d => ({...d, [valueObj.r_k]: d[valueObj.r_k].split('/')}));
+    dailyData2 = dailyData.map(d => ({id: `${d[valueObj.m_k]}_${d[valueObj.d_k]}`, dailyChked: d[valueObj.r_k].split('/')}));
 
-    const nowObj = dateFormat(new Date());
-
-    console.log(dailyData);
-    console.log(dailyData2);
-    console.log(bible);
-    console.log(nowObj);
+    // console.log(dailyData);
+    // console.log(dailyData2);
+    // console.log(bible);
 
     getCalendar('#calendar');
-
-    const todayData = dailyData.filter(d => d[valueObj.m_k] === nowObj.m && d[valueObj.d_k] === nowObj.d)[0];
-    console.log(todayData);
-
-    console.log(parseBook(todayData[valueObj.r_k]).join(', '));
 };
+
+
+function deleteDatabase() { //테스트용
+    const deleteRequest = indexedDB.deleteDatabase('MyDatabase');
+
+    deleteRequest.onsuccess = function () {
+        console.log(`데이터베이스 'MyDatabase' 삭제 완료`);
+    };
+
+    deleteRequest.onerror = function (event) {
+        console.error(`데이터베이스 'MyDatabase' 삭제 실패`, event.target.error);
+    };
+
+    deleteRequest.onblocked = function () {
+        console.warn(`데이터베이스 'MyDatabase' 삭제가 차단되었습니다. 열려 있는 연결을 닫으세요.`);
+    };
+}

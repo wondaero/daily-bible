@@ -1,4 +1,5 @@
 let dailyData;
+let dailyData2;
 let bible;
 
 const valueObj = {
@@ -475,6 +476,41 @@ function getCalendar(target, setDate) {
             todayTarget.click();
         })
     }
+
+    const validData = [];
+    
+    for(let key in localData){
+        if(key.indexOf(`${date.getFullYear()}_${date.getMonth() + 1}`) === 0){
+            validData.push({[key]: localData[key]});
+        }
+    }
+    
+    console.log('그해그달데이터', validData);
+    console.log('그해그달데이터', dailyData2);
+
+    // validDate.forEach(() => {
+
+    // })
+
+
+    // nowData[0][valueObj.r_k].split('/').forEach(d => {
+    //     const withRange1 = d.split('-');
+
+    //     if (withRange1.length === 2) {
+    //         const start = withRange1[0].split('b')[1];
+    //         const bibleCnt = +withRange1[1] - +start;
+    //         for (let i = 0; i < bibleCnt + 1; i++) {
+    //             bibleListTag.appendChild(bibleTemplate(withRange1[0].split('b')[0] + 'b' + (+start + i), d));
+    //         }
+    //     } else {
+    //         bibleListTag.appendChild(bibleTemplate(d));
+    //     }
+    // });
+    
+    document.getElementById('bibleList').innerHTML = '';
+    document.getElementById('allChker').checked = false;
+
+
 }
 
 function bibleTemplate(d, org) {
@@ -514,8 +550,6 @@ function bibleTemplate(d, org) {
             if(!inp.checked) isAllChked = false;
             else chkedCnt++;
         })
-
-        console.log(chkedCnt);
         
         const targetTd = document.querySelector(`#calendar [data-date="${thisDate.split('_')[2]}"]`);
 
@@ -583,29 +617,30 @@ document.getElementById('allChker').addEventListener('change', e => {
     }
 
     const thisDate = document.getElementById('bibleList').dataset.date;
+    const targetTd = document.querySelector(`#calendar [data-date="${thisDate.split('_')[2]}"]`);
+
+    targetTd.classList.remove('clear');
+    targetTd.classList.remove('ing');
+
     if (e.target.checked) {
+        targetTd.classList.add('clear');
         inps.forEach(inp => {
             inp.checked = true;
-
             if (localData.hasOwnProperty(thisDate)) localData[thisDate].push(inp.value);
             else localData[thisDate] = [inp.value];
         })
     } else {
         inps.forEach(inp => {
             inp.checked = false;
-            delete localData[thisDate];
         })
+        if (localData.hasOwnProperty(thisDate)) delete localData[thisDate];
     }
 
-
     saveData();
-
 
     // inps.forEach(inp => {
     //     inp.checked = e.target.checked;
     // })
-
-
 })
 
 document.getElementById('closeBiblePopupBtn').addEventListener('click', () => {
@@ -660,20 +695,18 @@ function loadData() {   //거의 한번
 }
 
 
-
-
-
 // 페이지 로드 후 자동으로 엑셀 파일을 불러옴
 window.onload = async function () {
 
     loadData();
-
     dailyData = await fetchAndReadExcel('./data/daily-data.xlsx');  // 페이지 로드 시 자동으로 엑셀 파일을 읽음
     bible = await fetchAndReadExcel('./data/bible-kr.xlsb');  // 페이지 로드 시 자동으로 엑셀 파일을 읽음
+    dailyData2 = dailyData.map(d => ({...d, [valueObj.r_k]: d[valueObj.r_k].split('/')}));
 
     const nowObj = dateFormat(new Date());
 
     console.log(dailyData);
+    console.log(dailyData2);
     console.log(bible);
     console.log(nowObj);
 

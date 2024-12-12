@@ -268,16 +268,20 @@ function parseBook(txt) {
         finalTxt += bookName[+book[0] - 1] + ' ';
 
         if (book[1].indexOf('-') > -1) {  //어디부터 어디까지
-            finalTxt += book[1].split('-')[0] + ' - ' + book[1].split('-')[1] + '장';
+            finalTxt += book[1].split('-')[0] + '~' + book[1].split('-')[1] + (+book[0] === 19 ? '편' : '장');
         } else {
             if (book[1].indexOf(':') > -1) {
-                finalTxt += book[1].split(':')[0] + '장';
+                finalTxt += book[1].split(':')[0] + (+book[0] === 19 ? '편' : '장');
                 if (book[1].indexOf('~') > -1) {
                     const verses = book[1].split('~');
-                    finalTxt += ' ' + verses[0].split(':')[1] + ' ~ ' + verses[1] + '절';
+                    if(verses[0].split(':')[1] === verses[1]){
+                        finalTxt += ' ' + verses[1] + '절';
+                    }else{
+                        finalTxt += ' ' + verses[0].split(':')[1] + '~' + verses[1] + '절';
+                    }
                 }
             } else {
-                finalTxt += book[1] + '장';
+                finalTxt += book[1] + (+book[0] === 19 ? '편' : '장');
             }
         }
         bookArr2.push(finalTxt);
@@ -466,10 +470,16 @@ function getCalendar(target, setDate) {
         if (blueTarget && blueTarget.querySelector('strong')) blueTarget.querySelector('strong').classList.add('sat');
     }
 
-    if (!setDate) {   //투데이
-        const todayTarget = document.querySelector('[data-date="' + nowD + '"]');
+    const nowD2 = new Date();
+    if(+nowD2.getFullYear() === +document.getElementById('yearInput').querySelector('span').textContent
+    && +(nowD2.getMonth() + 1) === +document.getElementById('yearInput').querySelector('strong').textContent){
+        const todayTarget = document.querySelector('[data-date="' + nowD2.getDate() + '"]');
         todayTarget.querySelector('strong').classList.add('today');
+    }
+
+    if (!setDate) {   //투데이 자동 클릭
         setTimeout(() => {
+            todayTarget = document.querySelector('[data-date="' + nowD + '"]');
             todayTarget.click();
         })
     }
@@ -591,10 +601,6 @@ function bibleTemplate(d, org) {
 
     })
 
-    li.querySelector('[data-id="chkRead"]').addEventListener('change', e => {
-        //todo 로컬스토리지에 저장하기
-        //todo for문으로 전체 확인해서 전체 체크일 경우 전체 체크 체크
-    })
     li.querySelector('button').addEventListener('click', e => {
         document.getElementById('dimLayer').classList.add('active');
         document.getElementById('biblePopup').classList.add('active');
@@ -611,21 +617,38 @@ function bibleTemplate(d, org) {
             targetInput.dispatchEvent(changeEvent);
         };
 
-
         const parseData = d.split('b');
 
-        thisBible = bible.filter(bs => +bs.BibleID === +parseData[0] && +bs.ChapterNo === +parseData[1]);
+        let thisBible;
 
+        const ranged2 = parseData[1].split(':');
+
+        if(ranged2.length === 2){
+            const chapter = +ranged2[0];
+            const verse = ranged2[1];
+
+            thisBible = bible.filter(bs => {
+                return +bs.BibleID === +parseData[0]
+                && +bs.ChapterNo === chapter
+                && (verse.split('~')[0] <= bs.VerseNo) 
+                && (bs.VerseNo <= verse.split('~')[1]) 
+            });
+
+        }else{
+            thisBible = bible.filter(bs => +bs.BibleID === +parseData[0] && +bs.ChapterNo === +parseData[1]);
+        }
+        
         document.getElementById('bibleName').textContent = parseBook(d);
-
+    
         document.getElementById('bibleScript').innerHTML = '';
         document.getElementById('bibleScript').scrollTop = 0;
-
+    
         thisBible.forEach(dd => {
             const span = document.createElement('span');
             span.innerHTML = `<strong>${dd.VerseNo}</strong> ${dd.BibleScript}`;
             document.getElementById('bibleScript').appendChild(span);
         });
+
     })
 
     return li;
@@ -725,6 +748,8 @@ window.onload = async function () {
     // console.log(bible);
 
     getCalendar('#calendar');
+
+    document.getElementById('loadingLayer').classList.remove('active');
 };
 
 

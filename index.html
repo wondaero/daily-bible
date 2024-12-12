@@ -19,11 +19,14 @@
     <main>
         <article class="calendar-section">
             <header>
-                <button id="prevMonthBtn" class="prev-month-btn"></button>
-                <div id="yearSelection" class="year-selection">
-                    <div id="yearInput" class="year-input"></div>
+                <div>
+                    <button id="prevMonthBtn" class="prev-month-btn move-month-btn"></button>
+                    <div id="yearSelection" class="year-selection">
+                        <div id="yearInput" class="year-input"></div>
+                    </div>
+                    <button id="nextMonthBtn" class="next-month-btn move-month-btn"></button>
                 </div>
-                <button id="nextMonthBtn" class="next-month-btn"></button>
+                <div class="today-btn-wrapper"><button id="todayBtn">Today</button></div>
             </header>
             <div id="calendar" class="calendar"></div>
         </article>

@@ -36,6 +36,10 @@ const bookName = [
     '요한일서', '요한이서', '요한삼서', '유다서', '요한계시록'
 ];
 
+document.getElementById('todayBtn').addEventListener('click', () => {
+    getCalendar('#calendar');
+})
+
 document.getElementById('yearInput').addEventListener('click', (e) => {
     
     document.getElementById('dimLayer').classList.add('active');
@@ -324,59 +328,16 @@ function getCalendar(target, setDate) {
     })
 
     const tHeadTag = appendTag(tableTag, 'thead');
-
     const headTrTag1 = appendTag(tHeadTag, 'tr');
-    const headTrTag2 = appendTag(tHeadTag, 'tr');
-    const headThTag1 = appendTag(headTrTag1, 'th', {
-        attr: { colspan: 7 },
-        style: {
-            border: '1px solid #ffffff80',
-            padding: '5px'
-        }
-    });
-
-    const thFlexBox = appendTag(headThTag1, 'DIV', {
-        style: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%'
-        }
-    });
-
-    const thLeftSide = appendTag(thFlexBox, 'DIV', {
-        style: {
-            display: 'flex',
-            alignItems: 'center'
-        }
-    });
-    const thRightSide = appendTag(thFlexBox, 'DIV');
-
-    const monthDataList = appendTag(thLeftSide, 'DATALIST', { attr: { id: 'monthData_' + randomTxt } });
-
-    for (let i = 0; i < 12; i++) {
-        appendTag(monthDataList, 'OPTION', {
-            attr: {
-                value: (i + 1),
-                html: (i + 1)
-            }
-        });
-    }
-    const todayBtn = appendTag(thRightSide, 'BUTTON', {
-        html: 'Today',
-        fnc: {
-            click: () => { getCalendar('#calendar'); }
-        }
-    });
 
     calendarTarget.appendChild(tableTag);
     for (let i = 0; i < 7; i++) {
-        const week = appendTag(headTrTag2, 'TH', {
+        const week = appendTag(headTrTag1, 'TH', {
             html: dateKr[i],
             style: {
-                textAlign: 'center',
-                borderBottom: '1px solid rgba(0, 0, 0, .5)',
-                fontWeight: 900
+                // textAlign: 'center',
+                // borderBottom: '1px solid rgba(0, 0, 0, .5)',
+                // fontWeight: 900
             }
         });
 

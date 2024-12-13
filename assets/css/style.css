@@ -34,12 +34,14 @@
 html, body{
     height: 100%;
     font-family: Pretendard;
+    /* background: linear-gradient(to bottom, #000, #002, #fed, #fff); */
     background: linear-gradient(to bottom, #002, #fed);
     min-width: 280px;
 }
 body{
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 body > header{
     background: darkslateblue;
@@ -527,7 +529,7 @@ table td.ing > div strong{
     display: flex;
 }
 .dim-layer .memo-popup{
-    display: flex;
+    display: none;
     flex-direction: column;
     height: calc(100% - 20px);
     width: calc(100% - 10px - 10px);

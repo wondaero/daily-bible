@@ -418,6 +418,8 @@ function getCalendar(target, setDate) {
 
                         indexeddb.query('r', thisDate, {success: (d) => {
                             let orgTxt = '';
+                            modOnBtn.classList.remove('hidden');
+                            regSection.classList.remove('hidden');
 
                             modOnBtn.addEventListener('click', () => {
                                 regSection.classList.remove('hidden');

@@ -45,6 +45,7 @@ document.getElementById('yearInput').addEventListener('click', (e) => {
     document.getElementById('dimLayer').classList.add('active');
     document.getElementById('datePopup').classList.add('active');
     document.getElementById('biblePopup').classList.remove('active');
+    document.getElementById('memoPopup').classList.remove('active');
 
     const yearList = document.getElementById('yearList');
 
@@ -584,6 +585,7 @@ function bibleTemplate(d, org) {
         document.getElementById('dimLayer').classList.add('active');
         document.getElementById('biblePopup').classList.add('active');
         document.getElementById('datePopup').classList.remove('active');
+        document.getElementById('memoPopup').classList.remove('active');
 
         const targetInput = e.currentTarget.closest('li').querySelector('input');
 
@@ -669,6 +671,7 @@ document.getElementById('closeBiblePopupBtn').addEventListener('click', () => {
     document.getElementById('dimLayer').classList.remove('active');
     document.getElementById('datePopup').classList.remove('active');
     document.getElementById('biblePopup').classList.remove('active');
+    document.getElementById('memoPopup').classList.remove('active');
 })
 
 function calcBlockCnt(week, date) {

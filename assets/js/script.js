@@ -396,6 +396,24 @@ function getCalendar(target, setDate) {
                 }
             });
 
+            const memo = () => {
+                const memoTag = document.createElement('article');
+                memoTag.classList.add('memo-section');
+                memoTag.dataset.id = 'memoBtn';
+                memoTag.textContent = `메모`;
+
+                memoTag.addEventListener('click', () => {
+                    alert('준비중입니다.');
+                })
+                
+                return memoTag;
+            }
+
+            const oldMemo = document.querySelector('[data-id="memoBtn"]');
+            if(oldMemo) oldMemo.remove();
+
+            document.body.querySelector(':scope > main').appendChild(memo());
+
             //저장된 데이터 처리
             document.getElementById('allChker').checked = false;
             let isAllChked = true;
@@ -515,7 +533,7 @@ function bibleTemplate(d, org) {
             <label class="checkbox1">
                 <input type="checkbox" value="${d}" data-id="chkRead" />
                 <span></span>
-                <strong>${parseBook(d)}</strong>
+                <strong class="bible-range">${parseBook(d)}</strong>
             </label>
             <button>보기</button>
         </div>
@@ -689,10 +707,8 @@ function appendTag(target, tagNm, option) {
     return tag;
 }
 
-
 // 페이지 로드 후 자동으로 엑셀 파일을 불러옴
 window.onload = async function () {
-
     indexeddb = new IndexedDB({
         dbNm: 'MyDatabase',
         dbVersion: 1,

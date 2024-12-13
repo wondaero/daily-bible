@@ -1,30 +1,30 @@
 @font-face {
     font-family: 'Pretendard';
-    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    src: url('../font/Pretendard-Regular.woff') format('woff');
     font-weight: 400;
     font-style: normal;
 }
 @font-face {
     font-family: 'Pretendard';
-    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Medium.woff') format('woff');
+    src: url('../font/Pretendard-Medium.woff') format('woff');
     font-weight: 500;
     font-style: normal;
 }
 @font-face {
     font-family: 'Pretendard';
-    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff') format('woff');
+    src: url('../font/Pretendard-SemiBold.woff') format('woff');
     font-weight: 600;
     font-style: normal;
 }
 @font-face {
     font-family: 'Pretendard';
-    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
+    src: url('../font/Pretendard-Bold.woff') format('woff');
     font-weight: 700;
     font-style: normal;
 }
 @font-face {
     font-family: 'Pretendard';
-    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-ExtraBold.woff') format('woff');
+    src: url('../font/Pretendard-ExtraBold.woff') format('woff');
     font-weight: 800;
     font-style: normal;
 }
@@ -32,16 +32,16 @@
 html, body{
     height: 100%;
     font-family: Pretendard;
-    background: linear-gradient(to bottom, #000, midnightblue);
+    background: linear-gradient(to bottom, #002, #fed);
 }
 body{
     display: flex;
     flex-direction: column;
 }
 body > header{
-    background: dimgray;
-    height: 50px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, .5);
+    background: darkslateblue;
+    height: 40px;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, .5);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -75,8 +75,7 @@ main > article{
 
 .calendar-section{
     margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid rgba(255, 255, 255, .5);
 }
 .calendar-section > header{
     margin-bottom: 20px;
@@ -190,11 +189,13 @@ main > article{
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, .95);
+    /* background: rgba(255, 255, 255, .95); */
     display: none;
     align-items: center;
     justify-content: center;
     z-index: 2;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 .dim-layer.active{
     display: flex;
@@ -241,7 +242,6 @@ main > article{
     font-size: 18px;
     cursor: pointer;
 }
-/* .dim-layer .date-popup{ */
 .dim-layer .every-popup{
     display: none;
     border: 1px solid #111;
@@ -382,7 +382,7 @@ table td.on{
 table td.on > div{
     font-weight: 900;
     opacity: 1;
-    border: 1px solid #fff;
+    border: 3px double #fff;
     box-shadow: inset 0 0 8px #fff;
 }
 table td > div{
@@ -426,15 +426,15 @@ table td > div strong.today + span{
 table td > div span{
     opacity: 0;
     background: #fff;
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     position: absolute;
     border-radius: 50%;
     z-index: -1;
-    box-shadow: 0 0 8px #fff;
+    box-shadow: 0 0 20px #fed;
 }
 table td.clear > div{
     /* opacity: 1; */
@@ -453,6 +453,11 @@ table td.ing > div strong{
 .bible-section{
     display: flex;
     justify-content: center;
+    background: rgba(255, 255, 255, .25);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: inset 0 0 8px rgba(255, 255, 255, .8);
+    margin-bottom: 10px;
 }
 .bible-section > div{
     width: 100%;
@@ -461,31 +466,34 @@ table td.ing > div strong{
 
 .bible-section header{
     display: flex;
-    margin-bottom: 5px;
-    padding-left: 10px;
     color: #fff;
 }
 
 .bible-list{
     margin: 0;
     padding: 0;
+    margin-top: 15px;
     list-style: none;
-    padding: 0 5px;
-    border-radius: 5px;
+    color: #fff;
 }
 .bible-list li{
-    padding: 10px 5px;
-    border-radius: 5px;
-    background: #fff;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
 }
 .bible-list li:last-of-type{
     border-bottom: 0;
+    margin-bottom: 0;
 }
 .bible-list li > div{
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+.bible-list li label{
+    flex: 1;
+}
+.bible-list li label .bible-range{
+    flex: 1;
+    font-weight: 100;
 }
 .bible-list li button{
     border: 0;
@@ -493,9 +501,22 @@ table td.ing > div strong{
     align-items: center;
     justify-content: center;
     background: 0;
-    color: #000;
+    color: #fff;
     cursor: pointer;
-    font-weight: 900;
+    font-weight: 100;
+    width: 40px;
+    padding: 0;
+}
+
+.memo-section{
+    display: flex;
+    justify-content: center;
+    background: rgba(255, 255, 255, .25);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: inset 0 0 8px rgba(255, 255, 255, .8);
+    color: #fff;
+    cursor: pointer;
 }
 
 /*checkbox*/
@@ -510,10 +531,8 @@ label.checkbox1 input{
 label.checkbox1 input + span{
     width: 20px;
     height: 20px;
-    /* box-shadow: inset 0 0 8px rgba(0, 0, 0, 1); */
-    border: 1px solid #222;
+    border: 1px solid #ddd;
     background: #eee;
-    /* background: rgba(255, 255, 255, .8); */
     display: flex;
     align-items: center;
     justify-content: center;

@@ -36,16 +36,33 @@ const bookName = [
     '요한일서', '요한이서', '요한삼서', '유다서', '요한계시록'
 ];
 
+function openPopup(popupId, cb){
+    closePopup();
+    document.getElementById('dimLayer').classList.add('active');
+    document.getElementById(popupId).classList.add('active');
+
+    if(cb && typeof cb === 'function') cb();
+}
+
+function closePopup(cb){
+    document.getElementById('dimLayer').classList.remove('active');
+    document.getElementById('datePopup').classList.remove('active');
+    document.getElementById('biblePopup').classList.remove('active');
+    document.getElementById('memoPopup').classList.remove('active');
+
+    if(cb && typeof cb === 'function') cb();
+}
+
+document.querySelectorAll('[data-id="closePopupBtn"]').forEach(btn => {
+    btn.addEventListener('click', closePopup);
+})
+
 document.getElementById('todayBtn').addEventListener('click', () => {
     getCalendar('#calendar');
 })
 
 document.getElementById('yearInput').addEventListener('click', (e) => {
-    
-    document.getElementById('dimLayer').classList.add('active');
-    document.getElementById('datePopup').classList.add('active');
-    document.getElementById('biblePopup').classList.remove('active');
-    document.getElementById('memoPopup').classList.remove('active');
+    openPopup('datePopup');
 
     const yearList = document.getElementById('yearList');
 
@@ -175,12 +192,6 @@ document.querySelectorAll('#monthList li').forEach(li => {
 
 })
 
-document.getElementById('closeDatePopupBtn').addEventListener('click', () => {
-    document.getElementById('dimLayer').classList.remove('active');
-    document.getElementById('datePopup').classList.remove('active');
-    document.getElementById('biblePopup').classList.remove('active');
-})
-
 document.getElementById('applyDateBtn').addEventListener('click', () => {
     const yearList = document.getElementById('yearList');
     const monthList = document.getElementById('monthList');
@@ -197,8 +208,7 @@ document.getElementById('applyDateBtn').addEventListener('click', () => {
         return;
     }
 
-    document.getElementById('dimLayer').classList.remove('active');
-    document.getElementById('datePopup').classList.remove('active');
+    closePopup();
 
     getCalendar('#calendar', { y: selectedYear.textContent, m: selectedMonth.textContent, d: 1 });
 })
@@ -251,6 +261,8 @@ async function fetchAndReadExcel(url) {
 
     } catch (error) {
         console.error('엑셀 파일을 읽는 중 오류 발생:', error);
+        alert('데이터 불러오는데 실패했습니다.\n다시 불러올게요.');
+        window.location.reload();
     }
 }
 
@@ -335,11 +347,6 @@ function getCalendar(target, setDate) {
     for (let i = 0; i < 7; i++) {
         const week = appendTag(headTrTag1, 'TH', {
             html: dateKr[i],
-            style: {
-                // textAlign: 'center',
-                // borderBottom: '1px solid rgba(0, 0, 0, .5)',
-                // fontWeight: 900
-            }
         });
 
         if (i == 0) week.classList.add('sun');
@@ -350,9 +357,6 @@ function getCalendar(target, setDate) {
     const tBodyTag = document.createElement('TBODY');
     tableTag.appendChild(tBodyTag);
     for (let i = 0; i < rowCnt; i++) {
-        // const trTag = document.createElement('TR');
-        // tBodyTag.appendChild(trTag);
-
         const trTag = appendTag(tBodyTag, 'TR');
 
         for (let j = 0; j < 7; j++) {
@@ -404,7 +408,52 @@ function getCalendar(target, setDate) {
                 memoTag.textContent = `메모`;
 
                 memoTag.addEventListener('click', () => {
-                    alert('준비중입니다.');
+                    openPopup('memoPopup', () => {
+                        const regMemoBtn = document.getElementById('regMemoBtn');
+                        const textarea = document.querySelector('#memoPopup textarea');
+                        const regSection = document.getElementById('regSection');
+                        const modOnBtn = document.getElementById('modOnBtn');
+
+                        const thisDate = document.getElementById('bibleList').dataset.date;
+
+                        indexeddb.query('r', thisDate, {success: (d) => {
+                            let orgTxt = '';
+
+                            modOnBtn.addEventListener('click', () => {
+                                regSection.classList.remove('hidden');
+                                modOnBtn.classList.add('hidden');
+                                textarea.removeAttribute('disabled');
+                                textarea.focus();
+                            });
+    
+                            initMemoBtn.addEventListener('click', () => {
+                                modOnBtn.classList.remove('hidden');
+                                regSection.classList.add('hidden');
+                                textarea.value = orgTxt;
+                                textarea.disabled = true;
+                            })
+
+                            regMemoBtn.addEventListener('click', () => {
+                                indexeddb.query('u', {id: thisDate, memo: textarea.value}, {
+                                    upsert: true,
+                                    success: () => {
+                                        orgTxt = textarea.value;
+                                        initMemoBtn.click();
+                                    }
+                                });
+                            })
+
+                            if(d && d.memo !== undefined && d.memo !== ''){ //값이 있음
+                                orgTxt = d.memo;
+                                textarea.value = d.memo;
+                                textarea.disabled = true;
+                                regSection.classList.add('hidden');
+                            }else{  //값이 없음
+                                regSection.classList.remove('hidden');
+                                modOnBtn.classList.add('hidden');
+                            }
+                        }});
+                    });
                 })
                 
                 return memoTag;
@@ -429,7 +478,7 @@ function getCalendar(target, setDate) {
                 })
     
                 if(isAllChked) document.getElementById('allChker').checked = true;
-            }})
+            }});
 
         })
         // blockTarget.insertAdjacentHTML('afterbegin', (i + 1));
@@ -582,10 +631,7 @@ function bibleTemplate(d, org) {
     })
 
     li.querySelector('button').addEventListener('click', e => {
-        document.getElementById('dimLayer').classList.add('active');
-        document.getElementById('biblePopup').classList.add('active');
-        document.getElementById('datePopup').classList.remove('active');
-        document.getElementById('memoPopup').classList.remove('active');
+        openPopup('biblePopup');
 
         const targetInput = e.currentTarget.closest('li').querySelector('input');
 
@@ -665,13 +711,6 @@ document.getElementById('allChker').addEventListener('change', e => {
     
     indexeddb.query('u', {id: thisDate, dailyChked: chkedData}, {upsert: true});
 
-})
-
-document.getElementById('closeBiblePopupBtn').addEventListener('click', () => {
-    document.getElementById('dimLayer').classList.remove('active');
-    document.getElementById('datePopup').classList.remove('active');
-    document.getElementById('biblePopup').classList.remove('active');
-    document.getElementById('memoPopup').classList.remove('active');
 })
 
 function calcBlockCnt(week, date) {

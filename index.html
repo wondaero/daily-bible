@@ -42,12 +42,11 @@
                 <ul id="bibleList" class="bible-list"></ul>
             </div>
         </article>
-        
     </main>
     <aside id="dimLayer" class="dim-layer">
         <div id="datePopup" class="date-popup every-popup">
             <header>
-                <span id="closeDatePopupBtn" class="close-btn"></span>
+                <span id="closeDatePopupBtn" class="close-btn" data-id="closePopupBtn"></span>
             </header>
             <main>
                 <div>
@@ -85,14 +84,28 @@
                         <strong id="bibleName"></strong>
                     </label>
                 </div>
-                <span id="closeBiblePopupBtn" class="close-btn"></span>
+                <span id="closeBiblePopupBtn" class="close-btn" data-id="closePopupBtn"></span>
             </header>
             <main>
                 <p id="bibleScript"></p>
             </main>
-            <footer></footer>
         </div>
-        <div id="memoPopup" class="memo-popup every-popup"></div>
+        <div id="memoPopup" class="memo-popup every-popup">
+            <header>
+                <h3>메모</h3>
+                <span id="closeBiblePopupBtn" class="close-btn" data-id="closePopupBtn"></span>
+            </header>
+            <main>
+                <textarea></textarea>
+            </main>
+            <footer>
+                <div id="regSection">
+                    <button id="initMemoBtn">취소</button>
+                    <button id="regMemoBtn">등록</button>
+                </div>
+                <button id="modOnBtn">편집</button>
+            </footer>
+        </div>
     </aside>
     <aside id="loadingLayer" class="loading-layer active">로딩중...</aside>
     

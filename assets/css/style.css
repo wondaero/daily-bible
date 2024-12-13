@@ -35,6 +35,7 @@ html, body{
     height: 100%;
     font-family: Pretendard;
     background: linear-gradient(to bottom, #002, #fed);
+    min-width: 280px;
 }
 body{
     display: flex;
@@ -522,6 +523,52 @@ table td.ing > div strong{
     width: 100%;
     box-sizing: border-box;
 }
+.dim-layer .memo-popup.active{
+    display: flex;
+}
+.dim-layer .memo-popup{
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 20px);
+    width: calc(100% - 10px - 10px);
+    max-width: 600px;
+}
+.dim-layer .memo-popup > header{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.dim-layer .memo-popup > header h3{
+    margin: 0;
+    padding: 0;
+}
+.dim-layer .memo-popup > main{
+    padding: 0;
+    flex: 1;
+    margin-bottom: 10px;
+}
+.dim-layer .memo-popup textarea{
+    resize: none;
+    padding: 10px;
+    border: 1px solid #888;
+    vertical-align: top;
+    height: 100%;
+    width: 100%;
+}
+.dim-layer .memo-popup footer button{
+    width: 100px;
+}
+.dim-layer .memo-popup footer *.hidden{
+    display: none;
+}
+.dim-layer .memo-popup footer > div{
+    display: flex;
+    align-items: center;
+}
+.dim-layer .memo-popup footer > div button:first-of-type{
+    margin-right: 5px;
+    background: #aaa;
+}
 
 /*checkbox*/
 label.checkbox1{
@@ -545,7 +592,7 @@ label.checkbox1 input + span{
     box-sizing: border-box;
 }
 label.checkbox1 input:checked + span{
-    box-shadow: inset 0 0 10px blue;
+    box-shadow: inset 0 0 10px hotpink;
     border: 0;
 }
 label.checkbox1 input:checked + span:after{

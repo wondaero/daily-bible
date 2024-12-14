@@ -538,6 +538,7 @@ function getCalendar(target, setDate) {
             return d.id.indexOf(`${date.getFullYear()}_${date.getMonth() + 1}`) === 0
         },
         success: (data) => {
+            console.log(data);
             const mapedData = data.map(d => {
                 const copyId = d.id.split('_').slice(1);
                 return copyId.join('_');
@@ -571,11 +572,15 @@ function getCalendar(target, setDate) {
 
             //가공 후
             // console.log('체크해야할 것: ', targetData, '체크된 것: ', mapedData2);
-            mapedData2.forEach(d => {
+            mapedData2.forEach(d => {   //요기서 다 담아라
                 if(d.dailyChked && d.dailyChked.length > 0){
                     let clsNm = 'ing';
                     if(isEqualArr(d.dailyChked, targetData.filter(td => td.id === d.id)[0].dailyChked)) clsNm = 'clear';
                     document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`).classList.add(clsNm);
+                }
+                
+                if(d.memo){
+                    document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`).classList.add('hasMemo');
                 }
             })
 

@@ -423,6 +423,7 @@ table td > div strong{
     border-radius: 50%;
     font-size: 12px;
     font-weight: normal;
+    position: relative;
 }
 table td > div strong.today + span{
     opacity: 1;
@@ -453,6 +454,26 @@ table td.ing > div strong{
     border-radius: 50%;
     color: #000;
 }
+
+table td.hasMemo > div strong:after{
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+}
+
+/* table td.ing > div strong:after,
+table td.clear > div strong:after,
+table td.today > div strong:after{
+    background: #000;
+} */
 
 .bible-section{
     background: rgba(255, 255, 255, .25);

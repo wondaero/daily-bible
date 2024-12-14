@@ -455,8 +455,11 @@ table td.ing > div strong{
     color: #000;
 }
 
-table td.hasMemo > div strong:after{
-    content: '';
+table td.has-memo > div strong{
+    text-decoration: underline;
+}
+table td.has-memo > div strong:after{
+    /* content: ''; */
     display: block;
     width: 6px;
     height: 6px;
@@ -541,7 +544,22 @@ table td.today > div strong:after{
     width: 100%;
     box-sizing: border-box;
     border: 0;
+    position: relative;
 }
+
+.memo-btn.has-memo:after{
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #f00;
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(15px);
+    box-shadow: inset 1px 1px 4px rgba(0, 0, 0, .5), 0 0 4px rgba(255, 0, 0, .5);
+}
+    
 .dim-layer .memo-popup.active{
     display: flex;
 }

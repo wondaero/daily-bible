@@ -247,7 +247,7 @@ main{
     width: 120px;
     height: 32px;
     border-radius: 5px;
-    background: navy;
+    background: darkslateblue;
     color: #fff;
     border: 0;
     font-size: 18px;
@@ -580,6 +580,11 @@ table td.today > div strong:after{
     margin: 0;
     padding: 0;
 }
+.dim-layer .memo-popup > header h3 span{
+    font-weight: 100;
+    font-size: 14px;
+    opacity: .7;
+}
 .dim-layer .memo-popup > main{
     padding: 0;
     flex: 1;
@@ -612,7 +617,9 @@ table td.today > div strong:after{
 }
 .dim-layer .memo-popup footer > div button:first-of-type{
     margin-right: 5px;
-    background: #aaa;
+    background: #fff;
+    color: #222;
+    border: 1px solid #222;
 }
 
 /*checkbox*/
@@ -674,9 +681,9 @@ label.checkbox1 input:checked + span:after{
     .dim-layer .every-popup{
         position: absolute;
         bottom: 0;
-        border-radius: 10px 10px 0 0;
-        border: 0;
+        border-radius: 20px 20px 0 0;
         width: 100%;
+        box-sizing: border-box;
         max-width: initial;
         max-height: calc(100% - 50px);
         background: rgba(255, 255, 255, .75);
@@ -685,11 +692,13 @@ label.checkbox1 input:checked + span:after{
     .dim-layer .every-popup:before{
         content: '';
         display: block;
-        width: 48px;
+        width: 60px;
         height: 4px;
         border-radius: 4px;
-        background: #000;
+        min-height: 4px;
+        background: linear-gradient(135deg, red, orange, yellow, green, blue, navy, purple);
         margin: 0 auto 10px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, .25);
     }
 
     .dim-layer .every-popup > header{
@@ -698,5 +707,4 @@ label.checkbox1 input:checked + span:after{
     .dim-layer .every-popup > header > .close-btn{
         display: none;
     }
-
 }

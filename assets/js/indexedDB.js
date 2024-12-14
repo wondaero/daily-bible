@@ -43,14 +43,7 @@ function IndexedDB(param){
     
                     cmdRequest.onsuccess = function () {
                         const data = cmdRequest.result;
-                        if (data) {
-                            // console.log(`ID ${value} 데이터:`, data);
-                            if(opt && typeof opt.success === 'function'){
-                                opt.success(data, value);
-                            }
-                        } else {
-                            console.log(`ID ${value} 데이터가 없습니다.`);
-                        }
+                        if(opt && typeof opt.success === 'function') opt.success(data, value);
                     };
     
                     cmdRequest.onerror = function () {
@@ -107,7 +100,20 @@ function IndexedDB(param){
                         };
                     } else {
                         console.log(`ID ${value[param.key]} 데이터 없음`);
-                        if(opt && opt.upsert === true) store.put(value);
+
+                        if(opt && opt.upsert === true){
+                            const insertRequest = store.put(value);
+                            insertRequest.onsuccess = function () {
+                                console.log(`ID ${value[param.key]} 데이터 등록 완료`);
+                                if(opt && typeof opt.success === 'function'){
+                                    opt.success(value[param.key]);
+                                }
+                            };
+    
+                            insertRequest.onerror = function () {
+                                console.error(`ID ${value[param.key]} 데이터 등록 실패`);
+                            };
+                        }
                     }
                 };
     

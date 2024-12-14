@@ -73,7 +73,7 @@ body > main{
     display: flex;
     align-items: center;
     flex-direction: column;
-    padding: 10px;
+    padding: 20px 10px 10px;
 }
 body > main > *{
     max-width: 600px;
@@ -455,8 +455,6 @@ table td.ing > div strong{
 }
 
 .bible-section{
-    display: flex;
-    justify-content: center;
     background: rgba(255, 255, 255, .25);
     border-radius: 10px;
     padding: 15px;
@@ -464,9 +462,6 @@ table td.ing > div strong{
     margin-bottom: 10px;
     width: 100%;
     box-sizing: border-box;
-}
-.bible-section > div{
-    width: 100%;
 }
 
 .bible-section header{
@@ -513,7 +508,7 @@ table td.ing > div strong{
     padding: 0;
 }
 
-.memo-section{
+.memo-btn{
     display: flex;
     justify-content: center;
     background: rgba(255, 255, 255, .25);
@@ -524,6 +519,7 @@ table td.ing > div strong{
     cursor: pointer;
     width: 100%;
     box-sizing: border-box;
+    border: 0;
 }
 .dim-layer .memo-popup.active{
     display: flex;

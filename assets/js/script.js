@@ -3,6 +3,7 @@ let dailyData2;
 let bible;
 
 let indexeddb;
+let orgTxt = '';
 
 const valueObj = {
     m_e: 'm',
@@ -230,6 +231,38 @@ document.getElementById('nextMonthBtn').addEventListener('click', () => {
     getCalendar('#calendar', { y: thisDate.getFullYear(), m: (+thisMonth + 1), d: 1 });
 })
 
+const textarea = document.querySelector('#memoPopup textarea');
+const regMemoBtn = document.getElementById('regMemoBtn');
+const regSection = document.getElementById('regSection');
+const modOnBtn = document.getElementById('modOnBtn');
+
+
+modOnBtn.addEventListener('click', () => {
+    regSection.classList.remove('hidden');
+    modOnBtn.classList.add('hidden');
+    textarea.removeAttribute('disabled');
+    setTimeout(() => {
+        textarea.focus();
+    }, 200);
+});
+
+initMemoBtn.addEventListener('click', () => {
+    modOnBtn.classList.remove('hidden');
+    regSection.classList.add('hidden');
+    textarea.value = orgTxt;
+    textarea.disabled = true;
+})
+
+regMemoBtn.addEventListener('click', () => {
+    const thisDate2 = document.getElementById('bibleList').dataset.date;
+    indexeddb.query('u', {id: thisDate2, memo: textarea.value}, {
+        upsert: true,
+        success: () => {
+            orgTxt = textarea.value;
+            initMemoBtn.click();
+        }
+    });
+})
 
 
 async function fetchAndReadExcel(url) {
@@ -380,12 +413,17 @@ function getCalendar(target, setDate) {
 
             const nowData = dailyData.filter(d => d[valueObj.m_k] === thisMonth && d[valueObj.d_k] === thisDate);
 
-            const bibleListTag = document.getElementById('bibleList');
-            const combiDate = `${thisYear}_${thisMonth}_${thisDate}`;
+            const oldBibleList = document.getElementById('bibleList');
+            if(oldBibleList) oldBibleList.remove();
 
+            const bibleListTag = document.createElement('ul');
+            bibleListTag.id = 'bibleList';
+            bibleListTag.classList.add('bible-list');
+
+            const combiDate = `${thisYear}_${thisMonth}_${thisDate}`;
             bibleListTag.dataset.date = combiDate;
 
-            bibleListTag.innerHTML = '';
+            document.getElementById('bibleSection').appendChild(bibleListTag);
 
             nowData[0][valueObj.r_k].split('/').forEach(d => {
                 const withRange1 = d.split('-');
@@ -402,48 +440,21 @@ function getCalendar(target, setDate) {
             });
 
             const memo = () => {
-                const memoTag = document.createElement('article');
-                memoTag.classList.add('memo-section');
-                memoTag.dataset.id = 'memoBtn';
-                memoTag.textContent = `메모`;
+                const memoBtn = document.createElement('button');
+                memoBtn.classList.add('memo-btn');
+                memoBtn.dataset.id = 'memoBtn';
+                memoBtn.textContent = `메모`;
 
-                memoTag.addEventListener('click', () => {
+                memoBtn.addEventListener('click', () => {
                     openPopup('memoPopup', () => {
-                        const regMemoBtn = document.getElementById('regMemoBtn');
-                        const textarea = document.querySelector('#memoPopup textarea');
-                        const regSection = document.getElementById('regSection');
-                        const modOnBtn = document.getElementById('modOnBtn');
-
                         const thisDate = document.getElementById('bibleList').dataset.date;
+                        textarea.value = '';
+                        textarea.removeAttribute('disabled');
+                        modOnBtn.classList.remove('hidden');
+                        regSection.classList.remove('hidden');
+                        document.querySelector('#memoPopup h3').textContent = `메모(${thisDate.replaceAll('_', '-')})`;
 
                         indexeddb.query('r', thisDate, {success: (d) => {
-                            let orgTxt = '';
-                            modOnBtn.classList.remove('hidden');
-                            regSection.classList.remove('hidden');
-
-                            modOnBtn.addEventListener('click', () => {
-                                regSection.classList.remove('hidden');
-                                modOnBtn.classList.add('hidden');
-                                textarea.removeAttribute('disabled');
-                                textarea.focus();
-                            });
-    
-                            initMemoBtn.addEventListener('click', () => {
-                                modOnBtn.classList.remove('hidden');
-                                regSection.classList.add('hidden');
-                                textarea.value = orgTxt;
-                                textarea.disabled = true;
-                            })
-
-                            regMemoBtn.addEventListener('click', () => {
-                                indexeddb.query('u', {id: thisDate, memo: textarea.value}, {
-                                    upsert: true,
-                                    success: () => {
-                                        orgTxt = textarea.value;
-                                        initMemoBtn.click();
-                                    }
-                                });
-                            })
 
                             if(d && d.memo !== undefined && d.memo !== ''){ //값이 있음
                                 orgTxt = d.memo;
@@ -453,12 +464,15 @@ function getCalendar(target, setDate) {
                             }else{  //값이 없음
                                 regSection.classList.remove('hidden');
                                 modOnBtn.classList.add('hidden');
+                                setTimeout(() => {
+                                    textarea.focus();
+                                }, 200);
                             }
                         }});
                     });
                 })
                 
-                return memoTag;
+                return memoBtn;
             }
 
             const oldMemo = document.querySelector('[data-id="memoBtn"]');
@@ -471,9 +485,13 @@ function getCalendar(target, setDate) {
             let isAllChked = true;
 
             indexeddb.query('r', combiDate, {success: (d) => {
-                d.dailyChked.forEach((c) => {
-                    bibleListTag.querySelector(`input[value="${c}"]`).checked = true;
-                })
+                if(!d) return;
+
+                if(d && d.dailyChked){
+                    d.dailyChked.forEach((c) => {
+                        bibleListTag.querySelector(`input[value="${c}"]`).checked = true;
+                    })
+                }
                 
                 bibleListTag.querySelectorAll('input').forEach(input => {
                     if(!input.checked) isAllChked = false;
@@ -554,7 +572,7 @@ function getCalendar(target, setDate) {
             //가공 후
             // console.log('체크해야할 것: ', targetData, '체크된 것: ', mapedData2);
             mapedData2.forEach(d => {
-                if(d.dailyChked.length > 0){
+                if(d.dailyChked && d.dailyChked.length > 0){
                     let clsNm = 'ing';
                     if(isEqualArr(d.dailyChked, targetData.filter(td => td.id === d.id)[0].dailyChked)) clsNm = 'clear';
                     document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`).classList.add(clsNm);
@@ -574,7 +592,9 @@ function getCalendar(target, setDate) {
         }
     });
 
-    document.getElementById('bibleList').innerHTML = '';
+    const oldBibleList = document.getElementById('bibleList');
+    if(oldBibleList) oldBibleList.remove();
+
     document.getElementById('allChker').checked = false;
 }
 

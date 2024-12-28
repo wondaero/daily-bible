@@ -58,6 +58,8 @@ body > header h1{
     margin: 0;
     font-size: 24px;
     color: #fff;
+    font-weight: 100;
+    transform: rotate(-2deg);
 }
 body > header .hamburger{
     width: 30px;

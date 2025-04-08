@@ -56,10 +56,22 @@ body > header{
 }
 body > header h1{
     margin: 0;
-    font-size: 24px;
+    font-size: 20px;
     color: #fff;
-    font-weight: 100;
+    font-weight: 900;
     transform: rotate(-2deg);
+    text-shadow: 0 0 8px rgba(255, 255, 255, .9);
+}
+body > header button{
+    padding: 0;
+    background: 0;
+    border: 0;
+    cursor: pointer;
+    transform: rotate(-2deg);
+}
+body > header button img{
+    vertical-align: top;
+    height: 30px;
 }
 body > header .hamburger{
     width: 30px;

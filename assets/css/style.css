@@ -296,6 +296,81 @@ main{
     padding-bottom: 10px;
     border-bottom: 1px solid #111;
 }
+.dim-layer .bible-popup > header > div{
+    display: flex;
+    align-items: center;
+}
+.dim-layer .bible-popup > header > div button{
+    margin-left: 10px;
+    cursor: pointer;
+    border: 0;
+    background: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dim-layer .bible-popup > header > div button *{
+    vertical-align: top;
+}
+.dim-layer .bible-popup > header > div button img{
+    height: 20px;
+}
+.dim-layer .bible-popup > header > div button span{
+    width: 17px;
+    height: 17px;
+    border: 3px solid #000;
+    border-radius: 50%;
+    border-top: 3px solid transparent;
+    animation: loading1 1s linear infinite;
+}
+.dim-layer .bible-popup > header > div button strong{
+    width: 17px;
+    height: 17px;
+    position: relative;
+    display: flex;
+    transform: rotate(45deg);
+}
+.dim-layer .bible-popup > header > div button strong:before,
+.dim-layer .bible-popup > header > div button strong:after{
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #f00;
+}
+.dim-layer .bible-popup > header > div button strong:before{
+    width: 17px;
+    height: 1px;
+}
+.dim-layer .bible-popup > header > div button strong:after{
+    width: 1px;
+    height: 17px;
+}
+
+.dim-layer .bible-popup > header > div button strong,
+.dim-layer .bible-popup > header > div button span{
+    display: none;
+}
+.dim-layer .bible-popup > header > div button[data-status="loading"]{
+    pointer-events: none;
+}
+.dim-layer .bible-popup > header > div button[data-status="loading"] img,
+.dim-layer .bible-popup > header > div button[data-status="loading"] strong{
+    display: none;
+}
+.dim-layer .bible-popup > header > div button[data-status="loading"] span{
+    display: flex;
+}
+.dim-layer .bible-popup > header > div button[data-status="playing"] img,
+.dim-layer .bible-popup > header > div button[data-status="playing"] span{
+    display: none;
+}
+.dim-layer .bible-popup > header > div button[data-status="playing"] strong{
+    display: flex;
+}
+
 
 .dim-layer .bible-popup p{
     margin: 0;
@@ -752,5 +827,14 @@ canvas{
         top: 8px;
         right: 8px;
         /* display: none; */
+    }
+}
+
+@keyframes loading1{
+    0%{
+        transform: rotate(0);
+    }
+    100%{
+        transform: rotate(360deg);
     }
 }

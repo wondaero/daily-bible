@@ -310,6 +310,10 @@ main{
     align-items: center;
     justify-content: center;
 }
+.dim-layer .bible-popup > header > div button.hidden{
+    display: none;
+    pointer-events: none;
+}
 .dim-layer .bible-popup > header > div button *{
     vertical-align: top;
 }

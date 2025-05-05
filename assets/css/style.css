@@ -59,8 +59,13 @@ body > header h1{
     font-size: 20px;
     color: #fff;
     font-weight: 900;
-    transform: rotate(-2deg);
+    /* transform: rotate(-2deg); */
     text-shadow: 0 0 8px rgba(255, 255, 255, .9);
+    display: flex;
+    align-items: center;
+}
+body > header h1 img{
+    height: 40px;
 }
 body > header button{
     padding: 0;
@@ -309,6 +314,8 @@ main{
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 30px;
+    height: 30px;
 }
 .dim-layer .bible-popup > header > div button.hidden{
     display: none;
@@ -318,60 +325,36 @@ main{
     vertical-align: top;
 }
 .dim-layer .bible-popup > header > div button img{
-    height: 20px;
+    height: 30px;
 }
 .dim-layer .bible-popup > header > div button span{
-    width: 17px;
-    height: 17px;
+    width: 25px;
+    height: 25px;
     border: 3px solid #000;
     border-radius: 50%;
     border-top: 3px solid transparent;
     animation: loading1 1s linear infinite;
 }
-.dim-layer .bible-popup > header > div button strong{
-    width: 17px;
-    height: 17px;
-    position: relative;
-    display: flex;
-    transform: rotate(45deg);
-}
-.dim-layer .bible-popup > header > div button strong:before,
-.dim-layer .bible-popup > header > div button strong:after{
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #f00;
-}
-.dim-layer .bible-popup > header > div button strong:before{
-    width: 17px;
-    height: 1px;
-}
-.dim-layer .bible-popup > header > div button strong:after{
-    width: 1px;
-    height: 17px;
-}
 
-.dim-layer .bible-popup > header > div button strong,
+.dim-layer .bible-popup > header > div button .cancel-voice-icon,
 .dim-layer .bible-popup > header > div button span{
     display: none;
 }
 .dim-layer .bible-popup > header > div button[data-status="loading"]{
     pointer-events: none;
 }
-.dim-layer .bible-popup > header > div button[data-status="loading"] img,
-.dim-layer .bible-popup > header > div button[data-status="loading"] strong{
+.dim-layer .bible-popup > header > div button[data-status="loading"] .voice-icon,
+.dim-layer .bible-popup > header > div button[data-status="loading"] .cancel-voice-icon{
     display: none;
 }
 .dim-layer .bible-popup > header > div button[data-status="loading"] span{
     display: flex;
 }
-.dim-layer .bible-popup > header > div button[data-status="playing"] img,
+.dim-layer .bible-popup > header > div button[data-status="playing"] .voice-icon,
 .dim-layer .bible-popup > header > div button[data-status="playing"] span{
     display: none;
 }
-.dim-layer .bible-popup > header > div button[data-status="playing"] strong{
+.dim-layer .bible-popup > header > div button[data-status="playing"] .cancel-voice-icon{
     display: flex;
 }
 

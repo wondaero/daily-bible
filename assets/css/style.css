@@ -369,6 +369,10 @@ main{
     line-height: 1.5;
     font-size: 20px;
 }
+.dim-layer .bible-popup p > span.active{
+    color: #fff;
+    text-shadow: 0 0 12px darkslateblue;
+}
 .dim-layer .bible-popup p > span:last-of-type{
     margin-bottom: 0;
 }

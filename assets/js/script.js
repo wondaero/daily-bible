@@ -53,11 +53,11 @@ async function getData(){ //열지마 느려져...
         '요한일서', '요한이서', '요한삼서', '유다서', '요한계시록'
     ];
 
-    const res1 = await fetch('/data/bible.json');
+    const res1 = await fetch('../data/bible.json');
     if (!res1.ok) throw new Error('Network response was not ok');
     bible = await res1.json();
 
-    const res2 = await fetch('/data/dailyData.json');
+    const res2 = await fetch('../data/dailyData.json');
     if (!res2.ok) throw new Error('Network response was not ok');
     dailyData = await res2.json();
 }

@@ -77,17 +77,67 @@ body > header button img{
     height: 30px;
 }
 body > header .hamburger{
-    width: 30px;
-    height: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    width: 24px;
+    height: 24px;
+    position: relative;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: loading1 12s infinite linear;
+
+}
+body > header .hamburger:before{
+    content: '';
+    background: #484848;
+    border: 2px solid #ffc400;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+body > header .hamburger:after{
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 2px;
+    margin-top: -1px;
+    margin-left: -6px;
+    background: #ffc400;
+    border-radius: 2px;
+    z-index: 2;
+    animation: loading1 3s infinite linear reverse;
 }
 body > header .hamburger > span{
-    height: 4px;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-top: -5px;
+    width: 24px;
+    height: 10px;
     background: #484848;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 4px;
+}
+body > header .hamburger > span:after{
+    /* content: ''; */
+    width: 100%;
+    height: 100%;
+    transform: rotate(90deg);
+    background: #484848;
+}
+
+body > header .hamburger > span:first-of-type{
+    transform: rotate(60deg);
+}
+body > header .hamburger > span:last-of-type{
+    transform: rotate(-60deg);
 }
 body > main{
     display: flex;
@@ -452,7 +502,7 @@ main{
 }
 .dim-layer .menu-popup ul{
     margin: 0;
-    padding: 0;
+    padding: 20px 0;
     list-style: none;
     width: 200px;
 }

@@ -634,7 +634,11 @@ table td.ing > div strong{
     background: linear-gradient(-45deg, #ffc400 50%, transparent 0);
     color: #fff;
     /* animation: reading1 .2s infinite; */
-    overflow: hidden;
+}
+table td.ing > div strong.today{
+    
+    background: linear-gradient(-45deg, #ffc400 50%, #fff 0);
+    color: #000;
 }
 table td.ing > div strong:before{
     border: 2px solid #ffc400;

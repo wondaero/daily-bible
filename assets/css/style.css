@@ -588,8 +588,19 @@ table td > div strong{
     font-weight: normal;
     position: relative;
 }
+
+table td > div strong:before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    transform: scale(.8) rotate(5deg);
+}
 table td > div strong.today + span{
-    opacity: 1;
+    /* opacity: 1; */
 }
 table td > div span{
     opacity: 0;
@@ -614,11 +625,22 @@ table td.clear > div strong{
     /* border-radius: 50%; */
     color: #000;
 }
+table td.clear > div strong.today:before{
+    /* border: 2px solid #fff; */
+}
 table td.ing > div strong{
-    background: yellow;
     background: #ffedb3;
-    /* border-radius: 50%; */
-    color: #000;
+    
+    background: linear-gradient(-45deg, #ffc400 50%, transparent 0);
+    color: #fff;
+    /* animation: reading1 .2s infinite; */
+    overflow: hidden;
+}
+table td.ing > div strong:before{
+    border: 2px solid #ffc400;
+}
+table td.ing > div strong.today:before{
+    /* border: 2px solid #fff; */
 }
 
 table td.has-memo > div strong{
@@ -915,5 +937,13 @@ canvas{
     }
     100%{
         transform: rotate(360deg);
+    }
+}
+@keyframes reading1{
+    0%{
+        transform: scale(1);
+    }
+    100%{
+        transform: scale(.8);
     }
 }

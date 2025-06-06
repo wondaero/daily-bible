@@ -1,3 +1,8 @@
+:root {
+    --yellow: #ffc400;
+    --black: #484848;
+  }
+  
 @font-face {
     font-family: 'Pretendard';
     src: url('../font/Pretendard-Regular.woff') format('woff');
@@ -34,8 +39,10 @@
 html, body{
     height: 100%;
     font-family: Pretendard;
-    background: #484848; /*가을*/
+    background: var(--black); /*가을*/
     min-width: 280px;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
 }
 body{
     display: flex;
@@ -44,9 +51,9 @@ body{
 }
 body > header{
     /* background: darkslateblue; */
-    background: #ffc400;
+    background: var(--yellow);
     height: 40px;
-    /* box-shadow: 0 2px 8px #ffc400; */
+    /* box-shadow: 0 2px 8px var(--yellow); */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -63,7 +70,7 @@ body > header h1{
     align-items: center;
 }
 body > header h1 img{
-    height: 32px;
+    height: 24px;
 }
 body > header button{
     padding: 0;
@@ -89,8 +96,8 @@ body > header .hamburger{
 }
 body > header .hamburger:before{
     content: '';
-    background: #484848;
-    border: 2px solid #ffc400;
+    background: var(--black);
+    border: 2px solid var(--yellow);
     border-radius: 50%;
     width: 12px;
     height: 12px;
@@ -103,11 +110,11 @@ body > header .hamburger:after{
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 12px;
+    width: 6px;
     height: 2px;
     margin-top: -1px;
     margin-left: -6px;
-    background: #ffc400;
+    background: var(--yellow);
     border-radius: 2px;
     z-index: 2;
     animation: loading1 3s infinite linear reverse;
@@ -119,7 +126,7 @@ body > header .hamburger > span{
     margin-top: -5px;
     width: 24px;
     height: 10px;
-    background: #484848;
+    background: var(--black);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -130,7 +137,7 @@ body > header .hamburger > span:after{
     width: 100%;
     height: 100%;
     transform: rotate(90deg);
-    background: #484848;
+    background: var(--black);
 }
 
 body > header .hamburger > span:first-of-type{
@@ -144,7 +151,7 @@ body > main{
     align-items: center;
     flex-direction: column;
     padding: 20px 10px 10px;
-    box-shadow: 0 0px 4px #484848;
+    box-shadow: 0 0px 4px var(--black);
 }
 body > main > *{
     max-width: 600px;
@@ -276,6 +283,7 @@ main{
     z-index: 2;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
+    min-width: 280px;
 }
 .dim-layer.active{
     display: flex;
@@ -317,8 +325,8 @@ main{
     height: 32px;
     border-radius: 5px;
     background: darkslateblue;
-    background: #ffc400;
-    color: #484848;
+    background: var(--yellow);
+    color: var(--black);
     border: 0;
     font-size: 18px;
     cursor: pointer;
@@ -409,27 +417,43 @@ main{
     display: flex;
 }
 
-
-.dim-layer .bible-popup p{
+.dim-layer .bible-popup ul{
+    list-style: none;
+    padding: 0;
     margin: 0;
     text-align: justify;
+    /* word-break: keep-all; */
 }
-.dim-layer .bible-popup p > span{
+.dim-layer .bible-popup ul li{
     display: flex;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     line-height: 1.5;
     font-size: 20px;
 }
-.dim-layer .bible-popup p > span.active{
+.dim-layer .bible-popup ul li.active{
     color: #fff;
-    text-shadow: 0 0 12px #ffc400;
+    text-shadow: 0 0 12px var(--yellow);
 }
-.dim-layer .bible-popup p > span:last-of-type{
+.dim-layer .bible-popup ul li:last-of-type{
     margin-bottom: 0;
 }
-.dim-layer .bible-popup p > span strong{
+.dim-layer .bible-popup ul li strong{
     width: 50px;
     min-width: 50px;
+    text-align: center;
+}
+.dim-layer .bible-popup ul li > div{
+    flex: 1;
+}
+.dim-layer .bible-popup ul li > div p{
+    margin: 0;
+}
+.dim-layer .bible-popup ul li > div p:not(.hidden):nth-of-type(2n){
+    opacity: .5;
+    margin-top: 2px;
+}
+.dim-layer .bible-popup ul li > div p.hidden{
+    display: none;
 }
 .dim-layer .date-popup > header{
     display: flex;
@@ -500,26 +524,60 @@ main{
     justify-content: flex-end;
     margin-bottom: 10px;
 }
-.dim-layer .menu-popup ul{
+.dim-layer .menu-popup > ul{
     margin: 0;
     padding: 20px 0;
     list-style: none;
     width: 200px;
 }
-.dim-layer .menu-popup ul li{
+.dim-layer .menu-popup > ul > li{
     margin: 0 auto;
     margin-bottom: 15px;
-    width: 160px;
-    cursor: pointer;
+    width: 180px;
+    
     /* text-align: center; */
 }
-.dim-layer .menu-popup ul li:last-of-type{
+.dim-layer .menu-popup > ul > li:last-of-type{
     margin-bottom: 0;
 }
-.dim-layer .menu-popup ul button{
+.dim-layer .menu-popup > ul button{
     background: 0;
     border: 0;
 }
+/* .dim-layer .menu-popup .select-bible-field fieldset{
+    border-radius: 5px;
+}
+.dim-layer .menu-popup .select-bible-field fieldset ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.dim-layer .menu-popup .select-bible-field fieldset ul li{
+    margin-bottom: 5px;
+}
+.dim-layer .menu-popup .select-bible-field fieldset ul li:last-of-type{
+    margin-bottom: 0;
+}
+.dim-layer .menu-popup .select-bible-field fieldset ul li label{
+    cursor: pointer;
+} */
+.dim-layer .menu-popup .data-field fieldset{
+    border-radius: 5px;
+    padding-top: 15px;
+}
+.dim-layer .menu-popup .data-field ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.dim-layer .menu-popup .data-field ul li{
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.dim-layer .menu-popup .data-field ul li:last-of-type{
+    margin-bottom: 0;
+}
+
 table thead tr{
     border-bottom: 1px solid rgba(255, 255, 255, .5);
 }
@@ -619,8 +677,13 @@ table td.clear > div{
     /* opacity: 1; */
 }
 table td.clear > div strong{
-    background: lime;
-    background: #ffc400;
+    background: var(--yellow);
+    
+    /* border-radius: 50%; */
+    color: #000;
+}
+table td.clear > div strong.today{
+    background: linear-gradient(135deg, #fff 10px, var(--yellow) 0);
     
     /* border-radius: 50%; */
     color: #000;
@@ -631,17 +694,17 @@ table td.clear > div strong.today:before{
 table td.ing > div strong{
     background: #ffedb3;
     
-    background: linear-gradient(-45deg, #ffc400 50%, transparent 0);
+    background: linear-gradient(-45deg, var(--yellow) 50%, transparent 0);
     color: #fff;
     /* animation: reading1 .2s infinite; */
 }
 table td.ing > div strong.today{
     
-    background: linear-gradient(-45deg, #ffc400 50%, #fff 0);
+    background: linear-gradient(-45deg, var(--yellow) 50%, #fff 0);
     color: #000;
 }
 table td.ing > div strong:before{
-    border: 2px solid #ffc400;
+    border: 2px solid var(--yellow);
 }
 table td.ing > div strong.today:before{
     /* border: 2px solid #fff; */
@@ -712,6 +775,7 @@ table td.today > div strong:after{
 .bible-list li label .bible-range{
     flex: 1;
     font-weight: 100;
+    word-break: keep-all;
 }
 .bible-list li button{
     border: 0;
@@ -803,8 +867,8 @@ table td.today > div strong:after{
 }
 .dim-layer .memo-popup textarea:focus{
     /* box-shadow: inset 0 0 2px #00e; */
-    box-shadow: inset 0 0 8px #ffc400;
-    /* box-shadow: inset 0 0 8px #484848; */
+    box-shadow: inset 0 0 8px var(--yellow);
+    /* box-shadow: inset 0 0 8px var(--black); */
 }
 .dim-layer .memo-popup footer button{
     width: 100px;
@@ -845,8 +909,8 @@ label.checkbox1 input + span{
     box-sizing: border-box;
 }
 label.checkbox1 input:checked + span{
-    box-shadow: inset 0 0 10px #484848;
-    background: #484848;
+    box-shadow: inset 0 0 10px var(--black);
+    background: var(--black);
     border: 0;
 }
 label.checkbox1 input:checked + span:after{
@@ -854,8 +918,8 @@ label.checkbox1 input:checked + span:after{
     display: block;
     width: 10px;
     height: 4px;
-    border-left: 2px solid #ffc400;
-    border-bottom: 2px solid #ffc400;
+    border-left: 2px solid var(--yellow);
+    border-bottom: 2px solid var(--yellow);
     position: relative;
     top: -1px;
     transform: rotate(-45deg);
@@ -876,11 +940,11 @@ label.checkbox1 input:checked + span:after{
     display: none;
     align-items: center;
     justify-content: center;
-    background: #ffc400;
+    background: var(--yellow);
     z-index: 3;
 }
 .loading-layer strong{
-    color: #484848;
+    color: var(--black);
     margin-top: 10px;
 }
 
@@ -932,6 +996,13 @@ canvas{
         top: 8px;
         right: 8px;
         /* display: none; */
+    }
+
+    .dim-layer .menu-popup > ul{
+        width: 100%;
+    }
+    .dim-layer .menu-popup > ul > li{
+        width: 100%;
     }
 }
 

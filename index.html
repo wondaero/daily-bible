@@ -125,7 +125,8 @@
                 <span id="closeBiblePopupBtn" class="close-btn" data-id="closePopupBtn"></span>
             </header>
             <main>
-                <p id="bibleScript"></p>
+                <!-- <p id="bibleScript"></p> -->
+                <ul id="bibleScript"></ul>
             </main>
         </div>
         <div id="memoPopup" class="memo-popup every-popup">
@@ -150,9 +151,40 @@
             </header>
             <ul>
                 <!-- <li id="chkAllDataBtn"><strong>5</strong>월 데이터 전체 체크</li> -->
-                <li id="backupBtn">데이터 백업 💾</li>
-                <li id="overwriteBtn">데이터 불러오기 🔄</li>
-                <li id="clearDataBtn">데이터 전체 삭제 ⚠️</li>
+                <!-- <li class="select-bible-field">
+                    <fieldset>
+                        <legend>성경 선택</legend>
+                        <ul>
+                            <li>
+                                <label class="checkbox1">
+                                    <input type="checkbox" name="bibleType" value="1" checked />
+                                    <span></span>
+                                    <strong>개역한글</strong>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="checkbox1">
+                                    <input type="checkbox" name="bibleType" value="2" />
+                                    <span></span>
+                                    <strong>개역개정</strong>
+                                </label>
+                            </li>
+                        </ul>
+                    </fieldset>
+                </li> -->
+                <li class="data-field">
+                    <fieldset>
+                        <legend>데이터 관리</legend>
+                        <ul>
+                            <li id="backupBtn">데이터 백업 💾</li>
+                            <li id="overwriteBtn">데이터 불러오기 🔄</li>
+                            <li id="clearDataBtn">데이터 전체 삭제 ⚠️</li>
+                        </ul>
+                    </fieldset>
+                </li>
+                
+                
+                
             </ul>
         </div>
     </aside>

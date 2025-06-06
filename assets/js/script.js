@@ -1,10 +1,16 @@
 let dailyData;
 let dailyData2;
 let bible;  //개역한글
-let bible2; //개역개정
+let bible2; //개역개정(현재 obj)
+let bible2Arr = []
 
 let indexeddb;
 let orgTxt = '';
+
+let bibleType = {
+    1: true,
+    2: false
+}
 
 const valueObj = {
     m_e: 'm',
@@ -29,7 +35,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
 });
 
-async function getData(){ //열지마 느려져...
+async function getData(){
     bookName = [
         '창세기', '출애굽기', '레위기',
         '민수기', '신명기', '여호수아',
@@ -57,9 +63,16 @@ async function getData(){ //열지마 느려져...
     if (!res1.ok) throw new Error('Network response was not ok');
     bible = await res1.json();
 
-    const res2 = await fetch('data/dailyData.json');
+    
+    const res2 = await fetch('data/bible2.json');
+    if (!res1.ok) throw new Error('Network response was not ok');
+    bible2 = await res2.json();
+
+    bible2Arr = parseBible2Data(bible2);
+
+    const res3 = await fetch('data/dailyData.json');
     if (!res2.ok) throw new Error('Network response was not ok');
-    dailyData = await res2.json();
+    dailyData = await res3.json();
 }
 
 // function fnc_resize(){
@@ -302,8 +315,37 @@ document.getElementById('hamburger').addEventListener('click', () => {
     //     btn.dataset.month = thisMonth;
     //     btn.dataset.year = thisYear;
     // });
-    openPopup('menuPopup');
+    openPopup('menuPopup', () => {
+        
+    });
 })
+
+// document.querySelectorAll('#menuPopup [name="bibleType"]').forEach((bt) => {
+//     bt.addEventListener('change', (e) => {
+//         const val = e.target.value;
+//         const isChked = e.target.checked;
+        
+//         bibleType[val] = isChked;
+
+//         let anyChked = isChked;
+
+//         if(!isChked){
+//             for(let key in bibleType){
+//                 if(bibleType[key]) anyChked = true;
+//             }
+//         }
+
+//         if(!anyChked){
+//             alert('적어도 1개는 선택되어야 합니다.');
+//             e.target.checked = !isChked;
+//             bibleType[val] = !bibleType[val];
+//         }
+
+//         window.localStorage.setItem('bibleType', JSON.stringify(bibleType));
+//     })
+// })
+
+
 
 const textarea = document.querySelector('#memoPopup textarea');
 const regMemoBtn = document.getElementById('regMemoBtn');
@@ -574,7 +616,6 @@ function getCalendar(target, setDate) {
         // if(redTarget) redTarget.style.color = '#f0f';
         // if(blueTarget) blueTarget.style.color = '#0ff';
 
-
         if (redTarget && redTarget.querySelector('strong')) redTarget.querySelector('strong').classList.add('sun');
         if (blueTarget && blueTarget.querySelector('strong')) blueTarget.querySelector('strong').classList.add('sat');
     }
@@ -733,7 +774,8 @@ function bibleTemplate(d, org) {
 
         const parseData = d.split('b');
 
-        let thisBible;
+        let thisBible;  //개역한글
+        let thisBible2; //개역개정
 
         const ranged2 = parseData[1].split(':');
 
@@ -747,9 +789,15 @@ function bibleTemplate(d, org) {
                 && (verse.split('~')[0] <= bs.VerseNo) 
                 && (bs.VerseNo <= verse.split('~')[1]) 
             });
-
+            thisBible2 = bible2Arr.filter(bs => {
+                return +bs.BibleID === +parseData[0]
+                && +bs.ChapterNo === chapter
+                && (verse.split('~')[0] <= bs.VerseNo) 
+                && (bs.VerseNo <= verse.split('~')[1]) 
+            });
         }else{
             thisBible = bible.filter(bs => +bs.BibleID === +parseData[0] && +bs.ChapterNo === +parseData[1]);
+            thisBible2 = bible2Arr.filter(bs => +bs.BibleID === +parseData[0] && +bs.ChapterNo === +parseData[1]);
         }
         
         document.getElementById('bibleName').textContent = parseBook(d);
@@ -758,17 +806,23 @@ function bibleTemplate(d, org) {
         document.getElementById('bibleScript').scrollTop = 0;
 
         tts.initData();
-        
-    
-        thisBible.forEach(dd => {
-            const span = document.createElement('span');
-            span.dataset.verseNo = dd.VerseNo;
-            span.innerHTML = `<strong>${dd.VerseNo}</strong> ${dd.BibleScript}`;
-            document.getElementById('bibleScript').appendChild(span);
 
+        thisBible.forEach((dd, idx) => {
+            const li = document.createElement('li');
+            li.dataset.verseNo = dd.VerseNo;
+            li.innerHTML = `
+                <strong>${dd.VerseNo}</strong>
+                <div>
+                    <p class="${bibleType[1] ? '' : 'hidden'}">${dd.BibleScript}</p>
+                    <p class="${bibleType[2] ? '' : 'hidden'}">${thisBible2[idx].BibleScript}</p>
+                </div>
+            `;
+            document.getElementById('bibleScript').appendChild(li);
+            
             tts.pushArray(tts.createSpeechUtterance(dd.VerseNo, dd.BibleScript));
         });
 
+    
         if(tts.preparedUtterances.length) document.getElementById('voiceBtn').dataset.status = 'normal';
     })
 
@@ -851,6 +905,19 @@ window.onload = async function () {
         tableNm: 'MyDailyBible',
         key: 'id'
     });
+
+    // const curBibleType = window.localStorage.getItem('bibleType');
+
+    // if(curBibleType){
+    //     bibleType = JSON.parse(curBibleType);
+
+    //     for(let key in bibleType){
+    //         document.querySelector('#menuPopup [value="' + key + '"]').checked = bibleType[key];
+    //     }
+    // }else{
+    //     window.localStorage.setItem('bibleType', JSON.stringify({1: true, 2: false}));
+    //     document.querySelector('#menuPopup [value="1"]').checked = true;
+    // }
 
     getData().then(() => {
         dailyData2 = dailyData.map(d => ({id: `${d[valueObj.m_k]}_${d[valueObj.d_k]}`, dailyChked: d[valueObj.r_k].split('/')}));
@@ -1162,7 +1229,7 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
         reader.readAsText(file, 'utf-8');
     };
 
-    
+    tmpInput.remove();
 
     // const cf = confirm('해당 데이터를 덮어쓰시겠습니까?\n기존 데이터는 삭제됩니다.');
     // if(cf) indexeddb.query('o');
@@ -1200,4 +1267,29 @@ function clearData(){
             window.location.reload();
         }
     });
+}
+
+
+function parseBible2Data(data){
+    const rtnArr = [];
+    let tmpBibleName = '';
+    let bibleId = 0;
+    let bibleIdx = 0;
+
+    for(let key in data){
+        bibleIdx = isNaN(key[1]) ? 2 : 1;
+        if(tmpBibleName !== key.slice(0, bibleIdx)){
+            tmpBibleName = key.slice(0, bibleIdx);
+            bibleId++;
+        }
+        const jj = key.slice(bibleIdx).split(':'); //장절
+        rtnArr.push({
+            BibleID: bibleId,
+            ChapterNo: +(jj[0]),
+            VerseNo: +(jj[1]),
+            BibleScript: data[key]
+        });
+    }
+
+    return rtnArr;
 }

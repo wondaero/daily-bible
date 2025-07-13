@@ -8,8 +8,8 @@ let indexeddb;
 let orgTxt = '';
 
 let bibleType = {
-    1: true,
-    2: false
+    1: false,
+    2: true
 }
 
 const valueObj = {
@@ -92,6 +92,10 @@ async function getData(){
 //     event.preventDefault(); // 기본 동작을 막을 수 있음
 //     event.returnValue = ''; // 브라우저에 따라 다를 수 있음
 // });
+
+function getRandomInt(mn, mx){
+    return Math.floor(Math.random() * (mx - mn + 1)) + mn;
+}
 
 function openPopup(popupId, cb){
     closePopup();
@@ -877,6 +881,8 @@ function getRandomTxt(data, len) {
     let rtnVal = '';
     for (let i = 0; i < len; i++) {
         const randomIdx = Math.floor(Math.random() * (data.length - 1));
+
+        
         rtnVal += data[randomIdx];
     }
 
@@ -1239,6 +1245,22 @@ document.getElementById('clearDataBtn').addEventListener('click', () => {
     const cf = confirm('모든 데이터를 삭제하시겠습니까?');
     
     if(cf) clearData();
+});
+document.getElementById('downloadBtn').addEventListener('click', () => {
+    const cf = confirm('어플(android)을 다운 받으시겠습니까?\nWi-Fi에 연결되지 않은 경우, 데이터 요금이 발생할 수 있습니다.');
+    if(!cf) return;
+    
+    const randomInt = getRandomInt(1, 10);
+    const prmt = prompt(`비밀번호를 입력해주세요.\nHint: ${randomInt}`);
+    if(randomInt + 1 !== +prmt) return;
+
+    const a = document.createElement('a');
+    a.href = '/assets/download/매일성경-debug.apk.zip';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
 });
 
 // document.getElementById('chkAllDataBtn').addEventListener('click', (e) => {

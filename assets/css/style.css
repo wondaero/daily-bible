@@ -448,10 +448,10 @@ main{
 .dim-layer .bible-popup ul li > div p{
     margin: 0;
 }
-.dim-layer .bible-popup ul li > div p:not(.hidden):nth-of-type(2n){
+/* .dim-layer .bible-popup ul li > div p:not(.hidden):nth-of-type(2n){
     opacity: .5;
     margin-top: 2px;
-}
+} */
 .dim-layer .bible-popup ul li > div p.hidden{
     display: none;
 }
@@ -528,12 +528,12 @@ main{
     margin: 0;
     padding: 20px 0;
     list-style: none;
-    width: 200px;
+    /* width: 240px; */
 }
 .dim-layer .menu-popup > ul > li{
     margin: 0 auto;
     margin-bottom: 15px;
-    width: 180px;
+    width: 220px;
     
     /* text-align: center; */
 }
@@ -788,6 +788,7 @@ table td.today > div strong:after{
     font-weight: 100;
     width: 40px;
     padding: 0;
+    white-space: nowrap;
 }
 
 .memo-btn{

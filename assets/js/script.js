@@ -1257,6 +1257,7 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
     const a = document.createElement('a');
     a.href = '/assets/download/매일성경-debug.apk.zip';
     a.style.display = 'none';
+    a.download = '';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

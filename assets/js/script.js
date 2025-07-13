@@ -1255,9 +1255,12 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
     if(randomInt + 1 !== +prmt) return;
 
     const a = document.createElement('a');
-    a.href = '/assets/download/매일성경-debug.apk.zip';
+    const path = '/assets/download/매일성경-debug.apk.zip'; 
+    a.href = path;
+    const splited = path.split('/');
+    
     a.style.display = 'none';
-    a.download = '';
+    a.download = splited[splited.length - 1];
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

@@ -1255,7 +1255,7 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
     if(randomInt + 1 !== +prmt) return;
 
     const a = document.createElement('a');
-    a.href = '/assets/download/매일성경.zip';;
+    a.href = 'assets/download/매일성경.zip';;
     
     a.style.display = 'none';
     a.download = '';

@@ -1,8 +1,8 @@
 const CACHE_NAME = 'daily-bible-v1';
 const ASSETS = [
-    '/data/개역한글.json',
-    '/data/개역개정.json',
-    '/data/guide/mccheyne.json',
+    './data/개역한글.json',
+    './data/개역개정.json',
+    './data/guide/mccheyne.json',
 ];
 
 // 설치할 때 캐시에 다 담아

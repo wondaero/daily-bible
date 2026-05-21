@@ -85,67 +85,35 @@ body > header button img{
 }
 body > header .hamburger{
     width: 24px;
-    height: 24px;
+    height:18px;
     position: relative;
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    animation: loading1 12s infinite linear;
-
-}
-body > header .hamburger:before{
-    content: '';
-    background: var(--black);
-    border: 2px solid var(--yellow);
-    border-radius: 50%;
-    width: 12px;
-    height: 12px;
-    box-sizing: border-box;
-    position: relative;
-    z-index: 1;
-}
-body > header .hamburger:after{
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 6px;
-    height: 2px;
-    margin-top: -1px;
-    margin-left: -6px;
-    background: var(--yellow);
-    border-radius: 2px;
-    z-index: 2;
-    animation: loading1 3s infinite linear reverse;
+    justify-content: space-between;
+    flex-direction: column;
+    
+    /* animation: loading1 12s infinite linear; */
 }
 body > header .hamburger > span{
-    position: absolute;
-    top: 50%;
-    left: 0;
-    margin-top: -5px;
     width: 24px;
-    height: 10px;
+    height: 4px;
     background: var(--black);
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
 }
-body > header .hamburger > span:after{
-    /* content: ''; */
-    width: 100%;
-    height: 100%;
-    transform: rotate(90deg);
-    background: var(--black);
-}
 
-body > header .hamburger > span:first-of-type{
+body > header .hamburger > span:nth-of-type(2){
+    transform: translateX(-4px);
+}
+/* body > header .hamburger > span:first-of-type{
     transform: rotate(60deg);
 }
 body > header .hamburger > span:last-of-type{
     transform: rotate(-60deg);
-}
+} */
 body > main{
     display: flex;
     align-items: center;
@@ -424,30 +392,7 @@ main{
     text-align: justify;
     /* word-break: keep-all; */
 }
-.dim-layer .bible-popup ul li{
-    display: flex;
-    margin-bottom: 4px;
-    line-height: 1.5;
-    font-size: 20px;
-}
-.dim-layer .bible-popup ul li.active{
-    color: #fff;
-    text-shadow: 0 0 12px var(--yellow);
-}
-.dim-layer .bible-popup ul li:last-of-type{
-    margin-bottom: 0;
-}
-.dim-layer .bible-popup ul li strong{
-    width: 50px;
-    min-width: 50px;
-    text-align: center;
-}
-.dim-layer .bible-popup ul li > div{
-    flex: 1;
-}
-.dim-layer .bible-popup ul li > div p{
-    margin: 0;
-}
+
 /* .dim-layer .bible-popup ul li > div p:not(.hidden):nth-of-type(2n){
     opacity: .5;
     margin-top: 2px;
@@ -578,38 +523,38 @@ main{
     margin-bottom: 0;
 }
 
-table thead tr{
-    border-bottom: 1px solid rgba(255, 255, 255, .5);
+.calendar table thead tr{
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
-table th{
+.calendar table th{
     font-weight: bold;
     color: rgba(255, 255, 255, 1);
     opacity: .7;
     padding-bottom: 5px;
 }
-table tbody tr:first-of-type{
+.calendar table tbody tr:first-of-type{
     padding-top: 10px;
     box-sizing: border-box;
 }
-table td{
+.calendar table td{
     text-align: center;
     font-weight: 900;
     cursor: pointer;
     height: 35px;
     padding: 0;
 }
-table td.on{
+.calendar table td.on{
     /* transform: scale(1.3) rotate(5deg); */
     /* position: relative;
     z-index: 1; */
 }
-table td.on > div{
+.calendar table td.on > div{
     font-weight: 900;
     opacity: 1;
     border: 3px double #fff;
     box-shadow: inset 0 0 8px #fff;
 }
-table td > div{
+.calendar table td > div{
     position: relative;
     box-sizing: border-box;
     width: 100%;
@@ -621,19 +566,19 @@ table td > div{
     color: rgba(255, 255, 255, 1);
     opacity: .7;
 }
-table .sun{
+.calendar table .sun{
     color: rgba(255, 127, 1);
 }
-table .sat{
+.calendar table .sat{
     color: rgba(0, 255, 255, 1);
 }
-table td > div strong.today{
+.calendar table td > div strong.today{
     box-shadow: 0 0 8px rgba(255, 255, 255, .8);
     background: #fff;
     color: #000;
     /* font-size: 12px; */
 }
-table td > div strong{
+.calendar table td > div strong{
     width: 25px;
     height: 25px;
     width: 100%;
@@ -647,7 +592,7 @@ table td > div strong{
     position: relative;
 }
 
-table td > div strong:before{
+.calendar table td > div strong:before{
     content: '';
     position: absolute;
     top: 0;
@@ -657,10 +602,10 @@ table td > div strong:before{
 
     transform: scale(.8) rotate(5deg);
 }
-table td > div strong.today + span{
+.calendar table td > div strong.today + span{
     /* opacity: 1; */
 }
-table td > div span{
+.calendar table td > div span{
     opacity: 0;
     background: #fff;
     width: 25px;
@@ -673,47 +618,47 @@ table td > div span{
     z-index: -1;
     box-shadow: 0 0 20px #fed;
 }
-table td.clear > div{
+.calendar table td.clear > div{
     /* opacity: 1; */
 }
-table td.clear > div strong{
+.calendar table td.clear > div strong{
     background: var(--yellow);
     
     /* border-radius: 50%; */
     color: #000;
 }
-table td.clear > div strong.today{
+.calendar table td.clear > div strong.today{
     background: linear-gradient(135deg, #fff 10px, var(--yellow) 0);
     
     /* border-radius: 50%; */
     color: #000;
 }
-table td.clear > div strong.today:before{
+.calendar table td.clear > div strong.today:before{
     /* border: 2px solid #fff; */
 }
-table td.ing > div strong{
+.calendar table td.ing > div strong{
     background: #ffedb3;
     
     background: linear-gradient(-45deg, var(--yellow) 50%, transparent 0);
     color: #fff;
     /* animation: reading1 .2s infinite; */
 }
-table td.ing > div strong.today{
+.calendar table td.ing > div strong.today{
     
     background: linear-gradient(-45deg, var(--yellow) 50%, #fff 0);
     color: #000;
 }
-table td.ing > div strong:before{
+.calendar table td.ing > div strong:before{
     border: 2px solid var(--yellow);
 }
-table td.ing > div strong.today:before{
+.calendar table td.ing > div strong.today:before{
     /* border: 2px solid #fff; */
 }
 
-table td.has-memo > div strong{
+.calendar table td.has-memo > div strong{
     /* text-decoration: underline; */
 }
-table td.has-memo > div strong:after{
+.calendar table td.has-memo > div strong:after{
     content: '';
     display: block;
     width: 6px;
@@ -728,9 +673,9 @@ table td.has-memo > div strong:after{
     background: red;
 }
 
-/* table td.ing > div strong:after,
-table td.clear > div strong:after,
-table td.today > div strong:after{
+/* .calendar table td.ing > div strong:after,
+.calendar table td.clear > div strong:after,
+.calendar table td.today > div strong:after{
     background: #000;
 } */
 
@@ -963,6 +908,29 @@ canvas{
     height: 100%;
     pointer-events: none;
     opacity: 0;
+}
+
+.bible-script{
+    /* table-layout: auto; */
+    width: 100%;
+}
+.bible-script tr{
+    font-size: 20px;
+    word-break: break-all;
+    text-align: justify;
+}
+.bible-script tr.active{
+    color: #fff;
+    text-shadow: 0 0 12px var(--yellow);
+}
+.bible-script tr th{
+    white-space: nowrap;
+    vertical-align: top;
+    text-align: right;
+    padding-right: 4px;
+}
+.bible-script tr td{
+    line-height: 1.5;
 }
 
 @media (max-width: 760px){

@@ -125,7 +125,8 @@
             </header>
             <main>
                 <!-- <p id="bibleScript"></p> -->
-                <ul id="bibleScript"></ul>
+                <table id="bibleScript" class="bible-script"></table>
+                <ul id="bibleScript2"></ul>
             </main>
         </div>
         <div id="memoPopup" class="memo-popup every-popup">
@@ -195,6 +196,15 @@
     <!-- <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
     integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
     crossorigin="anonymous"></script> -->
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/serviceWorker.js');
+        }
+    </script>
+
+
+    <script src="./assets/js/migration.js"></script>
     <script src="./assets/js/indexedDB.js"></script>
     <script src="./assets/js/TTS.js"></script>
     <script src="./assets/js/script.js"></script>

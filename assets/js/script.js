@@ -1,8 +1,7 @@
 let dailyData;
 let dailyData2;
-let bible;  //개역한글
-let bible2; //개역개정(현재 obj)
-let bible2Arr = []
+let bibleMap = {};
+let bible2Map = {};
 
 let indexeddb;
 let orgTxt = '';
@@ -12,19 +11,9 @@ let bibleType = {
     2: true
 }
 
-const valueObj = {
-    m_e: 'm',
-    d_e: 'd',
-    r_e: 'where',
-    m_k: '월',
-    d_k: '일',
-    r_k: '어디',
-}
 
 let bookName;
 let raf;
-
-const preparedUtterances = [];
 
 const tts = new TTS();
 
@@ -59,20 +48,19 @@ async function getData(){
         '요한일서', '요한이서', '요한삼서', '유다서', '요한계시록'
     ];
 
-    const res1 = await fetch('data/bible.json');
+    const res1 = await fetch('data/개역한글.json');
     if (!res1.ok) throw new Error('Network response was not ok');
-    bible = await res1.json();
-
+    bibleMap = parseBible2Data(await res1.json());
     
-    const res2 = await fetch('data/bible2.json');
-    if (!res1.ok) throw new Error('Network response was not ok');
-    bible2 = await res2.json();
-
-    bible2Arr = parseBible2Data(bible2);
-
-    const res3 = await fetch('data/dailyData.json');
+    const res2 = await fetch('data/개역개정.json');
     if (!res2.ok) throw new Error('Network response was not ok');
-    dailyData = await res3.json();
+    bible2Map = parseBible2Data(await res2.json());
+
+
+    const res3 = await fetch('data/guide/mccheyne.json');
+    if (!res3.ok) throw new Error('Network response was not ok');
+    const guideData = await res3.json();
+    dailyData = guideData.data;
 }
 
 // function fnc_resize(){
@@ -140,6 +128,25 @@ document.getElementById('todayBtn').addEventListener('click', () => {
     getCalendar('#calendar');
 })
 
+function addListItemClick(li, targets){
+    li.addEventListener('click', e => {
+        const lis2 = document.querySelectorAll(targets);
+        const targetLi = e.currentTarget;
+
+        let currIdx;
+
+        lis2.forEach((li2, idx) => {
+            li2.classList.remove('active');
+
+            if (targetLi.textContent === li2.textContent) currIdx = idx;
+        });
+
+        targetLi.closest('ul').scrollTop = (currIdx - 1) * 30;
+        targetLi.classList.add('active');
+    })
+
+}
+
 document.getElementById('yearInput').addEventListener('click', (e) => {
     openPopup('datePopup');
 
@@ -154,21 +161,7 @@ document.getElementById('yearInput').addEventListener('click', (e) => {
 
         if(i === 50) li.classList.add('active');
 
-        li.addEventListener('click', e => {
-            const lis2 = document.querySelectorAll('#yearList li');
-            const targetLi = e.currentTarget;
-
-            let currIdx;
-
-            lis2.forEach((li2, idx) => {
-                li2.classList.remove('active');
-
-                if (targetLi.textContent === li2.textContent) currIdx = idx;
-            });
-
-            targetLi.closest('ul').scrollTop = (currIdx - 1) * 30;
-            targetLi.classList.add('active');
-        })
+        addListItemClick(li, '#yearList li');
 
         yearList.appendChild(li);
     }
@@ -188,12 +181,16 @@ document.getElementById('yearInput').addEventListener('click', (e) => {
 
 document.getElementById('yearList').addEventListener('scroll', e => {
     const currScroll = e.currentTarget.scrollTop;
+
+    const case1 = currScroll < 1 ? 1 : currScroll + e.currentTarget.clientHeight + 1 > e.currentTarget.scrollHeight ? 2 : 0;
+    if(case1 === 0) return;
+
     const lis = e.currentTarget.querySelectorAll('li');
     const mnYear = lis[0].textContent;
     const mxYear = lis[lis.length - 1].textContent;
     const yearCnt = 50;
 
-    if (currScroll < 1) {
+    if (case1 === 1) {
         for (let i = 0; i < yearCnt; i++) {
             const li = document.createElement('li');
             const thisYear = mnYear - 1 - i;
@@ -201,27 +198,13 @@ document.getElementById('yearList').addEventListener('scroll', e => {
 
             li.textContent = thisYear;
 
-            li.addEventListener('click', e => {
-                const lis2 = document.querySelectorAll('#yearList li');
-                const targetLi = e.currentTarget;
-
-                let currIdx;
-
-                lis2.forEach((li2, idx) => {
-                    li2.classList.remove('active');
-
-                    if (targetLi.textContent === li2.textContent) currIdx = idx;
-                });
-
-                targetLi.closest('ul').scrollTop = (currIdx - 1) * 30;
-                targetLi.classList.add('active');
-            })
+            addListItemClick(li, '#yearList li');
 
             yearList.prepend(li);
             yearList.scrollTop = 30 * yearCnt;
         }
 
-    } else if (currScroll + e.currentTarget.clientHeight + 1 > e.currentTarget.scrollHeight) {
+    } else if (case1 === 2) {
 
         for (let i = 0; i < yearCnt; i++) {
             const li = document.createElement('li');
@@ -229,21 +212,7 @@ document.getElementById('yearList').addEventListener('scroll', e => {
 
             li.textContent = thisYear;
 
-            li.addEventListener('click', e => {
-                const lis2 = document.querySelectorAll('#yearList li');
-                const targetLi = e.currentTarget;
-
-                let currIdx;
-
-                lis2.forEach((li2, idx) => {
-                    li2.classList.remove('active');
-
-                    if (targetLi.textContent === li2.textContent) currIdx = idx;
-                });
-
-                targetLi.closest('ul').scrollTop = (currIdx - 1) * 30;
-                targetLi.classList.add('active');
-            })
+            addListItemClick(li, '#yearList li');
 
             yearList.appendChild(li);
         }
@@ -253,22 +222,7 @@ document.getElementById('yearList').addEventListener('scroll', e => {
 });
 
 document.querySelectorAll('#monthList li').forEach(li => {
-    li.addEventListener('click', e => {
-        const lis = document.querySelectorAll('#monthList li');
-        const targetLi = e.currentTarget;
-
-        let currIdx;
-
-        lis.forEach((li2, idx) => {
-            li2.classList.remove('active');
-
-            if (targetLi.textContent === li2.textContent) currIdx = idx;
-        });
-
-        targetLi.closest('ul').scrollTop = (currIdx - 1) * 30;
-        targetLi.classList.add('active');
-    })
-
+    addListItemClick(li, '#monthList li');
 })
 
 document.getElementById('applyDateBtn').addEventListener('click', () => {
@@ -432,17 +386,25 @@ function parseBook(txt) {
     return bookArr2;
 }
 
+function isEqualArr(a, b) {
+    const setA = new Set(a);
+    const setB = new Set(b);
+
+    if (setA.size !== setB.size) return false; // 원소 개수가 다르면 바로 false
+    for (let item of setA) {
+        if (!setB.has(item)) return false; // 하나라도 없다면 false
+    }
+    return true;
+}
+
 function getCalendar(target, setDate) {
     const calendarTarget = typeof target == 'object' ? target : document.querySelector(target);
 
     //ui초기화
     calendarTarget.innerHTML = '';
 
-    const colWidth = 100 / 7;
     const dateKr = ['일', '월', '화', '수', '목', '금', '토'];
     const date = setDate ? new Date(setDate.y, setDate.m - 1, setDate.d) : new Date();
-    const randomTxt = getRandomTxt('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 10);
-    const thisMonth = date.getMonth() + 1;
     const nowD = date.getDate();	//index아님
     const tmpDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     const lastDay = tmpDate.getDate();	//마지막일
@@ -507,7 +469,7 @@ function getCalendar(target, setDate) {
             const thisMonth = +document.getElementById('yearInput').querySelector('strong').textContent;
             const thisDate = +e.currentTarget.dataset.date;
 
-            const nowData = dailyData.filter(d => d[valueObj.m_k] === thisMonth && d[valueObj.d_k] === thisDate);
+            const nowData = dailyData.filter(d => d.month === thisMonth && d.day === thisDate);
 
             const oldBibleList = document.getElementById('bibleList');
             if(oldBibleList) oldBibleList.remove();
@@ -521,7 +483,7 @@ function getCalendar(target, setDate) {
 
             document.getElementById('bibleSection').appendChild(bibleListTag);
 
-            nowData[0][valueObj.r_k].split('/').forEach(d => {
+            nowData[0].readings.split('/').forEach(d => {
                 const withRange1 = d.split('-');
 
                 if (withRange1.length === 2) {
@@ -633,7 +595,7 @@ function getCalendar(target, setDate) {
 
     if (!setDate) {   //투데이 자동 클릭
         setTimeout(() => {
-            todayTarget = document.querySelector('[data-date="' + nowD + '"]');
+            const todayTarget = document.querySelector('[data-date="' + nowD + '"]');
             todayTarget.click();
         })
     }
@@ -686,17 +648,6 @@ function getCalendar(target, setDate) {
                     document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`).classList.add('has-memo');
                 }
             })
-
-            function isEqualArr(a, b) {
-                const setA = new Set(a);
-                const setB = new Set(b);
-            
-                if (setA.size !== setB.size) return false; // 원소 개수가 다르면 바로 false
-                for (let item of setA) {
-                    if (!setB.has(item)) return false; // 하나라도 없다면 false
-                }
-                return true;
-            }
         }
     });
 
@@ -787,21 +738,15 @@ function bibleTemplate(d, org) {
             const chapter = +ranged2[0];
             const verse = ranged2[1];
 
-            thisBible = bible.filter(bs => {
-                return +bs.BibleID === +parseData[0]
-                && +bs.ChapterNo === chapter
-                && (verse.split('~')[0] <= bs.VerseNo) 
-                && (bs.VerseNo <= verse.split('~')[1]) 
-            });
-            thisBible2 = bible2Arr.filter(bs => {
-                return +bs.BibleID === +parseData[0]
-                && +bs.ChapterNo === chapter
-                && (verse.split('~')[0] <= bs.VerseNo) 
-                && (bs.VerseNo <= verse.split('~')[1]) 
-            });
+            // 신규 - Map으로 해당 장 먼저 가져온 후 절 범위만 필터
+            const verseFrom = +verse.split('~')[0];
+            const verseTo = +verse.split('~')[1];
+            thisBible = (bibleMap[`${parseData[0]}_${chapter}`] || []).filter(bs => verseFrom <= bs.VerseNo && bs.VerseNo <= verseTo);
+            thisBible2 = (bible2Map[`${parseData[0]}_${chapter}`] || []).filter(bs => verseFrom <= bs.VerseNo && bs.VerseNo <= verseTo);
+
         }else{
-            thisBible = bible.filter(bs => +bs.BibleID === +parseData[0] && +bs.ChapterNo === +parseData[1]);
-            thisBible2 = bible2Arr.filter(bs => +bs.BibleID === +parseData[0] && +bs.ChapterNo === +parseData[1]);
+            thisBible = bibleMap[`${parseData[0]}_${parseData[1]}`];
+            thisBible2 = bible2Map[`${parseData[0]}_${parseData[1]}`];
         }
         
         document.getElementById('bibleName').textContent = parseBook(d);
@@ -812,16 +757,25 @@ function bibleTemplate(d, org) {
         tts.initData();
 
         thisBible.forEach((dd, idx) => {
-            const li = document.createElement('li');
-            li.dataset.verseNo = dd.VerseNo;
-            li.innerHTML = `
-                <strong>${dd.VerseNo}</strong>
-                <div>
-                    <p class="${bibleType[1] ? '' : 'hidden'}">${dd.BibleScript}</p>
-                    <p class="${bibleType[2] ? '' : 'hidden'}">${thisBible2[idx].BibleScript}</p>
-                </div>
+            const tr = document.createElement('tr');
+            tr.dataset.verseNo = dd.VerseNo;
+            tr.innerHTML = `
+                <th>${dd.VerseNo}</th>
+                <td class="">${dd.BibleScript}</td>
             `;
-            document.getElementById('bibleScript').appendChild(li);
+            document.getElementById('bibleScript').appendChild(tr);
+
+
+            // const li = document.createElement('li');
+            // li.dataset.verseNo = dd.VerseNo;
+            // li.innerHTML = `
+            //     <strong>${dd.VerseNo}</strong>
+            //     <div>
+            //         <p class="${bibleType[1] ? '' : 'hidden'}">${dd.BibleScript}</p>
+            //         <p class="${bibleType[2] ? '' : 'hidden'}">${thisBible2[idx].BibleScript}</p>
+            //     </div>
+            // `;
+            // document.getElementById('bibleScript2').appendChild(li);
             
             tts.pushArray(tts.createSpeechUtterance(dd.VerseNo, dd.BibleScript));
         });
@@ -890,13 +844,14 @@ function getRandomTxt(data, len) {
 }
 
 function appendTag(target, tagNm, option) {
-    const toTarget = typeof target == 'object' ? target : document.querySelector('target');
+    if(!['object', 'string'].includes(typeof target)) return;
+    const toTarget = typeof target == 'object' ? target : document.querySelector(target);
     const tag = document.createElement(tagNm);
     if (option && option.html) tag.insertAdjacentHTML('afterbegin', option.html);
-    if (option && option.attr) for (key in option.attr) tag.setAttribute(key, option.attr[key]);
+    if (option && option.attr) for (let key in option.attr) tag.setAttribute(key, option.attr[key]);
     if (option && option.class) option.class.forEach((el) => tag.classList.add(el));
-    if (option && option.style) for (key in option.style) tag.style[key] = option.style[key];
-    if (option && option.fnc) for (key in option.fnc) tag.addEventListener(key, option.fnc[key]);
+    if (option && option.style) for (let key in option.style) tag.style[key] = option.style[key];
+    if (option && option.fnc) for (let key in option.fnc) tag.addEventListener(key, option.fnc[key]);
 
     toTarget.appendChild(tag);
 
@@ -907,7 +862,7 @@ function appendTag(target, tagNm, option) {
 window.onload = async function () {
     indexeddb = new IndexedDB({
         dbNm: 'MyDatabase',
-        dbVersion: 1,
+        dbVersion: dbVersionHistory.length + 1,
         tableNm: 'MyDailyBible',
         key: 'id'
     });
@@ -926,11 +881,13 @@ window.onload = async function () {
     // }
 
     getData().then(() => {
-        dailyData2 = dailyData.map(d => ({id: `${d[valueObj.m_k]}_${d[valueObj.d_k]}`, dailyChked: d[valueObj.r_k].split('/')}));
+        dailyData2 = dailyData.map(d => ({id: `${d.month}_${d.day}`, dailyChked: d.readings.split('/')}));
     
         getCalendar('#calendar');
     
         document.getElementById('loadingLayer').classList.remove('active');
+    }).catch(err => {
+        console.log(err);
     });
 
 };
@@ -1255,7 +1212,7 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
     if(randomInt + 1 !== +prmt) return;
 
     const a = document.createElement('a');
-    a.href = 'assets/download/매일성경.zip';;
+    a.href = 'assets/download/매일성경.zip';
     
     a.style.display = 'none';
     a.download = '';
@@ -1294,8 +1251,9 @@ function clearData(){
 }
 
 
+// 신규 - 배열 대신 Map으로 빌드, 보기 클릭 시 O(1) 조회
 function parseBible2Data(data){
-    const rtnArr = [];
+    const rtnMap = {};
     let tmpBibleName = '';
     let bibleId = 0;
     let bibleIdx = 0;
@@ -1307,13 +1265,10 @@ function parseBible2Data(data){
             bibleId++;
         }
         const jj = key.slice(bibleIdx).split(':'); //장절
-        rtnArr.push({
-            BibleID: bibleId,
-            ChapterNo: +(jj[0]),
-            VerseNo: +(jj[1]),
-            BibleScript: data[key]
-        });
+        const mapKey = `${bibleId}_${jj[0]}`;
+        if(!rtnMap[mapKey]) rtnMap[mapKey] = [];
+        rtnMap[mapKey].push({VerseNo: +(jj[1]), BibleScript: data[key]});
     }
 
-    return rtnArr;
+    return rtnMap;
 }

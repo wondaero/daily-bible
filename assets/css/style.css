@@ -313,9 +313,7 @@ main{
     display: flex;
     align-items: center;
     justify-content: center;
-    /* width: 120px; */
-    height: 32px;
-    /* border-radius: 5px; */
+    height: 36px;
     background: darkslateblue;
     background: var(--mainColor);
     color: var(--mainBg);

@@ -1,6 +1,6 @@
 :root {
---yellow: #ffc400;
---black: #484848;
+--mainColor: #ffc400;
+--mainBg: #484848;
 }
 
 @font-face {
@@ -39,7 +39,7 @@
 html, body{
     height: 100%;
     font-family: Pretendard;
-    background: var(--black); /*가을*/
+    background: var(--mainBg); /*가을*/
     min-width: 280px;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
@@ -51,9 +51,9 @@ body{
 }
 body > header{
     /* background: darkslateblue; */
-    background: var(--yellow);
+    background: var(--mainColor);
     height: 40px;
-    /* box-shadow: 0 2px 8px var(--yellow); */
+    /* box-shadow: 0 2px 8px var(--mainColor); */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -98,7 +98,7 @@ body > header .hamburger{
 body > header .hamburger > span{
     width: 24px;
     height: 2px;
-    background: var(--black);
+    background: var(--mainBg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -119,7 +119,7 @@ body > main{
     align-items: center;
     flex-direction: column;
     padding: 20px 10px 10px;
-    box-shadow: 0 0px 4px var(--black);
+    box-shadow: 0 0px 4px var(--mainBg);
 }
 body > main > *{
     max-width: 600px;
@@ -317,8 +317,8 @@ main{
     height: 32px;
     /* border-radius: 5px; */
     background: darkslateblue;
-    background: var(--yellow);
-    color: var(--black);
+    background: var(--mainColor);
+    color: var(--mainBg);
     border: 0;
     font-size: 18px;
     cursor: pointer;
@@ -337,7 +337,7 @@ main{
     flex-direction: column;
 }
 .dim-layer .bible-popup > .popup-main{
-    flex: 1;
+    padding: 10px 0;
 }
 .dim-layer .bible-popup > header{
     display: flex;
@@ -628,13 +628,13 @@ main{
     /* opacity: 1; */
 }
 .calendar table td.clear > div strong{
-    background: var(--yellow);
+    background: var(--mainColor);
     
     /* border-radius: 50%; */
     color: #000;
 }
 .calendar table td.clear > div strong.today{
-    background: linear-gradient(135deg, #fff 10px, var(--yellow) 0);
+    background: linear-gradient(135deg, #fff 10px, var(--mainColor) 0);
     
     /* border-radius: 50%; */
     color: #000;
@@ -645,17 +645,17 @@ main{
 .calendar table td.ing > div strong{
     background: #ffedb3;
     
-    background: linear-gradient(-45deg, var(--yellow) 50%, transparent 0);
+    background: linear-gradient(-45deg, var(--mainColor) 50%, transparent 0);
     color: #fff;
     /* animation: reading1 .2s infinite; */
 }
 .calendar table td.ing > div strong.today{
     
-    background: linear-gradient(-45deg, var(--yellow) 50%, #fff 0);
+    background: linear-gradient(-45deg, var(--mainColor) 50%, #fff 0);
     color: #000;
 }
 .calendar table td.ing > div strong:before{
-    border: 2px solid var(--yellow);
+    border: 2px solid var(--mainColor);
 }
 .calendar table td.ing > div strong.today:before{
     /* border: 2px solid #fff; */
@@ -813,8 +813,8 @@ main{
 }
 .dim-layer .memo-popup textarea:focus{
     /* box-shadow: inset 0 0 2px #00e; */
-    box-shadow: inset 0 0 8px var(--yellow);
-    /* box-shadow: inset 0 0 8px var(--black); */
+    box-shadow: inset 0 0 8px var(--mainColor);
+    /* box-shadow: inset 0 0 8px var(--mainBg); */
 }
 .dim-layer .memo-popup .popup-footer button{
     flex: 1;
@@ -855,8 +855,8 @@ label.checkbox1 input + span{
     box-sizing: border-box;
 }
 label.checkbox1 input:checked + span{
-    box-shadow: inset 0 0 10px var(--black);
-    background: var(--black);
+    box-shadow: inset 0 0 10px var(--mainBg);
+    background: var(--mainBg);
     border: 0;
 }
 label.checkbox1 input:checked + span:after{
@@ -864,8 +864,8 @@ label.checkbox1 input:checked + span:after{
     display: block;
     width: 10px;
     height: 4px;
-    border-left: 2px solid var(--yellow);
-    border-bottom: 2px solid var(--yellow);
+    border-left: 2px solid var(--mainColor);
+    border-bottom: 2px solid var(--mainColor);
     position: relative;
     top: -1px;
     transform: rotate(-45deg);
@@ -886,11 +886,11 @@ label.checkbox1 input:checked + span:after{
     display: none;
     align-items: center;
     justify-content: center;
-    background: var(--yellow);
+    background: var(--mainColor);
     z-index: 3;
 }
 .loading-layer strong{
-    color: var(--black);
+    color: var(--mainBg);
     margin-top: 10px;
 }
 
@@ -936,7 +936,7 @@ canvas{
 .bible-script[data-font="28"] tr{font-size: 28px;}
 .bible-script tr.active{
     color: #fff;
-    text-shadow: 0 0 12px var(--yellow);
+    text-shadow: 0 0 12px var(--mainColor);
 }
 .bible-script tr th{
     white-space: nowrap;

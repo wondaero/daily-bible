@@ -22,6 +22,11 @@ const tts = new TTS();
 window.addEventListener('DOMContentLoaded', () => {
     if(!tts.isSupported) document.getElementById('voiceBtn').classList.add('hidden');
     if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
+
+
+    //폰트사이즈 적용
+    const savedFontSize = window.localStorage.getItem('fontSize');
+    if(savedFontSize) setFontUI(+savedFontSize);
 });
 
 async function getData(){
@@ -105,11 +110,11 @@ function closePopup(cb){
     // document.getElementById('voiceBtn').dataset.status = 'normal';
     if(tts.preparedUtterances.length) document.getElementById('voiceBtn').dataset.status = 'normal';
 
+
     document.getElementById('dimLayer').classList.remove('active');
-    document.getElementById('datePopup').classList.remove('active');
-    document.getElementById('biblePopup').classList.remove('active');
-    document.getElementById('memoPopup').classList.remove('active');
-    document.getElementById('menuPopup').classList.remove('active');
+    document.querySelectorAll('#dimLayer > div').forEach((p) => {
+        p.classList.remove('active');
+    })
 
     if(cb && typeof cb === 'function') cb();
 }
@@ -141,7 +146,7 @@ function addListItemClick(li, targets){
             if (targetLi.textContent === li2.textContent) currIdx = idx;
         });
 
-        targetLi.closest('ul').scrollTop = (currIdx - 1) * 30;
+        targetLi.closest('ul').scrollTop = (currIdx - 2) * 30;
         targetLi.classList.add('active');
     })
 
@@ -276,6 +281,12 @@ document.getElementById('hamburger').addEventListener('click', () => {
     openPopup('menuPopup', () => {
         
     });
+})
+
+document.getElementById('openFontPopBtn').addEventListener('click', () => {
+    openPopup('fontPopup', () => {
+
+    })
 })
 
 // document.querySelectorAll('#menuPopup [name="bibleType"]').forEach((bt) => {
@@ -510,7 +521,7 @@ function getCalendar(target, setDate) {
                         textarea.removeAttribute('disabled');
                         modOnBtn.classList.remove('hidden');
                         regSection.classList.remove('hidden');
-                        document.querySelector('#memoPopup h3').innerHTML = `동행<span>(${thisDate.replaceAll('_', '.')})</span>`;
+                        document.querySelector('#memoPopup header').innerHTML = `동행<span>(${thisDate.replaceAll('_', '.')})</span>`;
 
                         orgTxt = '';
 
@@ -1272,3 +1283,43 @@ function parseBible2Data(data){
 
     return rtnMap;
 }
+
+document.querySelectorAll('[data-id="setFontSizeBtn"]').forEach((b) => {
+    b.addEventListener('click', (e) => {
+        const target = document.querySelector('[data-font]');
+        const btnType = +e.currentTarget.dataset.value;
+        const curValue = +target.dataset.font;
+        let newValue;
+
+        if(btnType === 0){
+            newValue = 20;
+        }else{
+            newValue = curValue + btnType;
+        }
+
+        if(newValue < 14){
+            alert('최소 사이즈입니다.');
+            return;
+        }
+        if(28 < newValue){
+            alert('최대 사이즈입니다.');
+            return;
+        }
+
+        window.localStorage.setItem('fontSize', newValue);
+        setFontUI(newValue);
+
+    })
+})
+
+function setFontUI(val){
+    document.querySelectorAll('[data-font]').forEach((t) => {
+        t.dataset.font = val;
+    })
+}
+
+document.querySelectorAll('[data-id="notYet"]').forEach((b) => {
+    b.onclick = () => {
+        alert('준비중입니다.');
+    }
+})

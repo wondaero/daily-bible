@@ -77,10 +77,8 @@
     </main>
     <aside id="dimLayer" class="dim-layer">
         <div id="datePopup" class="date-popup every-popup">
-            <header>
-                <span id="closeDatePopupBtn" class="close-btn" data-id="closePopupBtn"></span>
-            </header>
-            <main>
+            <button id="closeDatePopupBtn" class="close-btn" data-id="closePopupBtn"></button>
+            <div class="popup-main">
                 <div>
                     <ul id="yearList" class="year-list"></ul>
                     <strong>년</strong>
@@ -102,12 +100,13 @@
                     </ul>
                     <strong>월</strong>
                 </div>
-            </main>
-            <footer>
+            </div>
+            <div class="popup-footer">
                 <button id="applyDateBtn">적용</button>
-            </footer>
+            </div>
         </div>
         <div id="biblePopup" class="bible-popup every-popup">
+            <button id="closeBiblePopupBtn" class="close-btn" data-id="closePopupBtn"></button>
             <header>
                 <div>
                     <label class="checkbox1">
@@ -121,72 +120,104 @@
                         <img class="cancel-voice-icon" src="./assets/imgs/cancelVoice.svg" alt="듣기취소" />
                     </button>
                 </div>
-                <span id="closeBiblePopupBtn" class="close-btn" data-id="closePopupBtn"></span>
             </header>
-            <main>
+            <div class="popup-main">
                 <!-- <p id="bibleScript"></p> -->
-                <table id="bibleScript" class="bible-script"></table>
-                <ul id="bibleScript2"></ul>
-            </main>
+                <table id="bibleScript" class="bible-script" data-font="20"></table>
+            </div>
         </div>
         <div id="memoPopup" class="memo-popup every-popup">
-            <header>
-                <h3>동행</h3>
-                <span id="closeBiblePopupBtn" class="close-btn" data-id="closePopupBtn"></span>
-            </header>
-            <main>
+            <button id="closeBiblePopupBtn" class="close-btn" data-id="closePopupBtn"></button>
+            <header>동행</header>
+            <div class="popup-main">
                 <textarea></textarea>
-            </main>
-            <footer>
+            </div>
+            <div class="popup-footer">
                 <div id="regSection">
-                    <button id="initMemoBtn">취소</button>
+                    <button id="initMemoBtn" class="popup-btn-v2">취소</button>
                     <button id="regMemoBtn">저장</button>
                 </div>
                 <button id="modOnBtn">편집</button>
-            </footer>
+            </div>
         </div>
         <div id="menuPopup" class="menu-popup every-popup">
-            <header>
-                <span id="closeMenuPopupBtn" class="close-btn" data-id="closePopupBtn"></span>
-            </header>
+            <button id="closeMenuPopupBtn" class="close-btn" data-id="closePopupBtn"></button>
             <ul>
                 <!-- <li id="chkAllDataBtn"><strong>5</strong>월 데이터 전체 체크</li> -->
+                <li>
+                    <strong class="group-title">읽기 설정 📖</strong>
+                    <ul>
+                        <li data-id="notYet">가이드 선택</li>
+                        <li data-id="notYet">성경 선택</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="group-title">설정 ⚙️</strong>
+                    <ul>
+                        <li data-id="notYet">테마</li>
+                        <li id="openFontPopBtn">글자크기</li>
+                    </ul>
+                </li>
                 <!-- <li class="select-bible-field">
-                    <fieldset>
-                        <legend>성경 선택</legend>
-                        <ul>
-                            <li>
-                                <label class="checkbox1">
-                                    <input type="checkbox" name="bibleType" value="1" checked />
-                                    <span></span>
-                                    <strong>개역한글</strong>
-                                </label>
-                            </li>
-                            <li>
-                                <label class="checkbox1">
-                                    <input type="checkbox" name="bibleType" value="2" />
-                                    <span></span>
-                                    <strong>개역개정</strong>
-                                </label>
-                            </li>
-                        </ul>
-                    </fieldset>
+                    <strong class="group-title">성경 선택</strong>
+                    <ul>
+                        <li>
+                            <label class="checkbox1">
+                                <input type="checkbox" name="bibleType" value="1" checked />
+                                <span></span>
+                                <strong>개역한글</strong>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="checkbox1">
+                                <input type="checkbox" name="bibleType" value="2" />
+                                <span></span>
+                                <strong>개역개정</strong>
+                            </label>
+                        </li>
+                    </ul>
                 </li> -->
-                <li class="data-field">
-                    <fieldset>
-                        <legend>데이터 관리</legend>
-                        <ul>
-                            <li id="backupBtn">데이터 백업 💾</li>
-                            <li id="overwriteBtn">데이터 불러오기 🔄</li>
-                            <li id="clearDataBtn">데이터 전체 삭제 ⚠️</li>
-                            <li id="downloadBtn">어플 다운로드(android) ⬇️</li>
-                        </ul>
-                    </fieldset>
+                <li>
+                    <strong class="group-title">데이터 관리 🗂️</strong>
+                    <ul>
+                        <li id="backupBtn">데이터 백업</li>
+                        <li id="overwriteBtn">데이터 불러오기</li>
+                        <li id="clearDataBtn">데이터 전체 삭제</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="group-title">다운로드 ⬇️</strong>
+                    <ul>
+                        <li id="downloadBtn">어플 다운로드(android)</li>
+                    </ul>
                 </li>
                 
                 
                 
             </ul>
+        </div>
+        <div id="fontPopup" class="every-popup">
+            <button class="close-btn" data-id="closePopupBtn"></button>
+            <header>글자크기 설정</header>
+            <table class="bible-script" data-font="20">
+                <tr>
+                    <th>1</th>
+                    <td>태초에 하나님이 천지를 창조하시니라</td>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <td>땅이 혼돈하고 공허하며 흑암이 깊음 위에 있고 하나님의 신은 수면에 운행하시니라</td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td>...</td>
+                </tr>
+            </table>
+            <div class="popup-footer btn-font-wrapper">
+                <button class="btn-set-font" data-id="setFontSizeBtn" data-value="-1">작게</button>
+                <button class="btn-set-font popup-btn-v2" data-id="setFontSizeBtn" data-value="0">기본</button>
+                <button class="btn-set-font" data-id="setFontSizeBtn" data-value="1">크게</button>
+            </div>
         </div>
     </aside>
     <aside id="loadingLayer" class="loading-layer active">

@@ -1,8 +1,8 @@
 :root {
-    --yellow: #ffc400;
-    --black: #484848;
-  }
-  
+--yellow: #ffc400;
+--black: #484848;
+}
+
 @font-face {
     font-family: 'Pretendard';
     src: url('../font/Pretendard-Regular.woff') format('woff');
@@ -97,7 +97,7 @@ body > header .hamburger{
 }
 body > header .hamburger > span{
     width: 24px;
-    height: 4px;
+    height: 2px;
     background: var(--black);
     display: flex;
     align-items: center;
@@ -256,18 +256,37 @@ main{
 .dim-layer.active{
     display: flex;
 }
-.dim-layer .every-popup.active{
+.every-popup{
+    position: relative;
+    display: none;
+    padding: 10px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, .75);
+    box-shadow: 0 0 4px rgba(0, 0, 0, .4);
+}
+.every-popup.active{
     display: block;
 }
-.dim-layer .every-popup > header .close-btn{
+.every-popup > header h3{
+    margin: 0;
+    padding: 0;
+}
+.every-popup .close-btn{
     width: 20px;
     height: 20px;
     transform: rotate(46deg);
     position: relative;
     cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: 0;
+    border: 0;
+    outline: 0;
 }
-.dim-layer .every-popup > header .close-btn:before,
-.dim-layer .every-popup > header .close-btn:after{
+.every-popup .close-btn:before,
+.every-popup .close-btn:after{
     content: '';
     width: 20px;
     height: 2px;
@@ -277,36 +296,35 @@ main{
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.dim-layer .every-popup > header .close-btn:after{
+.every-popup .close-btn:after{
     transform: translate(-50%, -50%) rotate(90deg);
 }
-.dim-layer .every-popup > footer{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.popup-main{
+    padding: 10px 5px;
+    overflow-y: auto;
 }
-.dim-layer .every-popup > footer button{
+.popup-footer{
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 120px;
+    margin: 0 -10px -10px;
+}
+.popup-footer button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* width: 120px; */
     height: 32px;
-    border-radius: 5px;
+    /* border-radius: 5px; */
     background: darkslateblue;
     background: var(--yellow);
     color: var(--black);
     border: 0;
     font-size: 18px;
     cursor: pointer;
+    flex: 1;
 }
-.dim-layer .every-popup{
-    display: none;
-    padding: 10px;
-    border-radius: 5px;
-    box-sizing: border-box;
-    background: rgba(255, 255, 255, .75);
-    box-shadow: 0 0 4px rgba(0, 0, 0, .4);
-}
+
 
 .dim-layer .bible-popup.active{
     display: flex;
@@ -318,7 +336,7 @@ main{
     max-height: calc(100% - 10px - 10px);
     flex-direction: column;
 }
-.dim-layer .bible-popup > main{
+.dim-layer .bible-popup > .popup-main{
     flex: 1;
 }
 .dim-layer .bible-popup > header{
@@ -400,19 +418,8 @@ main{
 .dim-layer .bible-popup ul li > div p.hidden{
     display: none;
 }
-.dim-layer .date-popup > header{
-    display: flex;
-    justify-content: flex-end;
-}
-.dim-layer .date-popup > header .close-btn{
-    width: 20px;
-    height: 20px;
-    transform: rotate(46deg);
-    position: relative;
-    cursor: pointer;
-}
-.dim-layer .date-popup > header .close-btn:before,
-.dim-layer .date-popup > header .close-btn:after{
+.dim-layer .date-popup .close-btn:before,
+.dim-layer .date-popup .close-btn:after{
     content: '';
     width: 20px;
     height: 2px;
@@ -422,20 +429,20 @@ main{
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.dim-layer .date-popup > header .close-btn:after{
+.dim-layer .date-popup .close-btn:after{
     transform: translate(-50%, -50%) rotate(90deg);
 }
-.dim-layer .date-popup > main{
+.dim-layer .date-popup .popup-main{
     display: flex;
     justify-content: center;
 }
 
 
-.dim-layer .date-popup > main > div{
+.dim-layer .date-popup > .popup-main > div{
     display: flex;
     align-items: center;
 }
-.dim-layer .date-popup > main > div:first-of-type{
+.dim-layer .date-popup > .popup-main > div:first-of-type{
     margin-right: 10px;
 }
 .dim-layer .date-popup ul{
@@ -445,7 +452,7 @@ main{
     border: 1px solid #111;
     border-radius: 5px;
     width: 80px;
-    height: 90px;
+    height: 150px;
     margin-right: 5px;
     overflow-y: auto;
 }
@@ -464,21 +471,18 @@ main{
     background: #ffedb3;
     font-weight: 900;
 }
-.dim-layer .menu-popup > header{
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px;
-}
 .dim-layer .menu-popup > ul{
     margin: 0;
-    padding: 20px 0;
+    padding: 0;
     list-style: none;
     /* width: 240px; */
 }
 .dim-layer .menu-popup > ul > li{
     margin: 0 auto;
     margin-bottom: 15px;
+    padding-bottom: 10px;
     width: 220px;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
     
     /* text-align: center; */
 }
@@ -506,20 +510,21 @@ main{
 .dim-layer .menu-popup .select-bible-field fieldset ul li label{
     cursor: pointer;
 } */
-.dim-layer .menu-popup .data-field fieldset{
-    border-radius: 5px;
-    padding-top: 15px;
+.dim-layer .menu-popup .group-title{
+    font-size: 20px;
+    display: block;
+    margin-bottom: 12px;
 }
-.dim-layer .menu-popup .data-field ul{
+.dim-layer .menu-popup ul ul{
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 0 0 8px;
 }
-.dim-layer .menu-popup .data-field ul li{
+.dim-layer .menu-popup ul ul li{
     margin-bottom: 10px;
     cursor: pointer;
 }
-.dim-layer .menu-popup .data-field ul li:last-of-type{
+.dim-layer .menu-popup ul ul li:last-of-type{
     margin-bottom: 0;
 }
 
@@ -531,6 +536,7 @@ main{
     color: rgba(255, 255, 255, 1);
     opacity: .7;
     padding-bottom: 5px;
+    font-size: 18px;
 }
 .calendar table tbody tr:first-of-type{
     padding-top: 10px;
@@ -587,7 +593,7 @@ main{
     align-items: center;
     justify-content: center;
     /* border-radius: 50%; */
-    font-size: 12px;
+    font-size: 16px;
     font-weight: normal;
     position: relative;
 }
@@ -715,7 +721,7 @@ main{
     justify-content: space-between;
 }
 .bible-list li label{
-    flex: 1;
+    /* flex: 1; */
 }
 .bible-list li label .bible-range{
     flex: 1;
@@ -731,7 +737,6 @@ main{
     color: #fff;
     cursor: pointer;
     font-weight: 100;
-    width: 40px;
     padding: 0;
     white-space: nowrap;
 }
@@ -776,20 +781,15 @@ main{
     max-width: 600px;
 }
 .dim-layer .memo-popup > header{
-    display: flex;
-    justify-content: space-between;
+    text-align: center;
     margin-bottom: 10px;
 }
-.dim-layer .memo-popup > header h3{
-    margin: 0;
-    padding: 0;
-}
-.dim-layer .memo-popup > header h3 span{
+.dim-layer .memo-popup > header span{
     font-weight: 100;
     font-size: 14px;
     opacity: .7;
 }
-.dim-layer .memo-popup > main{
+.dim-layer .memo-popup > .popup-main{
     padding: 0;
     flex: 1;
     margin-bottom: 10px;
@@ -816,18 +816,18 @@ main{
     box-shadow: inset 0 0 8px var(--yellow);
     /* box-shadow: inset 0 0 8px var(--black); */
 }
-.dim-layer .memo-popup footer button{
-    width: 100px;
+.dim-layer .memo-popup .popup-footer button{
+    flex: 1;
 }
-.dim-layer .memo-popup footer *.hidden{
+.dim-layer .memo-popup .popup-footer *.hidden{
     display: none;
 }
-.dim-layer .memo-popup footer > div{
+.dim-layer .memo-popup .popup-footer > div{
+    width: 100%;
     display: flex;
     align-items: center;
 }
-.dim-layer .memo-popup footer > div button:first-of-type{
-    margin-right: 5px;
+.popup-footer button.popup-btn-v2{
     background: #fff;
     color: #222;
     border: 1px solid #222;
@@ -919,6 +919,21 @@ canvas{
     word-break: break-all;
     text-align: justify;
 }
+.bible-script[data-font="14"] tr{font-size: 14px;}
+.bible-script[data-font="15"] tr{font-size: 15px;}
+.bible-script[data-font="16"] tr{font-size: 16px;}
+.bible-script[data-font="17"] tr{font-size: 17px;}
+.bible-script[data-font="18"] tr{font-size: 18px;}
+.bible-script[data-font="19"] tr{font-size: 19px;}
+.bible-script[data-font="20"] tr{font-size: 20px;}
+.bible-script[data-font="21"] tr{font-size: 21px;}
+.bible-script[data-font="22"] tr{font-size: 22px;}
+.bible-script[data-font="23"] tr{font-size: 23px;}
+.bible-script[data-font="24"] tr{font-size: 24px;}
+.bible-script[data-font="25"] tr{font-size: 25px;}
+.bible-script[data-font="26"] tr{font-size: 26px;}
+.bible-script[data-font="27"] tr{font-size: 27px;}
+.bible-script[data-font="28"] tr{font-size: 28px;}
 .bible-script tr.active{
     color: #fff;
     text-shadow: 0 0 12px var(--yellow);
@@ -931,6 +946,17 @@ canvas{
 }
 .bible-script tr td{
     line-height: 1.5;
+}
+
+.btn-font-wrapper{
+    display: flex;
+    align-items: center;
+}
+.btn-font-wrapper .btn-set-font:nth-of-type(1){
+    font-size: 14px;
+}
+.btn-font-wrapper .btn-set-font:nth-of-type(3){
+    font-size: 24px;
 }
 
 @media (max-width: 760px){
@@ -955,12 +981,13 @@ canvas{
         background: linear-gradient(135deg, red, orange, yellow, green, blue, navy, purple);
         margin: 0 auto 10px;
         box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+        pointer-events: none;
     }
 
     .dim-layer .every-popup > header{
         justify-content: center;
     }
-    .dim-layer .every-popup > header > .close-btn{
+    .dim-layer .every-popup .close-btn{
         position: absolute;
         top: 8px;
         right: 8px;

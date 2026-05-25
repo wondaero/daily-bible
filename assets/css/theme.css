@@ -1,0 +1,32 @@
+body[data-theme] .bible-page{
+    background: var(--theme-bg);
+    color: var(--theme-color);
+}
+
+body[data-theme] .bible-page header{
+    border-bottom: 1px solid var(--theme-color);
+}
+
+body[data-theme] .bible-page button:before,
+body[data-theme] .bible-page button:after{
+    background: var(--theme-color);
+}
+
+body[data-theme] .read-toggle-wrapper label.checkbox1 input + span{
+    border: 1px solid var(--theme-color);
+    background: var(--theme-bg)
+}
+
+body[data-theme] .read-toggle-wrapper label.checkbox1 input:checked + span{
+    background: var(--theme-color);
+    box-shadow: none;
+}
+
+body[data-theme] .read-toggle-wrapper label.checkbox1 input:checked + span:after{
+    border-left: 3px solid var(--theme-bg);
+    border-bottom: 3px solid var(--theme-bg);
+}
+body[data-theme] .bible-script tr.active{
+    background:var(--theme-color);
+    color:var(--theme-bg);
+}

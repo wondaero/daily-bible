@@ -23,10 +23,13 @@ window.addEventListener('DOMContentLoaded', () => {
     if(!tts.isSupported) document.getElementById('voiceBtn').classList.add('hidden');
     if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
 
-
     //폰트사이즈 적용
     const savedFontSize = window.localStorage.getItem('fontSize');
     if(savedFontSize) setFontUI(+savedFontSize);
+    
+    //테마 적용
+    const savedTheme = window.localStorage.getItem('theme');
+    if(savedTheme) document.body.dataset.theme = savedTheme;
 });
 
 async function getData(){
@@ -90,6 +93,31 @@ function getRandomInt(mn, mx){
     return Math.floor(Math.random() * (mx - mn + 1)) + mn;
 }
 
+function openPage(pageId, cb){
+    closePopup();
+    closePage();
+
+    location.hash = pageId;
+
+    document.getElementById('dimLayer').classList.remove('active');
+    document.getElementById(pageId).classList.remove('hidden');
+
+    if(cb && typeof cb === 'function') cb();
+}
+function closePage(cb){
+    tts.stopTTS();
+
+    document.querySelectorAll('[data-role="page"]').forEach(p => {
+        p.classList.add('hidden');
+    })
+
+    closePopup();
+
+    document.getElementById('dimLayer').classList.remove('active');
+
+    if(cb && typeof cb === 'function') cb();
+}
+
 function openPopup(popupId, cb){
     closePopup();
 
@@ -118,6 +146,14 @@ function closePopup(cb){
 
     if(cb && typeof cb === 'function') cb();
 }
+
+document.querySelectorAll('[data-id="closePageBtn"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        history.back();
+    });
+    
+})
+
 
 document.getElementById('dimLayer').addEventListener('click', e => {
     if(e.target === e.currentTarget) history.back();
@@ -283,11 +319,6 @@ document.getElementById('hamburger').addEventListener('click', () => {
     });
 })
 
-document.getElementById('openFontPopBtn').addEventListener('click', () => {
-    openPopup('fontPopup', () => {
-
-    })
-})
 
 // document.querySelectorAll('#menuPopup [name="bibleType"]').forEach((bt) => {
 //     bt.addEventListener('change', (e) => {
@@ -549,7 +580,7 @@ function getCalendar(target, setDate) {
             const oldMemo = document.querySelector('[data-id="memoBtn"]');
             if(oldMemo) oldMemo.remove();
 
-            document.body.querySelector(':scope > main').appendChild(memo());
+            document.getElementById('calendarPageMain').appendChild(memo());
 
             //저장된 데이터 처리
             document.getElementById('allChker').checked = false;
@@ -718,6 +749,8 @@ function bibleTemplate(d, org) {
 
         document.getElementById('allChker').checked = isAllChked;
 
+        console.log(333);
+
         indexeddb.query('u', {id: thisDate, dailyChked: chkedData}, {upsert: true});
 
     })
@@ -725,14 +758,15 @@ function bibleTemplate(d, org) {
     //이부분이 [보기]버튼 눌렀을 때
     li.querySelector('button').addEventListener('click', e => {
         
-        openPopup('biblePopup');
+        // openPopup('biblePopup');
+        openPage('biblePage');
 
         const targetInput = e.currentTarget.closest('li').querySelector('input');
 
         const isChked = targetInput.checked;
-        document.querySelector('#biblePopup input').checked = isChked;
+        document.querySelector('#biblePage input').checked = isChked;
 
-        document.querySelector('#biblePopup input').onchange = e => {
+        document.querySelector('#biblePage input').onchange = e => {
             targetInput.checked = e.currentTarget.checked;
             const changeEvent = new Event('change');
             targetInput.dispatchEvent(changeEvent);
@@ -1118,7 +1152,14 @@ document.addEventListener('visibilitychange', () => {
 
 // 해시 변경 감지
 window.addEventListener('hashchange', () => {
-    if(!window.location.hash) closePopup();
+    if(!window.location.hash){
+        closePopup();
+
+        //페이지는 임시로...
+        closePage(() => {
+            document.getElementById('calendarPage').classList.remove('hidden');
+        });
+    }
 });
 
 
@@ -1323,3 +1364,11 @@ document.querySelectorAll('[data-id="notYet"]').forEach((b) => {
         alert('준비중입니다.');
     }
 })
+document.querySelectorAll('[data-id="setThemeBtn"]').forEach((b) => {
+    b.addEventListener('click', e => {
+        const themeVal = e.currentTarget.dataset.value;
+
+        window.localStorage.setItem('theme', themeVal);
+        document.body.dataset.theme = themeVal;
+    })
+});

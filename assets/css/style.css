@@ -1,6 +1,19 @@
 :root {
---mainColor: #ffc400;
---mainBg: #484848;
+    --main-color: #ffc400;
+    --main-bg: #484848;
+}
+
+[data-theme="light"]{
+    --theme-bg: #f5f0e8;
+    --theme-color: #2c2c2c;
+}
+[data-theme="dark"]{
+    --theme-bg: #1a1a2e;
+    --theme-color: #e0e0e0;
+}
+[data-theme="sepia"]{
+    --theme-bg: #f4ecd8;
+    --theme-color: #5b4636;
 }
 
 @font-face {
@@ -34,56 +47,66 @@
     font-style: normal;
 }
 
+.mx-w600{
+    max-width: 600px;
+    margin: 0 auto;
+}
+
 *{box-sizing: border-box;}
 
 html, body{
     height: 100%;
     font-family: Pretendard;
-    background: var(--mainBg); /*가을*/
+    background: var(--main-bg); /*가을*/
     min-width: 280px;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
 }
-body{
+
+[data-role].hidden{
+    display: none;
+}
+.calendar-page{
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    align-items: center;
+    height: 100%;
 }
-body > header{
-    /* background: darkslateblue; */
-    background: var(--mainColor);
+
+.calendar-page > header{
+    background: var(--main-color);
     height: 40px;
-    /* box-shadow: 0 2px 8px var(--mainColor); */
+    width: 100%;
+    /* box-shadow: 0 2px 8px var(--main-color); */
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 10px;
 }
-body > header h1{
+.calendar-page > header h1{
     margin: 0;
     font-size: 20px;
     color: #fff;
     font-weight: 900;
-    /* transform: rotate(-2deg); */
-    /* text-shadow: 0 0 8px rgba(255, 255, 255, .9); */
     display: flex;
     align-items: center;
 }
-body > header h1 img{
+.calendar-page > header h1 img{
     height: 24px;
 }
-body > header button{
+.calendar-page > header button{
     padding: 0;
     background: 0;
     border: 0;
     cursor: pointer;
     transform: rotate(-2deg);
 }
-body > header button img{
+.calendar-page > header button img{
     vertical-align: top;
     height: 30px;
 }
-body > header .hamburger{
+.calendar-page > header .hamburger{
     width: 24px;
     height:18px;
     position: relative;
@@ -95,36 +118,32 @@ body > header .hamburger{
     
     /* animation: loading1 12s infinite linear; */
 }
-body > header .hamburger > span{
+.calendar-page > header .hamburger > span{
     width: 24px;
     height: 2px;
-    background: var(--mainBg);
+    background: var(--main-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
 }
 
-body > header .hamburger > span:nth-of-type(2){
+.calendar-page > header .hamburger > span:nth-of-type(2){
     transform: translateX(-4px);
 }
-/* body > header .hamburger > span:first-of-type{
+/* .calendar-page > header .hamburger > span:first-of-type{
     transform: rotate(60deg);
 }
-body > header .hamburger > span:last-of-type{
+.calendar-page > header .hamburger > span:last-of-type{
     transform: rotate(-60deg);
 } */
-body > main{
+.calendar-page-main{
     display: flex;
     align-items: center;
     flex-direction: column;
     padding: 20px 10px 10px;
-    box-shadow: 0 0px 4px var(--mainBg);
-}
-body > main > *{
+    box-shadow: 0 0px 4px var(--main-bg);
     max-width: 600px;
-}
-main{
     flex: 1;
     padding: 10px 5px;
     overflow-y: auto;
@@ -272,21 +291,23 @@ main{
     margin: 0;
     padding: 0;
 }
-.every-popup .close-btn{
+.close-btn{
     width: 20px;
     height: 20px;
     transform: rotate(46deg);
     position: relative;
     cursor: pointer;
-    position: absolute;
-    top: 0;
-    right: 0;
     background: 0;
     border: 0;
     outline: 0;
 }
-.every-popup .close-btn:before,
-.every-popup .close-btn:after{
+.every-popup .close-btn{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.close-btn:before,
+.close-btn:after{
     content: '';
     width: 20px;
     height: 2px;
@@ -296,7 +317,7 @@ main{
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.every-popup .close-btn:after{
+.close-btn:after{
     transform: translate(-50%, -50%) rotate(90deg);
 }
 .popup-main{
@@ -315,41 +336,50 @@ main{
     justify-content: center;
     height: 36px;
     background: darkslateblue;
-    background: var(--mainColor);
-    color: var(--mainBg);
+    background: var(--main-color);
+    color: var(--main-bg);
     border: 0;
     font-size: 18px;
     cursor: pointer;
     flex: 1;
 }
 
-
-.dim-layer .bible-popup.active{
+.bible-page{
     display: flex;
-}
-
-.dim-layer .bible-popup{
-    width: calc(100% - 10px - 10px);
-    max-width: 600px;
-    max-height: calc(100% - 10px - 10px);
     flex-direction: column;
+    padding: 8px;
+    height: 100%;
+    max-height: none;
+    background: var(--theme-bg);
+    color: var(--theme-color);
 }
-.dim-layer .bible-popup > .popup-main{
-    padding: 10px 0;
+
+.bible-page-main{
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 80px;
 }
-.dim-layer .bible-popup > header{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 10px;
+
+
+.bible-page header{
     border-bottom: 1px solid #111;
 }
-.dim-layer .bible-popup > header > div{
+.bible-page .header-top{
     display: flex;
-    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 5px;
 }
-.dim-layer .bible-popup > header > div button{
-    margin-left: 10px;
+.bible-page .header-top{
+}
+.bible-page .header-bottom{
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 5px;
+}
+.bible-page button{
     cursor: pointer;
     border: 0;
     background: 0;
@@ -357,63 +387,60 @@ main{
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
 }
-.dim-layer .bible-popup > header > div button.hidden{
+
+
+
+.bible-page .header-bottom button{
+    margin-left: 10px;
+    cursor: pointer;
+}
+.bible-page .header-bottom button.hidden{
     display: none;
     pointer-events: none;
 }
-.dim-layer .bible-popup > header > div button *{
+.bible-page > header > div button *{
     vertical-align: top;
 }
-.dim-layer .bible-popup > header > div button img{
-    height: 30px;
+.bible-page > header > div button svg{
+    height: 25px;
+    width: auto;
+    pointer-events: none;
 }
-.dim-layer .bible-popup > header > div button span{
+.bible-page > header > div button span{
     width: 25px;
     height: 25px;
-    border: 3px solid #000;
+    border: 3px solid var(--theme-color);
     border-radius: 50%;
     border-top: 3px solid transparent;
     animation: loading1 1s linear infinite;
 }
 
-.dim-layer .bible-popup > header > div button .cancel-voice-icon,
-.dim-layer .bible-popup > header > div button span{
+.bible-page > header > div button .cancel-mark,
+.bible-page > header > div button span{
     display: none;
 }
-.dim-layer .bible-popup > header > div button[data-status="loading"]{
+.bible-page > header > div button[data-status="loading"]{
     pointer-events: none;
 }
-.dim-layer .bible-popup > header > div button[data-status="loading"] .voice-icon,
-.dim-layer .bible-popup > header > div button[data-status="loading"] .cancel-voice-icon{
+.bible-page > header > div button[data-status="loading"] svg{
     display: none;
 }
-.dim-layer .bible-popup > header > div button[data-status="loading"] span{
+.bible-page > header > div button[data-status="loading"] span{
     display: flex;
 }
-.dim-layer .bible-popup > header > div button[data-status="playing"] .voice-icon,
-.dim-layer .bible-popup > header > div button[data-status="playing"] span{
+.bible-page > header > div button[data-status="playing"] span{
     display: none;
 }
-.dim-layer .bible-popup > header > div button[data-status="playing"] .cancel-voice-icon{
-    display: flex;
+.bible-page > header > div button[data-status="playing"] .cancel-mark{
+    display: block;
 }
 
-.dim-layer .bible-popup ul{
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    text-align: justify;
-    /* word-break: keep-all; */
-}
-
-/* .dim-layer .bible-popup ul li > div p:not(.hidden):nth-of-type(2n){
+/* .bible-page ul li > div p:not(.hidden):nth-of-type(2n){
     opacity: .5;
     margin-top: 2px;
 } */
-.dim-layer .bible-popup ul li > div p.hidden{
+.bible-page ul li > div p.hidden{
     display: none;
 }
 .dim-layer .date-popup .close-btn:before,
@@ -626,13 +653,13 @@ main{
     /* opacity: 1; */
 }
 .calendar table td.clear > div strong{
-    background: var(--mainColor);
+    background: var(--main-color);
     
     /* border-radius: 50%; */
     color: #000;
 }
 .calendar table td.clear > div strong.today{
-    background: linear-gradient(135deg, #fff 10px, var(--mainColor) 0);
+    background: linear-gradient(135deg, #fff 10px, var(--main-color) 0);
     
     /* border-radius: 50%; */
     color: #000;
@@ -643,17 +670,17 @@ main{
 .calendar table td.ing > div strong{
     background: #ffedb3;
     
-    background: linear-gradient(-45deg, var(--mainColor) 50%, transparent 0);
+    background: linear-gradient(-45deg, var(--main-color) 50%, transparent 0);
     color: #fff;
     /* animation: reading1 .2s infinite; */
 }
 .calendar table td.ing > div strong.today{
     
-    background: linear-gradient(-45deg, var(--mainColor) 50%, #fff 0);
+    background: linear-gradient(-45deg, var(--main-color) 50%, #fff 0);
     color: #000;
 }
 .calendar table td.ing > div strong:before{
-    border: 2px solid var(--mainColor);
+    border: 2px solid var(--main-color);
 }
 .calendar table td.ing > div strong.today:before{
     /* border: 2px solid #fff; */
@@ -811,8 +838,8 @@ main{
 }
 .dim-layer .memo-popup textarea:focus{
     /* box-shadow: inset 0 0 2px #00e; */
-    box-shadow: inset 0 0 8px var(--mainColor);
-    /* box-shadow: inset 0 0 8px var(--mainBg); */
+    box-shadow: inset 0 0 8px var(--main-color);
+    /* box-shadow: inset 0 0 8px var(--main-bg); */
 }
 .dim-layer .memo-popup .popup-footer button{
     flex: 1;
@@ -853,8 +880,8 @@ label.checkbox1 input + span{
     box-sizing: border-box;
 }
 label.checkbox1 input:checked + span{
-    box-shadow: inset 0 0 10px var(--mainBg);
-    background: var(--mainBg);
+    box-shadow: inset 0 0 10px var(--main-bg);
+    background: var(--main-bg);
     border: 0;
 }
 label.checkbox1 input:checked + span:after{
@@ -862,8 +889,8 @@ label.checkbox1 input:checked + span:after{
     display: block;
     width: 10px;
     height: 4px;
-    border-left: 2px solid var(--mainColor);
-    border-bottom: 2px solid var(--mainColor);
+    border-left: 2px solid var(--main-color);
+    border-bottom: 2px solid var(--main-color);
     position: relative;
     top: -1px;
     transform: rotate(-45deg);
@@ -884,11 +911,11 @@ label.checkbox1 input:checked + span:after{
     display: none;
     align-items: center;
     justify-content: center;
-    background: var(--mainColor);
+    background: var(--main-color);
     z-index: 3;
 }
 .loading-layer strong{
-    color: var(--mainBg);
+    color: var(--main-bg);
     margin-top: 10px;
 }
 
@@ -909,8 +936,8 @@ canvas{
 }
 
 .bible-script{
-    /* table-layout: auto; */
     width: 100%;
+    border-collapse: collapse;
 }
 .bible-script tr{
     font-size: 20px;
@@ -932,10 +959,6 @@ canvas{
 .bible-script[data-font="26"] tr{font-size: 26px;}
 .bible-script[data-font="27"] tr{font-size: 27px;}
 .bible-script[data-font="28"] tr{font-size: 28px;}
-.bible-script tr.active{
-    color: #fff;
-    text-shadow: 0 0 12px var(--mainColor);
-}
 .bible-script tr th{
     white-space: nowrap;
     vertical-align: top;
@@ -946,15 +969,86 @@ canvas{
     line-height: 1.5;
 }
 
-.btn-font-wrapper{
+.config-wrapper{
+    position: fixed;
+    bottom: 5px;
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px;
+    border-radius: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    width: calc(100% - 10px);
+    box-shadow: 0 0 4px rgba(0, 0, 0, .25);
+}
+.config-wrapper ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
     display: flex;
     align-items: center;
 }
-.btn-font-wrapper .btn-set-font:nth-of-type(1){
-    font-size: 14px;
+
+.theme-wrapper{
+    
 }
-.btn-font-wrapper .btn-set-font:nth-of-type(3){
+.theme-wrapper li + li{
+    margin-left: 4px;
+}
+.theme-wrapper .btn-set-theme{
+    width: 28px;
+    height: 28px;
+    font-size: 0;
+    border-radius: 50%;
+    border: 0;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, .5);
+}
+
+.theme-wrapper .btn-set-theme[data-value="light"]{
+    background: linear-gradient(135deg, #f5f0e8 50%, #2c2c2c 0);
+}
+.theme-wrapper .btn-set-theme[data-value="sepia"]{
+    background: linear-gradient(135deg, #f4ecd8 50%, #5b4636 0);
+}
+.theme-wrapper .btn-set-theme[data-value="dark"]{
+    background: linear-gradient(135deg, #1a1a2e 50%, #e0e0e0 0);
+}
+
+
+.btn-font-wrapper .btn-set-font{
+    border: 1px solid #555;
+    background: 0;
+    height: 32px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #555;
+}
+.btn-font-wrapper li:nth-of-type(1) .btn-set-font{
+    border-radius: 8px 0 0 8px;
+    font-size: 16px;
+}
+.btn-font-wrapper li:nth-of-type(3) .btn-set-font{
+    border-radius: 0 8px 8px 0;
     font-size: 24px;
+}
+
+.read-toggle-wrapper{
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+.read-toggle-wrapper label.checkbox1 input + span{
+    width: 32px;
+    height: 32px;
+}
+.read-toggle-wrapper strong{
+    font-size: 32px;
 }
 
 @media (max-width: 760px){
@@ -966,7 +1060,6 @@ canvas{
         box-sizing: border-box;
         max-width: initial;
         max-height: calc(100% - 50px);
-        background: rgba(255, 255, 255, .75);
         box-shadow: 0 -2px 4px rgba(0, 0, 0, .4);
     }
     .dim-layer .every-popup:before{
@@ -985,7 +1078,7 @@ canvas{
     .dim-layer .every-popup > header{
         justify-content: center;
     }
-    .dim-layer .every-popup .close-btn{
+    .dim-layer .close-btn{
         position: absolute;
         top: 8px;
         right: 8px;

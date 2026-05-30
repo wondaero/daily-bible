@@ -21,7 +21,6 @@ const tts = new TTS();
 
 window.addEventListener('DOMContentLoaded', () => {
     if(!tts.isSupported) document.getElementById('voiceBtn').classList.add('hidden');
-    if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
 
     //폰트사이즈 적용
     const savedFontSize = window.localStorage.getItem('fontSize');
@@ -97,7 +96,7 @@ function openPage(pageId, cb){
     closePopup();
     closePage();
 
-    location.hash = pageId;
+    history.pushState({ type: 'page', id: pageId }, '');
 
     document.getElementById('dimLayer').classList.remove('active');
     document.getElementById(pageId).classList.remove('hidden');
@@ -121,7 +120,7 @@ function closePage(cb){
 function openPopup(popupId, cb){
     closePopup();
 
-    location.hash = popupId;
+    history.pushState({ type: 'popup', id: popupId }, '');
 
     document.getElementById('dimLayer').classList.add('active');
     document.getElementById(popupId).classList.add('active');
@@ -151,7 +150,6 @@ document.querySelectorAll('[data-id="closePageBtn"]').forEach(btn => {
     btn.addEventListener('click', () => {
         history.back();
     });
-    
 })
 
 
@@ -444,6 +442,9 @@ function getCalendar(target, setDate) {
 
     //ui초기화
     calendarTarget.innerHTML = '';
+
+    const memoBtn = document.querySelector('[data-id="memoBtn"]');
+    if(memoBtn) memoBtn.remove();
 
     const dateKr = ['일', '월', '화', '수', '목', '금', '토'];
     const date = setDate ? new Date(setDate.y, setDate.m - 1, setDate.d) : new Date();
@@ -748,8 +749,6 @@ function bibleTemplate(d, org) {
         }
 
         document.getElementById('allChker').checked = isAllChked;
-
-        console.log(333);
 
         indexeddb.query('u', {id: thisDate, dailyChked: chkedData}, {upsert: true});
 
@@ -1151,17 +1150,16 @@ document.addEventListener('visibilitychange', () => {
 
 
 // 해시 변경 감지
-window.addEventListener('hashchange', () => {
-    if(!window.location.hash){
+window.addEventListener('popstate', (e) => {
+    if(e.state === null){
         closePopup();
-
-        //페이지는 임시로...
         closePage(() => {
             document.getElementById('calendarPage').classList.remove('hidden');
         });
+    }else{
+
     }
 });
-
 
 document.getElementById('backupBtn').addEventListener('click', () => {
     const cf = confirm('데이터를 백업하시겠습니까?\n나중에 백업한 데이터를 덮어쓸 수 있습니다.');
@@ -1338,11 +1336,11 @@ document.querySelectorAll('[data-id="setFontSizeBtn"]').forEach((b) => {
             newValue = curValue + btnType;
         }
 
-        if(newValue < 14){
+        if(newValue < 10){
             alert('최소 사이즈입니다.');
             return;
         }
-        if(28 < newValue){
+        if(32 < newValue){
             alert('최대 사이즈입니다.');
             return;
         }

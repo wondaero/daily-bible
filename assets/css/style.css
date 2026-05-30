@@ -83,6 +83,7 @@ html, body{
     align-items: center;
     justify-content: space-between;
     padding: 0 10px;
+    flex-shrink: 0;
 }
 .calendar-page > header h1{
     margin: 0;
@@ -106,46 +107,20 @@ html, body{
     vertical-align: top;
     height: 30px;
 }
-.calendar-page > header .hamburger{
-    width: 24px;
-    height:18px;
-    position: relative;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-direction: column;
-    
-    /* animation: loading1 12s infinite linear; */
-}
-.calendar-page > header .hamburger > span{
-    width: 24px;
-    height: 2px;
-    background: var(--main-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-}
 
-.calendar-page > header .hamburger > span:nth-of-type(2){
-    transform: translateX(-4px);
+.calendar-page-main-wrapper{
+    max-width: 600px;
+    position: relative;
+    flex: 1;
+    min-height: 0;  /* 이거 안주면 height 이상함 */
 }
-/* .calendar-page > header .hamburger > span:first-of-type{
-    transform: rotate(60deg);
-}
-.calendar-page > header .hamburger > span:last-of-type{
-    transform: rotate(-60deg);
-} */
 .calendar-page-main{
+    padding: 10px 5px 60px;
+    height: 100%;
     display: flex;
     align-items: center;
     flex-direction: column;
-    padding: 20px 10px 10px;
     box-shadow: 0 0px 4px var(--main-bg);
-    max-width: 600px;
-    flex: 1;
-    padding: 10px 5px;
     overflow-y: auto;
 }
 
@@ -352,6 +327,8 @@ html, body{
     max-height: none;
     background: var(--theme-bg);
     color: var(--theme-color);
+    position: relative;
+    z-index: 1;
 }
 
 .bible-page-main{
@@ -944,6 +921,10 @@ canvas{
     word-break: break-all;
     text-align: justify;
 }
+.bible-script[data-font="10"] tr{font-size: 10px;}
+.bible-script[data-font="11"] tr{font-size: 11px;}
+.bible-script[data-font="12"] tr{font-size: 12px;}
+.bible-script[data-font="13"] tr{font-size: 13px;}
 .bible-script[data-font="14"] tr{font-size: 14px;}
 .bible-script[data-font="15"] tr{font-size: 15px;}
 .bible-script[data-font="16"] tr{font-size: 16px;}
@@ -959,6 +940,10 @@ canvas{
 .bible-script[data-font="26"] tr{font-size: 26px;}
 .bible-script[data-font="27"] tr{font-size: 27px;}
 .bible-script[data-font="28"] tr{font-size: 28px;}
+.bible-script[data-font="29"] tr{font-size: 29px;}
+.bible-script[data-font="30"] tr{font-size: 30px;}
+.bible-script[data-font="31"] tr{font-size: 31px;}
+.bible-script[data-font="32"] tr{font-size: 32px;}
 .bible-script tr th{
     white-space: nowrap;
     vertical-align: top;
@@ -983,6 +968,9 @@ canvas{
     background: #fff;
     width: calc(100% - 10px);
     box-shadow: 0 0 4px rgba(0, 0, 0, .25);
+
+    /* -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px); */
 }
 .config-wrapper ul{
     margin: 0;
@@ -1031,17 +1019,19 @@ canvas{
 }
 .btn-font-wrapper li:nth-of-type(1) .btn-set-font{
     border-radius: 8px 0 0 8px;
-    font-size: 16px;
+    font-size: 12px;
 }
 .btn-font-wrapper li:nth-of-type(3) .btn-set-font{
     border-radius: 0 8px 8px 0;
-    font-size: 24px;
+    font-size: 28px;
 }
 
 .read-toggle-wrapper{
     display: flex;
     justify-content: center;
     margin-top: 10px;
+    border-top: 1px dashed var(--theme-color);
+    padding-top: 10px;
 }
 .read-toggle-wrapper label.checkbox1 input + span{
     width: 32px;
@@ -1050,6 +1040,53 @@ canvas{
 .read-toggle-wrapper strong{
     font-size: 32px;
 }
+
+
+.menu-wrapper{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--main-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(255, 255, 255, .8);
+}
+.menu-wrapper .hamburger{
+    width: 24px;
+    height: 18px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    
+    /* animation: loading1 12s infinite linear; */
+}
+.menu-wrapper .hamburger > span{
+    width: 24px;
+    height: 2px;
+    background: var(--main-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.menu-wrapper .hamburger > span:nth-of-type(2){
+    transform: translateX(-4px);
+}
+/* .menu-wrapper .hamburger > span:first-of-type{
+    transform: rotate(60deg);
+}
+.menu-wrapper .hamburger > span:last-of-type{
+    transform: rotate(-60deg);
+} */
+
 
 @media (max-width: 760px){
     .dim-layer .every-popup{

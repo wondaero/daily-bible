@@ -43,38 +43,41 @@
             <!-- <button id="shareBtn" class="share-btn">
                 <img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_small.png" alt="카카오톡 공유 보내기 버튼" />
             </button> -->
-    
-    
-            <div id="hamburger" class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
         </header>
-        <div id="calendarPageMain" class="calendar-page-main">
-            <article class="calendar-section">
-                <header>
-                    <div>
-                        <button id="prevMonthBtn" class="prev-month-btn move-month-btn"></button>
-                        <div id="yearSelection" class="year-selection">
-                            <div id="yearInput" class="year-input"></div>
+        <div class="calendar-page-main-wrapper">
+            <div id="calendarPageMain" class="calendar-page-main">
+                <article class="calendar-section">
+                    <header>
+                        <div>
+                            <button id="prevMonthBtn" class="prev-month-btn move-month-btn"></button>
+                            <div id="yearSelection" class="year-selection">
+                                <div id="yearInput" class="year-input"></div>
+                            </div>
+                            <button id="nextMonthBtn" class="next-month-btn move-month-btn"></button>
                         </div>
-                        <button id="nextMonthBtn" class="next-month-btn move-month-btn"></button>
-                    </div>
-                    <div class="today-btn-wrapper"><button id="todayBtn">오늘</button></div>
-                </header>
-                <div id="calendar" class="calendar"></div>
-            </article>
-            <article id="bibleSection" class="bible-section">
-                <header>
-                    <label class="checkbox1">
-                        <input type="checkbox" id="allChker" />
-                        <span></span>
-                        <strong>전체</strong>
-                    </label>
-                </header>
-                <ul id="bibleList" class="bible-list"></ul>
-            </article>
+                        <div class="today-btn-wrapper"><button id="todayBtn">오늘</button></div>
+                    </header>
+                    <div id="calendar" class="calendar"></div>
+                </article>
+                <article id="bibleSection" class="bible-section">
+                    <header>
+                        <label class="checkbox1">
+                            <input type="checkbox" id="allChker" />
+                            <span></span>
+                            <strong>전체</strong>
+                        </label>
+                    </header>
+                    <ul id="bibleList" class="bible-list"></ul>
+                </article>
+            </div>
+
+            <aside class="menu-wrapper">
+                <div id="hamburger" class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </aside>
         </div>
     </section>
 

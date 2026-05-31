@@ -26,7 +26,8 @@ body[data-theme] .read-toggle-wrapper label.checkbox1 input:checked + span:after
     border-left: 3px solid var(--theme-bg);
     border-bottom: 3px solid var(--theme-bg);
 }
-body[data-theme] .bible-script tr.active{
+body[data-theme] .bible-script tr.active,
+body[data-theme] .bible-script tr[data-selected="true"]{
     background:var(--theme-color);
     color:var(--theme-bg);
 }

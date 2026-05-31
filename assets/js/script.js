@@ -20,6 +20,8 @@ const tts = new TTS();
 // getData();
 
 window.addEventListener('DOMContentLoaded', () => {
+    history.replaceState(null, '');
+
     if(!tts.isSupported) document.getElementById('voiceBtn').classList.add('hidden');
 
     //폰트사이즈 적용
@@ -349,6 +351,7 @@ const textarea = document.querySelector('#memoPopup textarea');
 const regMemoBtn = document.getElementById('regMemoBtn');
 const regSection = document.getElementById('regSection');
 const modOnBtn = document.getElementById('modOnBtn');
+const bibleScriptTag = document.getElementById('bibleScript');
 
 
 modOnBtn.addEventListener('click', () => {
@@ -700,6 +703,8 @@ function getCalendar(target, setDate) {
     document.getElementById('allChker').checked = false;
 }
 
+const selectControl = new SelectControl();
+
 function bibleTemplate(d, org) {
     const li = document.createElement('li');
     li.innerHTML = `
@@ -795,8 +800,8 @@ function bibleTemplate(d, org) {
         
         document.getElementById('bibleName').textContent = parseBook(d);
     
-        document.getElementById('bibleScript').innerHTML = '';
-        document.getElementById('bibleScript').scrollTop = 0;
+        bibleScriptTag.innerHTML = '';
+        bibleScriptTag.scrollTop = 0;
 
         tts.initData();
 
@@ -824,12 +829,145 @@ function bibleTemplate(d, org) {
             tts.pushArray(tts.createSpeechUtterance(dd.VerseNo, dd.BibleScript));
         });
 
+        selectControl.scripts = bibleScriptTag.querySelectorAll('tr');
+        selectControl.init();
+
     
         if(tts.preparedUtterances.length) document.getElementById('voiceBtn').dataset.status = 'normal';
     })
 
     return li;
 }
+
+function SelectControl(){
+    const $t = this;
+    $t.currDir = 0;   //0: 앞, 1: 뒤
+    $t.scripts = null;
+    $t.selectedPopup = document.getElementById('selectedPopup');
+    $t.configWrapper = document.getElementById('configWrapper');
+
+    // 기존
+    $t.handle = (idx) => {
+        if(idx === undefined){
+            $t.scripts.forEach(el => {
+                el.removeAttribute('data-selected');
+            })
+
+            $t.togglePopup(false);
+            return;
+        }
+
+        const oldSelected = bibleScriptTag.querySelectorAll('[data-selected="true"]');
+        const newSelect = $t.scripts[idx];
+        const newIdx = newSelect.rowIndex;
+
+        if(!oldSelected.length){
+            newSelect.dataset.selected = true;
+            $t.togglePopup(true);
+            return;
+        }
+
+        const oldIdx1 = oldSelected[0].rowIndex;
+
+        if(oldSelected.length === 1){
+            if(oldIdx1 === newIdx){
+                oldSelected[0].removeAttribute('data-selected');
+                $t.currDir = 0;
+
+                $t.togglePopup(false);
+                return;
+            }
+            
+            const from = Math.min(oldIdx1, newIdx);
+            const to = Math.max(oldIdx1, newIdx);
+            
+            $t.scripts.forEach((el, i) => {
+                if(from <= i && i <= to) el.dataset.selected = true;
+            });
+            $t.currDir = oldIdx1 < newIdx ? 1 : 0;
+            $t.togglePopup(true);
+
+        }else{
+            const oldIdx2 = oldSelected[oldSelected.length - 1].rowIndex;
+            
+            if(newIdx < oldIdx1){
+                $t.scripts.forEach((el, i) => {
+                    if(newIdx <= i && i <= oldIdx1) el.dataset.selected = true;
+                });
+                $t.currDir = 0;
+
+            }else if(oldIdx2 < newIdx){
+                $t.scripts.forEach((el, i) => {
+                    if(oldIdx2 <= i && i <= newIdx) el.dataset.selected = true;
+                });
+                $t.currDir = 1;
+
+            }else{
+                $t.scripts.forEach((el, i) => {
+                    const ifCase = $t.currDir ? newIdx < i : i < newIdx;
+                    if(ifCase) el.removeAttribute('data-selected');
+                });
+
+            }
+            $t.togglePopup(true);
+        }
+    }
+
+    $t.init = () => {
+        $t.togglePopup(false);
+    }
+
+    $t.togglePopup = (bool, cb) => {
+        $t.selectedPopup.classList.toggle('active', bool);
+        $t.configWrapper.classList.toggle('hidden', bool);
+
+        if(typeof cb === 'function') cb();
+    }
+
+    const btnFnc = {
+        verseMemoBtn: () => {
+            alert('준비중입니다.');
+        },
+        colorPenBtn: () => {
+            alert('준비중입니다.');
+        },
+        copyVerseBtn: () => {
+            alert('준비중입니다.');
+        },
+        cancelSelecteBtn: () => {
+            $t.handle();
+        }
+    };
+
+    (function constructor(){
+        $t.init();
+
+        $t.selectedPopup.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+
+            if(!btn) return;
+
+            const fnc = btnFnc[btn.id];
+
+            if(typeof fnc === 'function') fnc();
+        });
+    })();
+}
+
+
+
+bibleScriptTag.addEventListener('click', (e) => {
+    const target = e.target.closest('tr');
+    if(!target) return;
+    
+    selectControl.handle(target.rowIndex);
+})
+
+
+
+
+
+
 
 document.getElementById('allChker').addEventListener('change', e => {
     const inps = document.querySelectorAll('#bibleList input');
@@ -1148,15 +1286,19 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-
-// 해시 변경 감지
 window.addEventListener('popstate', (e) => {
+    console.log(e.state);
     if(e.state === null){
         closePopup();
         closePage(() => {
             document.getElementById('calendarPage').classList.remove('hidden');
         });
-    }else{
+    } else if(e.state.type === 'page'){
+        closePopup();
+        closePage(() => {
+            document.getElementById('calendarPage').classList.remove('hidden');
+        });
+    } else{
 
     }
 });

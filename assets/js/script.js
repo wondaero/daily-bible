@@ -806,13 +806,23 @@ function bibleTemplate(d, org) {
         tts.initData();
 
         thisBible.forEach((dd, idx) => {
-            const tr = document.createElement('tr');
-            tr.dataset.verseNo = dd.VerseNo;
-            tr.innerHTML = `
-                <th>${dd.VerseNo}</th>
-                <td class="">${dd.BibleScript}</td>
+            // const tr = document.createElement('tr');
+            // tr.dataset.verseNo = dd.VerseNo;
+            // tr.innerHTML = `
+            //     <th>${dd.VerseNo}</th>
+            //     <td class="">${dd.BibleScript}</td>
+            // `;
+            const div = document.createElement('div');
+            div.dataset.verseNo = dd.VerseNo;
+            div.dataset.idx = idx;
+
+            div.innerHTML = `
+                <div class="verse-wrapper" data-id="verseWrapper">
+                    <div class="verse-no">${dd.VerseNo}</div>
+                    <div data-id="bibleScript">${dd.BibleScript}</div>
+                </div>
             `;
-            document.getElementById('bibleScript').appendChild(tr);
+            bibleScriptTag.appendChild(div);
 
 
             // const li = document.createElement('li');
@@ -829,7 +839,7 @@ function bibleTemplate(d, org) {
             tts.pushArray(tts.createSpeechUtterance(dd.VerseNo, dd.BibleScript));
         });
 
-        selectControl.scripts = bibleScriptTag.querySelectorAll('tr');
+        selectControl.scripts = bibleScriptTag.querySelectorAll('[data-verse-no]');
         selectControl.init();
 
     
@@ -859,7 +869,7 @@ function SelectControl(){
 
         const oldSelected = bibleScriptTag.querySelectorAll('[data-selected="true"]');
         const newSelect = $t.scripts[idx];
-        const newIdx = newSelect.rowIndex;
+        const newIdx = +newSelect.dataset.idx;
 
         if(!oldSelected.length){
             newSelect.dataset.selected = true;
@@ -867,7 +877,7 @@ function SelectControl(){
             return;
         }
 
-        const oldIdx1 = oldSelected[0].rowIndex;
+        const oldIdx1 = +oldSelected[0].dataset.idx;
 
         if(oldSelected.length === 1){
             if(oldIdx1 === newIdx){
@@ -888,7 +898,7 @@ function SelectControl(){
             $t.togglePopup(true);
 
         }else{
-            const oldIdx2 = oldSelected[oldSelected.length - 1].rowIndex;
+            const oldIdx2 = +oldSelected[oldSelected.length - 1].dataset.idx;
             
             if(newIdx < oldIdx1){
                 $t.scripts.forEach((el, i) => {
@@ -932,7 +942,19 @@ function SelectControl(){
             alert('준비중입니다.');
         },
         copyVerseBtn: () => {
-            alert('준비중입니다.');
+            const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
+            const len = selectedScript.length;
+            const bibleInfo = document.getElementById('bibleName').textContent.replace(/[장편 ]/g, '');
+            const verseInfo = selectedScript[0].dataset.verseNo + (len > 2 ? `-${String(selectedScript[len - 1].dataset.verseNo)}` : '');
+            let txt = `[${bibleInfo}:${verseInfo}]`;
+
+            selectedScript.forEach((el) => {
+                txt += '\n' + el.dataset.verseNo + ' ' + el.querySelector('[data-id="bibleScript"]').textContent.trim();
+            })
+
+            navigator.clipboard.writeText(txt)
+            .then(() => alert('복사했습니다'))
+            .catch(err => console.error(err));
         },
         cancelSelecteBtn: () => {
             $t.handle();
@@ -957,10 +979,10 @@ function SelectControl(){
 
 
 bibleScriptTag.addEventListener('click', (e) => {
-    const target = e.target.closest('tr');
+    const target = e.target.closest('[data-id="verseWrapper"]');
     if(!target) return;
     
-    selectControl.handle(target.rowIndex);
+    selectControl.handle(+target.closest('[data-verse-no]').dataset.idx);
 })
 
 
@@ -1287,7 +1309,6 @@ document.addEventListener('visibilitychange', () => {
 });
 
 window.addEventListener('popstate', (e) => {
-    console.log(e.state);
     if(e.state === null){
         closePopup();
         closePage(() => {

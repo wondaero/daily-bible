@@ -361,6 +361,7 @@ html, body{
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--main-bg);
 }
 
 
@@ -909,15 +910,17 @@ canvas{
     opacity: 0;
 }
 
-.bible-script{
-    width: 100%;
-    border-collapse: collapse;
-}
-.bible-script tr{
+.bible-script > div{
     font-size: 20px;
     word-break: break-all;
     text-align: justify;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--theme-color);
 }
+.bible-script .verse-no{
+    margin-bottom: 5px;
+}
+
 .bible-script[data-font="10"] tr{font-size: 10px;}
 .bible-script[data-font="11"] tr{font-size: 11px;}
 .bible-script[data-font="12"] tr{font-size: 12px;}
@@ -1030,9 +1033,9 @@ canvas{
 .read-toggle-wrapper{
     display: flex;
     justify-content: center;
-    margin-top: 10px;
-    border-top: 1px dashed var(--theme-color);
-    padding-top: 10px;
+    margin-top: 20px;
+    /* border-top: 1px dashed var(--theme-color);
+    padding-top: 10px; */
 }
 .read-toggle-wrapper label.checkbox1 input + span{
     width: 32px;

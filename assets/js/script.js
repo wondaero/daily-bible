@@ -845,7 +845,7 @@ function bibleTemplate(d, org) {
             div.innerHTML = `
                 <div class="verse-wrapper" data-id="verseWrapper">
                     <div class="verse-no">${dd.VerseNo}</div>
-                    <div data-id="bibleScript">${dd.BibleScript}</div>
+                    <div data-id="bibleScript"><span>${dd.BibleScript}</span></div>
                 </div>
             `;
             bibleScriptTag.appendChild(div);

@@ -358,9 +358,6 @@ html, body{
     border: 0;
     background: 0;
     padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     color: var(--main-bg);
 }
 
@@ -1108,6 +1105,11 @@ canvas{
     cursor: pointer;
 }
 .selected-popup button{
+    width: 50px;
+}
+.selected-popup button span{
+    display: block;
+    margin-top: 5px;
 }
 /* .menu-wrapper .hamburger > span:first-of-type{
     transform: rotate(60deg);

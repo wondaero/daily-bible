@@ -738,7 +738,7 @@ function bibleTemplate(d, org) {
                 <span></span>
                 <strong class="bible-range">${parseBook(d)}</strong>
             </label>
-            <button>보기</button>
+            <button class="flex-center">보기</button>
         </div>
     `;
 
@@ -881,6 +881,7 @@ function SelectControl(){
     $t.scripts = null;
     $t.selectedPopup = document.getElementById('selectedPopup');
     $t.configWrapper = document.getElementById('configWrapper');
+    $t.colorPopup = document.getElementById('colorPopup');
 
     // 기존
     $t.handle = (idx) => {
@@ -889,7 +890,7 @@ function SelectControl(){
                 el.removeAttribute('data-selected');
             })
 
-            $t.togglePopup(false);
+            $t.toggleSelectPopup(false);
             return;
         }
 
@@ -899,7 +900,7 @@ function SelectControl(){
 
         if(!oldSelected.length){
             newSelect.dataset.selected = true;
-            $t.togglePopup(true);
+            $t.toggleSelectPopup(true);
             return;
         }
 
@@ -910,7 +911,7 @@ function SelectControl(){
                 oldSelected[0].removeAttribute('data-selected');
                 $t.currDir = 0;
 
-                $t.togglePopup(false);
+                $t.toggleSelectPopup(false);
                 return;
             }
             
@@ -921,7 +922,7 @@ function SelectControl(){
                 if(from <= i && i <= to) el.dataset.selected = true;
             });
             $t.currDir = oldIdx1 < newIdx ? 1 : 0;
-            $t.togglePopup(true);
+            $t.toggleSelectPopup(true);
 
         }else{
             const oldIdx2 = +oldSelected[oldSelected.length - 1].dataset.idx;
@@ -945,19 +946,25 @@ function SelectControl(){
                 });
 
             }
-            $t.togglePopup(true);
+            $t.toggleSelectPopup(true);
         }
     }
 
     $t.init = () => {
-        $t.togglePopup(false);
+        $t.toggleSelectPopup(false);
     }
 
-    $t.togglePopup = (bool, cb) => {
+    $t.toggleSelectPopup = (bool, cb) => {
         $t.selectedPopup.classList.toggle('active', bool);
         $t.configWrapper.classList.toggle('hidden', bool);
 
         if(typeof cb === 'function') cb();
+    }
+
+    $t.toggleColorPopup = (bool, cb) => {
+        alert('준비중입니다.');
+        return;
+        $t.colorPopup.classList.toggle('active', bool);
     }
 
     const btnFnc = {
@@ -965,7 +972,8 @@ function SelectControl(){
             alert('준비중입니다.');
         },
         colorPenBtn: () => {
-            alert('준비중입니다.');
+            $t.toggleColorPopup(true);
+            
         },
         copyVerseBtn: () => {
             const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
@@ -990,7 +998,7 @@ function SelectControl(){
     (function constructor(){
         $t.init();
 
-        $t.selectedPopup.addEventListener('click', (e) => {
+        $t.selectedPopup.addEventListener('click', e => {
             const btn = e.target.closest('button');
 
             if(!btn) return;
@@ -999,6 +1007,18 @@ function SelectControl(){
 
             if(typeof fnc === 'function') fnc();
         });
+
+        $t.colorPopup.addEventListener('click', e => {
+            const btn = e.target.closest('[data-color]');
+
+            if(!btn) return;
+
+            const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
+            selectedScript.forEach(el => {
+                el.querySelector('[data-id="bibleScript"] span').dataset.newColor = btn.dataset.color;
+            })
+
+        })
     })();
 }
 

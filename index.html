@@ -47,15 +47,15 @@
         <div class="calendar-page-main-wrapper">
             <div id="calendarPageMain" class="calendar-page-main">
                 <article class="calendar-section">
-                    <header>
-                        <div>
-                            <button id="prevMonthBtn" class="prev-month-btn move-month-btn"></button>
+                    <header class="flex-center">
+                        <div class="flex-center">
+                            <button id="prevMonthBtn" class="prev-month-btn move-month-btn flex-center"></button>
                             <div id="yearSelection" class="year-selection">
-                                <div id="yearInput" class="year-input"></div>
+                                <div id="yearInput" class="year-input flex-center"></div>
                             </div>
-                            <button id="nextMonthBtn" class="next-month-btn move-month-btn"></button>
+                            <button id="nextMonthBtn" class="next-month-btn move-month-btn flex-center"></button>
                         </div>
-                        <div class="today-btn-wrapper"><button id="todayBtn">오늘</button></div>
+                        <div class="today-btn-wrapper flex-center"><button id="todayBtn" class="flex-center">오늘</button></div>
                     </header>
                     <div id="calendar" class="calendar"></div>
                 </article>
@@ -71,7 +71,7 @@
                 </article>
             </div>
 
-            <aside class="menu-wrapper">
+            <aside class="menu-wrapper flex-center">
                 <div id="hamburger" class="hamburger">
                     <span></span>
                     <span></span>
@@ -83,7 +83,7 @@
 
     <section id="biblePage" data-role="page" class="bible-page hidden">
         <header>
-            <div class="header-left">
+            <div class="header-left flex-center">
                 <strong id="bibleName"></strong>
                 <button id="voiceBtn" data-status="loading">
                     <svg width="1143" height="1230" viewBox="0 0 1143 1230" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -124,18 +124,31 @@
                 <li><button class="btn-set-theme" data-id="setThemeBtn" data-value="dark">dark</button></li>
             </ul>
             <ul class="btn-font-wrapper">
-                <li><button class="btn-set-font" data-id="setFontSizeBtn" data-value="-1">가</button></li>
-                <li><button class="btn-set-font" data-id="setFontSizeBtn" data-value="0">가</button></li>
-                <li><button class="btn-set-font" data-id="setFontSizeBtn" data-value="1">가</button></li>
+                <li><button class="btn-set-font flex-center" data-id="setFontSizeBtn" data-value="-1">가</button></li>
+                <li><button class="btn-set-font flex-center" data-id="setFontSizeBtn" data-value="0">가</button></li>
+                <li><button class="btn-set-font flex-center" data-id="setFontSizeBtn" data-value="1">가</button></li>
             </ul>
         </aside>
-        <aside id="selectedPopup" class="selected-popup">
+        <aside id="selectedPopup" class="bible-page-common-popup selected-popup">
             <div class="btns mx-w600">
                 <button id="verseMemoBtn">📝<span>메모</span></button>
                 <button id="colorPenBtn">🖍️<span>형광펜</span></button>
                 <button id="copyVerseBtn">📋<span>복사</span></button>
                 <button id="cancelSelecteBtn">❌<span>취소</span></button>
-                
+            </div>
+        </aside>
+        <aside id="colorPopup" class="bible-page-common-popup color-popup">
+            <div class="btns mx-w600">
+                <button data-color="yellow"></button>
+                <button data-color="green"></button>
+                <button data-color="blue"></button>
+                <button data-color="pink"></button>
+                <button data-color="orange"></button>
+                <button data-color="none" class="flex-center"></button>
+            </div>
+            <div class="flex-center bottom-btns">
+                <button class="flex-center">취소</button>
+                <button class="flex-center">적용</button>
             </div>
         </aside>
     </section>
@@ -166,8 +179,8 @@
                     <strong>월</strong>
                 </div>
             </div>
-            <div class="popup-footer">
-                <button id="applyDateBtn">적용</button>
+            <div class="popup-footer flex-center">
+                <button id="applyDateBtn" class="flex-center">적용</button>
             </div>
         </div>
         <div id="memoPopup" class="memo-popup every-popup">
@@ -176,12 +189,12 @@
             <div class="popup-main">
                 <textarea></textarea>
             </div>
-            <div class="popup-footer">
+            <div class="popup-footer flex-center">
                 <div id="regSection">
-                    <button id="initMemoBtn" class="popup-btn-v2">취소</button>
-                    <button id="regMemoBtn">저장</button>
+                    <button id="initMemoBtn" class="flex-center popup-btn-v2">취소</button>
+                    <button id="regMemoBtn" class="flex-center">저장</button>
                 </div>
-                <button id="modOnBtn">편집</button>
+                <button id="modOnBtn" class="flex-center">편집</button>
             </div>
         </div>
         <div id="menuPopup" class="menu-popup every-popup">

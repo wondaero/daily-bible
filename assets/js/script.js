@@ -968,7 +968,6 @@ function SelectControl(){
             alert('준비중입니다.');
         },
         copyVerseBtn: () => {
-            console.log(bibleName);
             const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
             const len = selectedScript.length;
             const bibleInfo = bibleName.dataset.mnName;

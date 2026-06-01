@@ -921,29 +921,29 @@ canvas{
     margin-bottom: 5px;
 }
 
-.bible-script[data-font="10"] tr{font-size: 10px;}
-.bible-script[data-font="11"] tr{font-size: 11px;}
-.bible-script[data-font="12"] tr{font-size: 12px;}
-.bible-script[data-font="13"] tr{font-size: 13px;}
-.bible-script[data-font="14"] tr{font-size: 14px;}
-.bible-script[data-font="15"] tr{font-size: 15px;}
-.bible-script[data-font="16"] tr{font-size: 16px;}
-.bible-script[data-font="17"] tr{font-size: 17px;}
-.bible-script[data-font="18"] tr{font-size: 18px;}
-.bible-script[data-font="19"] tr{font-size: 19px;}
-.bible-script[data-font="20"] tr{font-size: 20px;}
-.bible-script[data-font="21"] tr{font-size: 21px;}
-.bible-script[data-font="22"] tr{font-size: 22px;}
-.bible-script[data-font="23"] tr{font-size: 23px;}
-.bible-script[data-font="24"] tr{font-size: 24px;}
-.bible-script[data-font="25"] tr{font-size: 25px;}
-.bible-script[data-font="26"] tr{font-size: 26px;}
-.bible-script[data-font="27"] tr{font-size: 27px;}
-.bible-script[data-font="28"] tr{font-size: 28px;}
-.bible-script[data-font="29"] tr{font-size: 29px;}
-.bible-script[data-font="30"] tr{font-size: 30px;}
-.bible-script[data-font="31"] tr{font-size: 31px;}
-.bible-script[data-font="32"] tr{font-size: 32px;}
+.bible-script[data-font="10"] [data-verse-no]{font-size: 10px;}
+.bible-script[data-font="11"] [data-verse-no]{font-size: 11px;}
+.bible-script[data-font="12"] [data-verse-no]{font-size: 12px;}
+.bible-script[data-font="13"] [data-verse-no]{font-size: 13px;}
+.bible-script[data-font="14"] [data-verse-no]{font-size: 14px;}
+.bible-script[data-font="15"] [data-verse-no]{font-size: 15px;}
+.bible-script[data-font="16"] [data-verse-no]{font-size: 16px;}
+.bible-script[data-font="17"] [data-verse-no]{font-size: 17px;}
+.bible-script[data-font="18"] [data-verse-no]{font-size: 18px;}
+.bible-script[data-font="19"] [data-verse-no]{font-size: 19px;}
+.bible-script[data-font="20"] [data-verse-no]{font-size: 20px;}
+.bible-script[data-font="21"] [data-verse-no]{font-size: 21px;}
+.bible-script[data-font="22"] [data-verse-no]{font-size: 22px;}
+.bible-script[data-font="23"] [data-verse-no]{font-size: 23px;}
+.bible-script[data-font="24"] [data-verse-no]{font-size: 24px;}
+.bible-script[data-font="25"] [data-verse-no]{font-size: 25px;}
+.bible-script[data-font="26"] [data-verse-no]{font-size: 26px;}
+.bible-script[data-font="27"] [data-verse-no]{font-size: 27px;}
+.bible-script[data-font="28"] [data-verse-no]{font-size: 28px;}
+.bible-script[data-font="29"] [data-verse-no]{font-size: 29px;}
+.bible-script[data-font="30"] [data-verse-no]{font-size: 30px;}
+.bible-script[data-font="31"] [data-verse-no]{font-size: 31px;}
+.bible-script[data-font="32"] [data-verse-no]{font-size: 32px;}
 .bible-script tr th{
     white-space: nowrap;
     vertical-align: top;

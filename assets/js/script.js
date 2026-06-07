@@ -67,23 +67,23 @@ const tts = new TTS();
 window.addEventListener('DOMContentLoaded', () => {
     history.replaceState(null, '');
 
-    if(!tts.isSupported) document.getElementById('voiceBtn').classList.add('hidden');
+    if (!tts.isSupported) document.getElementById('voiceBtn').classList.add('hidden');
 
     //폰트사이즈 적용
     const savedFontSize = window.localStorage.getItem('fontSize');
-    if(savedFontSize) setFontUI(+savedFontSize);
-    
+    if (savedFontSize) setFontUI(+savedFontSize);
+
     //테마 적용
     const savedTheme = window.localStorage.getItem('theme');
-    if(savedTheme) document.body.dataset.theme = savedTheme;
+    if (savedTheme) document.body.dataset.theme = savedTheme;
 });
 
-async function getData(){
+async function getData() {
 
     const res1 = await fetch('data/개역한글.json');
     if (!res1.ok) throw new Error('Network response was not ok');
     bibleMap = parseBible2Data(await res1.json());
-    
+
     const res2 = await fetch('data/개역개정.json');
     if (!res2.ok) throw new Error('Network response was not ok');
     bible2Map = parseBible2Data(await res2.json());
@@ -113,11 +113,11 @@ async function getData(){
 //     event.returnValue = ''; // 브라우저에 따라 다를 수 있음
 // });
 
-function getRandomInt(mn, mx){
+function getRandomInt(mn, mx) {
     return Math.floor(Math.random() * (mx - mn + 1)) + mn;
 }
 
-function openPage(pageId, cb){
+function openPage(pageId, cb) {
     closePopup();
     closePage();
 
@@ -126,9 +126,9 @@ function openPage(pageId, cb){
     document.getElementById('dimLayer').classList.remove('active');
     document.getElementById(pageId).classList.remove('hidden');
 
-    if(cb && typeof cb === 'function') cb();
+    if (cb && typeof cb === 'function') cb();
 }
-function closePage(cb){
+function closePage(cb) {
     tts.stopTTS();
 
     document.querySelectorAll('[data-role="page"]').forEach(p => {
@@ -139,10 +139,10 @@ function closePage(cb){
 
     document.getElementById('dimLayer').classList.remove('active');
 
-    if(cb && typeof cb === 'function') cb();
+    if (cb && typeof cb === 'function') cb();
 }
 
-function openPopup(popupId, cb){
+function openPopup(popupId, cb) {
     closePopup();
 
     history.pushState({ type: 'popup', id: popupId }, '');
@@ -150,17 +150,17 @@ function openPopup(popupId, cb){
     document.getElementById('dimLayer').classList.add('active');
     document.getElementById(popupId).classList.add('active');
 
-    if(cb && typeof cb === 'function') cb();
+    if (cb && typeof cb === 'function') cb();
 }
 
-function closePopup(cb){
+function closePopup(cb) {
     tts.stopTTS();
     document.querySelectorAll('[data-verse-no]').forEach((v) => {
         v.classList.remove('active');
     })
 
     // document.getElementById('voiceBtn').dataset.status = 'normal';
-    if(tts.preparedUtterances.length) document.getElementById('voiceBtn').dataset.status = 'normal';
+    if (tts.preparedUtterances.length) document.getElementById('voiceBtn').dataset.status = 'normal';
 
 
     document.getElementById('dimLayer').classList.remove('active');
@@ -168,7 +168,7 @@ function closePopup(cb){
         p.classList.remove('active');
     })
 
-    if(cb && typeof cb === 'function') cb();
+    if (cb && typeof cb === 'function') cb();
 }
 
 document.querySelectorAll('[data-id="closePageBtn"]').forEach(btn => {
@@ -179,7 +179,7 @@ document.querySelectorAll('[data-id="closePageBtn"]').forEach(btn => {
 
 
 document.getElementById('dimLayer').addEventListener('click', e => {
-    if(e.target === e.currentTarget) history.back();
+    if (e.target === e.currentTarget) history.back();
 })
 
 document.querySelectorAll('[data-id="closePopupBtn"]').forEach(btn => {
@@ -192,7 +192,7 @@ document.getElementById('todayBtn').addEventListener('click', () => {
     getCalendar('#calendar');
 })
 
-function addListItemClick(li, targets){
+function addListItemClick(li, targets) {
     li.addEventListener('click', e => {
         const lis2 = document.querySelectorAll(targets);
         const targetLi = e.currentTarget;
@@ -223,7 +223,7 @@ document.getElementById('yearInput').addEventListener('click', (e) => {
         const thisYear = +e.currentTarget.querySelector('span').textContent;
         li.textContent = thisYear - 50 + i;
 
-        if(i === 50) li.classList.add('active');
+        if (i === 50) li.classList.add('active');
 
         addListItemClick(li, '#yearList li');
 
@@ -236,7 +236,7 @@ document.getElementById('yearInput').addEventListener('click', (e) => {
 
     monthList.querySelectorAll('li').forEach((li, idx) => {
         li.classList.remove('active');
-        if(+li.textContent === +e.currentTarget.querySelector('strong').textContent){
+        if (+li.textContent === +e.currentTarget.querySelector('strong').textContent) {
             li.classList.add('active');
             monthList.scrollTop = 30 * (idx - 1);
         }
@@ -247,7 +247,7 @@ document.getElementById('yearList').addEventListener('scroll', e => {
     const currScroll = e.currentTarget.scrollTop;
 
     const case1 = currScroll < 1 ? 1 : currScroll + e.currentTarget.clientHeight + 1 > e.currentTarget.scrollHeight ? 2 : 0;
-    if(case1 === 0) return;
+    if (case1 === 0) return;
 
     const lis = e.currentTarget.querySelectorAll('li');
     const mnYear = lis[0].textContent;
@@ -338,7 +338,7 @@ document.getElementById('hamburger').addEventListener('click', () => {
     //     btn.dataset.year = thisYear;
     // });
     openPopup('menuPopup', () => {
-        
+
     });
 })
 
@@ -347,7 +347,7 @@ document.getElementById('hamburger').addEventListener('click', () => {
 //     bt.addEventListener('change', (e) => {
 //         const val = e.target.value;
 //         const isChked = e.target.checked;
-        
+
 //         bibleType[val] = isChked;
 
 //         let anyChked = isChked;
@@ -393,18 +393,18 @@ initMemoBtn.addEventListener('click', () => {
 
 regMemoBtn.addEventListener('click', () => {
     const thisDate2 = document.getElementById('bibleList').dataset.date;
-    indexeddb.query('u', {id: thisDate2, memo: textarea.value}, {
+    indexeddb.query('u', { id: thisDate2, memo: textarea.value }, {
         upsert: true,
         success: () => {
             history.back();
-            
+
             const targetTd = document.querySelector(`#calendar [data-date="${thisDate2.split('_')[2]}"]`);
             const memoBtn = document.querySelector('[data-id="memoBtn"]');
 
-            if(textarea.value !== ''){
+            if (textarea.value !== '') {
                 memoBtn.classList.add('has-memo');
                 targetTd.classList.add('has-memo');
-            }else{
+            } else {
                 memoBtn.classList.remove('has-memo');
                 targetTd.classList.remove('has-memo');
             }
@@ -437,9 +437,9 @@ function parseBook(txt) {
                 finalTxt += book[1].split(':')[0] + (+book[0] === 19 ? '편' : '장');
                 if (book[1].indexOf('~') > -1) {
                     const verses = book[1].split('~');
-                    if(verses[0].split(':')[1] === verses[1]){
+                    if (verses[0].split(':')[1] === verses[1]) {
                         finalTxt += ' ' + verses[1] + '절';
-                    }else{
+                    } else {
                         finalTxt += ' ' + verses[0].split(':')[1] + '~' + verses[1] + '절';
                     }
                 }
@@ -471,7 +471,7 @@ function getCalendar(target, setDate) {
     calendarTarget.innerHTML = '';
 
     const memoBtn = document.querySelector('[data-id="memoBtn"]');
-    if(memoBtn) memoBtn.remove();
+    if (memoBtn) memoBtn.remove();
 
     const dateKr = ['일', '월', '화', '수', '목', '금', '토'];
     const date = setDate ? new Date(setDate.y, setDate.m - 1, setDate.d) : new Date();
@@ -528,7 +528,7 @@ function getCalendar(target, setDate) {
         blockTarget.addEventListener('click', e => {
             cancelAnimationFrame(raf);
             const oldSnow = document.querySelector('[data-effect="snow"]');
-            if(oldSnow) oldSnow.remove();
+            if (oldSnow) oldSnow.remove();
 
             const allBlock = document.querySelectorAll('[data-block-idx]');
 
@@ -542,7 +542,7 @@ function getCalendar(target, setDate) {
             const nowData = dailyData.filter(d => d.month === thisMonth && d.day === thisDate);
 
             const oldBibleList = document.getElementById('bibleList');
-            if(oldBibleList) oldBibleList.remove();
+            if (oldBibleList) oldBibleList.remove();
 
             const bibleListTag = document.createElement('ul');
             bibleListTag.id = 'bibleList';
@@ -584,29 +584,31 @@ function getCalendar(target, setDate) {
 
                         orgTxt = '';
 
-                        indexeddb.query('r', thisDate, {success: (d) => {
+                        indexeddb.query('r', thisDate, {
+                            success: (d) => {
 
-                            if(d && d.memo !== undefined && d.memo !== ''){ //값이 있음
-                                orgTxt = d.memo;
-                                textarea.value = d.memo;
-                                textarea.disabled = true;
-                                regSection.classList.add('hidden');
-                            }else{  //값이 없음
-                                regSection.classList.remove('hidden');
-                                modOnBtn.classList.add('hidden');
-                                setTimeout(() => {
-                                    textarea.focus();
-                                }, 200);
+                                if (d && d.memo !== undefined && d.memo !== '') { //값이 있음
+                                    orgTxt = d.memo;
+                                    textarea.value = d.memo;
+                                    textarea.disabled = true;
+                                    regSection.classList.add('hidden');
+                                } else {  //값이 없음
+                                    regSection.classList.remove('hidden');
+                                    modOnBtn.classList.add('hidden');
+                                    setTimeout(() => {
+                                        textarea.focus();
+                                    }, 200);
+                                }
                             }
-                        }});
+                        });
                     });
                 })
-                
+
                 return memoBtn;
             }
 
             const oldMemo = document.querySelector('[data-id="memoBtn"]');
-            if(oldMemo) oldMemo.remove();
+            if (oldMemo) oldMemo.remove();
 
             document.getElementById('calendarPageMain').appendChild(memo());
 
@@ -614,27 +616,29 @@ function getCalendar(target, setDate) {
             document.getElementById('allChker').checked = false;
             let isAllChked = true;
 
-            indexeddb.query('r', combiDate, {success: (d) => {
-                if(!d) return;
+            indexeddb.query('r', combiDate, {
+                success: (d) => {
+                    if (!d) return;
 
-                if(d && d.memo !== undefined && d.memo !== ''){
-                    document.querySelector('[data-id="memoBtn"]').classList.add('has-memo');
-                }
+                    if (d && d.memo !== undefined && d.memo !== '') {
+                        document.querySelector('[data-id="memoBtn"]').classList.add('has-memo');
+                    }
 
-                if(d && d.dailyChked){
-                    d.dailyChked.forEach((c) => {
-                        bibleListTag.querySelector(`input[value="${c}"]`).checked = true;
+                    if (d && d.dailyChked) {
+                        d.dailyChked.forEach((c) => {
+                            bibleListTag.querySelector(`input[value="${c}"]`).checked = true;
+                        })
+                    }
+
+                    bibleListTag.querySelectorAll('input').forEach(input => {
+                        if (!input.checked) isAllChked = false;
                     })
-                }
-                
-                bibleListTag.querySelectorAll('input').forEach(input => {
-                    if(!input.checked) isAllChked = false;
-                })
-    
-                if(isAllChked) document.getElementById('allChker').checked = true;
-            }});
 
-            if(thisMonth === 12 && thisDate === 25){
+                    if (isAllChked) document.getElementById('allChker').checked = true;
+                }
+            });
+
+            if (thisMonth === 12 && thisDate === 25) {
                 snowEffect();
             }
 
@@ -657,8 +661,8 @@ function getCalendar(target, setDate) {
     }
 
     const nowD2 = new Date();
-    if(+nowD2.getFullYear() === +document.getElementById('yearInput').querySelector('span').textContent
-    && +(nowD2.getMonth() + 1) === +document.getElementById('yearInput').querySelector('strong').textContent){
+    if (+nowD2.getFullYear() === +document.getElementById('yearInput').querySelector('span').textContent
+        && +(nowD2.getMonth() + 1) === +document.getElementById('yearInput').querySelector('strong').textContent) {
         const todayTarget = document.querySelector('[data-date="' + nowD2.getDate() + '"]');
         todayTarget.querySelector('strong').classList.add('today');
     }
@@ -681,7 +685,7 @@ function getCalendar(target, setDate) {
             })
             const mapedData2 = data.map(d => {
                 const copyId = d.id.split('_').slice(1);
-                return {...d, id: copyId.join('_')};
+                return { ...d, id: copyId.join('_') };
             })
 
             const set = new Set(mapedData);
@@ -696,9 +700,9 @@ function getCalendar(target, setDate) {
                     const parsedData = wr.split('b');
                     const ranged = parsedData[1].split('-');
                     const bookCnt = +ranged[1] - +ranged[0];
-                    
+
                     const splittedArr = [];
-                    for(let i = 0; i < (bookCnt + 1); i++){
+                    for (let i = 0; i < (bookCnt + 1); i++) {
                         splittedArr.push(parsedData[0] + 'b' + (+ranged[0] + i));
                     }
 
@@ -708,13 +712,13 @@ function getCalendar(target, setDate) {
 
             //가공 후
             mapedData2.forEach(d => {   //여기서 다 담아라
-                if(d.dailyChked && d.dailyChked.length > 0){
+                if (d.dailyChked && d.dailyChked.length > 0) {
                     let clsNm = 'ing';
-                    if(isEqualArr(d.dailyChked, targetData.filter(td => td.id === d.id)[0].dailyChked)) clsNm = 'clear';
+                    if (isEqualArr(d.dailyChked, targetData.filter(td => td.id === d.id)[0].dailyChked)) clsNm = 'clear';
                     document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`).classList.add(clsNm);
                 }
-                
-                if(d.memo){
+
+                if (d.memo) {
                     document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`).classList.add('has-memo');
                 }
             })
@@ -722,7 +726,7 @@ function getCalendar(target, setDate) {
     });
 
     const oldBibleList = document.getElementById('bibleList');
-    if(oldBibleList) oldBibleList.remove();
+    if (oldBibleList) oldBibleList.remove();
 
     document.getElementById('allChker').checked = false;
 }
@@ -758,34 +762,34 @@ function bibleTemplate(d, org) {
         const chkedData = [];
 
         inputs.forEach(inp => {
-            if(!inp.checked){
+            if (!inp.checked) {
                 isAllChked = false;
-            }else{
+            } else {
                 chkedData.push(inp.value);
                 chkedCnt++;
             }
         })
-        
+
         const targetTd = document.querySelector(`#calendar [data-date="${thisDate.split('_')[2]}"]`);
 
         targetTd.classList.remove('clear');
         targetTd.classList.remove('ing');
 
-        if(chkedCnt === inputs.length){ //완료
+        if (chkedCnt === inputs.length) { //완료
             targetTd.classList.add('clear');
-        }else if(chkedCnt > 0){  //진행중
+        } else if (chkedCnt > 0) {  //진행중
             targetTd.classList.add('ing');
         }
 
         document.getElementById('allChker').checked = isAllChked;
 
-        indexeddb.query('u', {id: thisDate, dailyChked: chkedData}, {upsert: true});
+        indexeddb.query('u', { id: thisDate, dailyChked: chkedData }, { upsert: true });
 
     })
 
     //이부분이 [보기]버튼 눌렀을 때
     li.querySelector('button').addEventListener('click', e => {
-        
+
         // openPopup('biblePopup');
         openPage('biblePage');
 
@@ -807,7 +811,7 @@ function bibleTemplate(d, org) {
 
         const ranged2 = parseData[1].split(':');
 
-        if(ranged2.length === 2){
+        if (ranged2.length === 2) {
             const chapter = +ranged2[0];
             const verse = ranged2[1];
 
@@ -817,15 +821,15 @@ function bibleTemplate(d, org) {
             thisBible = (bibleMap[`${parseData[0]}_${chapter}`] || []).filter(bs => verseFrom <= bs.VerseNo && bs.VerseNo <= verseTo);
             thisBible2 = (bible2Map[`${parseData[0]}_${chapter}`] || []).filter(bs => verseFrom <= bs.VerseNo && bs.VerseNo <= verseTo);
 
-        }else{
+        } else {
             thisBible = bibleMap[`${parseData[0]}_${parseData[1]}`];
             thisBible2 = bible2Map[`${parseData[0]}_${parseData[1]}`];
         }
-        
+
         bibleName.textContent = parseBook(d);
         const bookChapter = d.split(':')[0].split('b');
         bibleName.dataset.mnName = `${bookMnName[bookChapter[0] - 1]}${bookChapter[1]}`;
-    
+
         bibleScriptTag.innerHTML = '';
         bibleScriptTag.scrollTop = 0;
 
@@ -861,21 +865,21 @@ function bibleTemplate(d, org) {
             //     </div>
             // `;
             // document.getElementById('bibleScript2').appendChild(li);
-            
+
             tts.pushArray(tts.createSpeechUtterance(dd.VerseNo, dd.BibleScript));
         });
 
         selectControl.scripts = bibleScriptTag.querySelectorAll('[data-verse-no]');
         selectControl.init();
 
-    
-        if(tts.preparedUtterances.length) document.getElementById('voiceBtn').dataset.status = 'normal';
+
+        if (tts.preparedUtterances.length) document.getElementById('voiceBtn').dataset.status = 'normal';
     })
 
     return li;
 }
 
-function SelectControl(){
+function SelectControl() {
     const $t = this;
     $t.currDir = 0;   //0: 앞, 1: 뒤
     $t.scripts = null;
@@ -885,7 +889,7 @@ function SelectControl(){
 
     // 기존
     $t.handle = (idx) => {
-        if(idx === undefined){
+        if (idx === undefined) {
             $t.scripts.forEach(el => {
                 el.removeAttribute('data-selected');
             })
@@ -898,7 +902,7 @@ function SelectControl(){
         const newSelect = $t.scripts[idx];
         const newIdx = +newSelect.dataset.idx;
 
-        if(!oldSelected.length){
+        if (!oldSelected.length) {
             newSelect.dataset.selected = true;
             $t.toggleSelectPopup(true);
             return;
@@ -906,43 +910,43 @@ function SelectControl(){
 
         const oldIdx1 = +oldSelected[0].dataset.idx;
 
-        if(oldSelected.length === 1){
-            if(oldIdx1 === newIdx){
+        if (oldSelected.length === 1) {
+            if (oldIdx1 === newIdx) {
                 oldSelected[0].removeAttribute('data-selected');
                 $t.currDir = 0;
 
                 $t.toggleSelectPopup(false);
                 return;
             }
-            
+
             const from = Math.min(oldIdx1, newIdx);
             const to = Math.max(oldIdx1, newIdx);
-            
+
             $t.scripts.forEach((el, i) => {
-                if(from <= i && i <= to) el.dataset.selected = true;
+                if (from <= i && i <= to) el.dataset.selected = true;
             });
             $t.currDir = oldIdx1 < newIdx ? 1 : 0;
             $t.toggleSelectPopup(true);
 
-        }else{
+        } else {
             const oldIdx2 = +oldSelected[oldSelected.length - 1].dataset.idx;
-            
-            if(newIdx < oldIdx1){
+
+            if (newIdx < oldIdx1) {
                 $t.scripts.forEach((el, i) => {
-                    if(newIdx <= i && i <= oldIdx1) el.dataset.selected = true;
+                    if (newIdx <= i && i <= oldIdx1) el.dataset.selected = true;
                 });
                 $t.currDir = 0;
 
-            }else if(oldIdx2 < newIdx){
+            } else if (oldIdx2 < newIdx) {
                 $t.scripts.forEach((el, i) => {
-                    if(oldIdx2 <= i && i <= newIdx) el.dataset.selected = true;
+                    if (oldIdx2 <= i && i <= newIdx) el.dataset.selected = true;
                 });
                 $t.currDir = 1;
 
-            }else{
+            } else {
                 $t.scripts.forEach((el, i) => {
                     const ifCase = $t.currDir ? newIdx < i : i < newIdx;
-                    if(ifCase) el.removeAttribute('data-selected');
+                    if (ifCase) el.removeAttribute('data-selected');
                 });
 
             }
@@ -958,12 +962,12 @@ function SelectControl(){
         $t.selectedPopup.classList.toggle('active', bool);
         $t.configWrapper.classList.toggle('hidden', bool);
 
-        if(typeof cb === 'function') cb();
+        if (typeof cb === 'function') cb();
     }
 
     $t.toggleColorPopup = (bool, cb) => {
-        alert('준비중입니다.');
-        return;
+        // alert('준비중입니다.');
+        // return;
         $t.colorPopup.classList.toggle('active', bool);
     }
 
@@ -973,7 +977,7 @@ function SelectControl(){
         },
         colorPenBtn: () => {
             $t.toggleColorPopup(true);
-            
+
         },
         copyVerseBtn: () => {
             const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
@@ -987,31 +991,31 @@ function SelectControl(){
             })
 
             navigator.clipboard.writeText(txt)
-            .then(() => alert('클립보드에 복사했습니다.'))
-            .catch(err => console.error(err));
+                .then(() => alert('클립보드에 복사했습니다.'))
+                .catch(err => console.error(err));
         },
         cancelSelecteBtn: () => {
             $t.handle();
         }
     };
 
-    (function constructor(){
+    (function constructor() {
         $t.init();
 
         $t.selectedPopup.addEventListener('click', e => {
             const btn = e.target.closest('button');
 
-            if(!btn) return;
+            if (!btn) return;
 
             const fnc = btnFnc[btn.id];
 
-            if(typeof fnc === 'function') fnc();
+            if (typeof fnc === 'function') fnc();
         });
 
         $t.colorPopup.addEventListener('click', e => {
             const btn = e.target.closest('[data-color]');
 
-            if(!btn) return;
+            if (!btn) return;
 
             const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
             selectedScript.forEach(el => {
@@ -1026,8 +1030,8 @@ function SelectControl(){
 
 bibleScriptTag.addEventListener('click', (e) => {
     const target = e.target.closest('[data-id="verseWrapper"]');
-    if(!target) return;
-    
+    if (!target) return;
+
     selectControl.handle(+target.closest('[data-verse-no]').dataset.idx);
 })
 
@@ -1059,13 +1063,13 @@ document.getElementById('allChker').addEventListener('change', e => {
             inp.checked = true;
             chkedData.push(inp.value);
         })
-    }else{
+    } else {
         inps.forEach(inp => {
             inp.checked = false;
         })
     }
-    
-    indexeddb.query('u', {id: thisDate, dailyChked: chkedData}, {upsert: true});
+
+    indexeddb.query('u', { id: thisDate, dailyChked: chkedData }, { upsert: true });
 
 })
 
@@ -1086,7 +1090,7 @@ function getRandomTxt(data, len) {
     for (let i = 0; i < len; i++) {
         const randomIdx = Math.floor(Math.random() * (data.length - 1));
 
-        
+
         rtnVal += data[randomIdx];
     }
 
@@ -1094,7 +1098,7 @@ function getRandomTxt(data, len) {
 }
 
 function appendTag(target, tagNm, option) {
-    if(!['object', 'string'].includes(typeof target)) return;
+    if (!['object', 'string'].includes(typeof target)) return;
     const toTarget = typeof target == 'object' ? target : document.querySelector(target);
     const tag = document.createElement(tagNm);
     if (option && option.html) tag.insertAdjacentHTML('afterbegin', option.html);
@@ -1131,10 +1135,10 @@ window.onload = async function () {
     // }
 
     getData().then(() => {
-        dailyData2 = dailyData.map(d => ({id: `${d.month}_${d.day}`, dailyChked: d.readings.split('/')}));
-    
+        dailyData2 = dailyData.map(d => ({ id: `${d.month}_${d.day}`, dailyChked: d.readings.split('/') }));
+
         getCalendar('#calendar');
-    
+
         document.getElementById('loadingLayer').classList.remove('active');
     }).catch(err => {
         console.log(err);
@@ -1144,96 +1148,96 @@ window.onload = async function () {
 
 // snowEffect();
 
-function snowEffect(){
+function snowEffect() {
     cancelAnimationFrame(raf);
     const oldSnow = document.querySelector('[data-effect="snow"]');
-    if(oldSnow) oldSnow.remove();
+    if (oldSnow) oldSnow.remove();
 
     const $canvas = document.createElement("canvas");
-    $canvas.dataset.effect = 'snow'; 
+    $canvas.dataset.effect = 'snow';
     const ctx = $canvas.getContext("2d");
-    
+
     const getRandomRadius = () => Math.random() * 1 + 0.5;
     const getRandomSpeed = () => Math.random() * 0.3 + 0.1;
     const getRandomDir = () => [-1, 1][Math.floor(Math.random() * 2)];
-    
-    const Snow = {
-      data: [],
-      canvasWidth: $canvas.clientWidth,
-      canvasHeight: $canvas.clientHeight,
-    
-      init() {
-        Snow.make();
-        Snow.loop();
-      },
-    
-      loop() {
-        Snow.move();
-        Snow.draw();
-    
-        raf = window.requestAnimationFrame(Snow.loop);
-      },
-    
-      make() {
-        const data = [];
 
-        // 랜덤한 데이터 200개 생성
-        for (let i = 0; i < 200; i++) {
-          const x = Math.random() * Snow.canvasWidth;
-          const y = Math.random() * Snow.canvasHeight;
-    
-          const size = getRandomRadius();
-          const speed = getRandomSpeed();
-          const dir = getRandomDir();
-    
-          data.push({ x, y, size, speed, dir });
-        }
-    
-        // Snow 객체에 데이터 저장
-        Snow.data = data;
-      },
-    
-      move() {
-        Snow.data = Snow.data.map((item) => {
-          // 방향에 맞게 이동
-          item.x += item.dir * item.speed;
-          item.y += item.speed;
-    
-          // 캔버스를 벗어났는지 판단
-          const isMinOverPositionX = -item.size > item.x;
-          const isMaxOverPositionX = item.x > Snow.canvasWidth;
-          const isOverPositionY = item.y > Snow.canvasHeight;
-    
-          // 벗어나면 반대방향, 맨 위로
-          if (isMinOverPositionX || isMaxOverPositionX) {
-            item.dir *= -1;
-          }
-          if (isOverPositionY) {
-            item.y = -item.size;
-          }
-    
-          return item;
-        });
-      },
-    
-      draw() {
-        ctx.clearRect(0, 0, Snow.canvasWidth, Snow.canvasHeight);
-    
-        ctx.fillStyle = "transparent";
-        ctx.fillRect(0, 0, Snow.canvasWidth, Snow.canvasHeight);
-    
-        Snow.data.forEach((item) => {
-          ctx.beginPath();
-          ctx.fillStyle = "rgba(255, 255, 255, .6)";
-          ctx.arc(item.x, item.y, item.size, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.closePath();
-        });
-      },
+    const Snow = {
+        data: [],
+        canvasWidth: $canvas.clientWidth,
+        canvasHeight: $canvas.clientHeight,
+
+        init() {
+            Snow.make();
+            Snow.loop();
+        },
+
+        loop() {
+            Snow.move();
+            Snow.draw();
+
+            raf = window.requestAnimationFrame(Snow.loop);
+        },
+
+        make() {
+            const data = [];
+
+            // 랜덤한 데이터 200개 생성
+            for (let i = 0; i < 200; i++) {
+                const x = Math.random() * Snow.canvasWidth;
+                const y = Math.random() * Snow.canvasHeight;
+
+                const size = getRandomRadius();
+                const speed = getRandomSpeed();
+                const dir = getRandomDir();
+
+                data.push({ x, y, size, speed, dir });
+            }
+
+            // Snow 객체에 데이터 저장
+            Snow.data = data;
+        },
+
+        move() {
+            Snow.data = Snow.data.map((item) => {
+                // 방향에 맞게 이동
+                item.x += item.dir * item.speed;
+                item.y += item.speed;
+
+                // 캔버스를 벗어났는지 판단
+                const isMinOverPositionX = -item.size > item.x;
+                const isMaxOverPositionX = item.x > Snow.canvasWidth;
+                const isOverPositionY = item.y > Snow.canvasHeight;
+
+                // 벗어나면 반대방향, 맨 위로
+                if (isMinOverPositionX || isMaxOverPositionX) {
+                    item.dir *= -1;
+                }
+                if (isOverPositionY) {
+                    item.y = -item.size;
+                }
+
+                return item;
+            });
+        },
+
+        draw() {
+            ctx.clearRect(0, 0, Snow.canvasWidth, Snow.canvasHeight);
+
+            ctx.fillStyle = "transparent";
+            ctx.fillRect(0, 0, Snow.canvasWidth, Snow.canvasHeight);
+
+            Snow.data.forEach((item) => {
+                ctx.beginPath();
+                ctx.fillStyle = "rgba(255, 255, 255, .6)";
+                ctx.arc(item.x, item.y, item.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.closePath();
+            });
+        },
     };
-    
+
     Snow.init();
-    
+
     document.body.appendChild($canvas);
     $canvas.setAttribute('width', $canvas.clientWidth);
     $canvas.setAttribute('height', $canvas.clientHeight);
@@ -1241,7 +1245,7 @@ function snowEffect(){
     Snow.canvasHeight = $canvas.clientHeight;
 
     $canvas.classList.add('effect');
-    
+
     Snow.make();
 }
 
@@ -1279,7 +1283,7 @@ function deleteDatabase() { //테스트용
 //             webUrl: 'https://developers.kakao.com',
 //         },
 //         },
-        
+
 //         buttons: [
 //         {
 //             title: '읽기',
@@ -1300,7 +1304,7 @@ function addCommasToNumbers(input) {
 
 document.getElementById('voiceBtn').addEventListener('click', e => {
     const target = e.currentTarget;
-    if(target.dataset.status === 'playing'){
+    if (target.dataset.status === 'playing') {
         tts.stopTTS();
         document.querySelectorAll('[data-verse-no]').forEach((v) => {
             v.classList.remove('active');
@@ -1320,15 +1324,15 @@ document.getElementById('voiceBtn').addEventListener('click', e => {
             target.dataset.status = 'normal';
             document.querySelectorAll('[data-verse-no]').forEach((v) => {
                 v.classList.remove('active');
-                if(v.dataset.verseNo === verseNo) v.classList.add('active');
+                if (v.dataset.verseNo === verseNo) v.classList.add('active');
             })
         }, (utterance) => {
             target.dataset.status = 'playing';
             const verseNo = utterance.text.split('!,')[0];
-            
+
             document.querySelectorAll('[data-verse-no]').forEach((v) => {
                 v.classList.remove('active');
-                if(v.dataset.verseNo === verseNo) v.classList.add('active');
+                if (v.dataset.verseNo === verseNo) v.classList.add('active');
             })
         });
     }
@@ -1355,24 +1359,24 @@ document.addEventListener('visibilitychange', () => {
 });
 
 window.addEventListener('popstate', (e) => {
-    if(e.state === null){
+    if (e.state === null) {
         closePopup();
         closePage(() => {
             document.getElementById('calendarPage').classList.remove('hidden');
         });
-    } else if(e.state.type === 'page'){
+    } else if (e.state.type === 'page') {
         closePopup();
         closePage(() => {
             document.getElementById('calendarPage').classList.remove('hidden');
         });
-    } else{
+    } else {
 
     }
 });
 
 document.getElementById('backupBtn').addEventListener('click', () => {
     const cf = confirm('데이터를 백업하시겠습니까?\n나중에 백업한 데이터를 덮어쓸 수 있습니다.');
-    if(cf) indexeddb.query('b');
+    if (cf) indexeddb.query('b');
 })
 
 document.getElementById('overwriteBtn').addEventListener('click', () => {
@@ -1384,7 +1388,7 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
 
     tmpInput.onchange = e => {
         const file = e.target.files[0];
-        if(!file){
+        if (!file) {
             tmpInput.remove();
             return;
         }
@@ -1392,7 +1396,7 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
         const reader = new FileReader();
 
         reader.onload = e => {
-            try{
+            try {
                 const jsonTxt = e.target.result;
                 const jsonObj = JSON.parse(jsonTxt);
 
@@ -1404,10 +1408,10 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
                         //step1(중복 아닌것 찾기)
                         jsonObj.forEach((dd) => {   //파일 데이터
                             const overwrapData = merged.filter(m => m.id === dd.id);
-                            if(overwrapData.length){    //중복
-                                
+                            if (overwrapData.length) {    //중복
+
                                 let tmpChkedArr = [];
-                                if(overwrapData[0].dailyChked && overwrapData[0].dailyChked.length){
+                                if (overwrapData[0].dailyChked && overwrapData[0].dailyChked.length) {
                                     tmpChkedArr = [...overwrapData[0].dailyChked];
                                 }
 
@@ -1417,13 +1421,13 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
                                     memo: setMemo(overwrapData[0].memo, dd.memo)
                                 });
 
-                            }else{
+                            } else {
                                 merged.push(dd);
                             }
                         })
 
                         toUpdateData.forEach((tud) => {
-                            merged = merged.map(mg => mg.id === tud.id ? {...mg, dailyChked: tud.dailyChked, memo: tud.memo} : mg)
+                            merged = merged.map(mg => mg.id === tud.id ? { ...mg, dailyChked: tud.dailyChked, memo: tud.memo } : mg)
                         })
 
                         indexeddb.query('m', merged, {
@@ -1436,9 +1440,9 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
                 });
 
                 // console.log(jsonTxt, jsonObj);
-            }catch(err){
+            } catch (err) {
                 console.error('JSON parsing 오류!');
-            }finally {
+            } finally {
                 tmpInput.remove();
             }
         }
@@ -1459,26 +1463,26 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
 
 document.getElementById('clearDataBtn').addEventListener('click', () => {
     const cf = confirm('모든 데이터를 삭제하시겠습니까?');
-    
-    if(cf) clearData();
+
+    if (cf) clearData();
 });
 document.getElementById('downloadBtn').addEventListener('click', () => {
     const cf = confirm('어플(android)을 다운 받으시겠습니까?\nWi-Fi에 연결되지 않은 경우, 데이터 요금이 발생할 수 있습니다.');
-    if(!cf) return;
-    
+    if (!cf) return;
+
     const randomInt = getRandomInt(1, 10);
     const prmt = prompt(`비밀번호를 입력해주세요.\nHint: ${randomInt}`);
-    if(randomInt + 1 !== +prmt) return;
+    if (randomInt + 1 !== +prmt) return;
 
     const a = document.createElement('a');
     a.href = 'assets/download/매일성경.zip';
-    
+
     a.style.display = 'none';
     a.download = '';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    
+
 });
 
 // document.getElementById('chkAllDataBtn').addEventListener('click', (e) => {
@@ -1492,15 +1496,15 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
 //     }
 // })
 
-function setMemo(oldMemo, newMemo){
-    if(oldMemo && newMemo){
+function setMemo(oldMemo, newMemo) {
+    if (oldMemo && newMemo) {
         return `[기존동행]\n${oldMemo}\n\n\n[새동행]\n${newMemo}`;
-    }else{
+    } else {
         return newMemo || oldMemo;
     }
 }
 
-function clearData(){
+function clearData() {
     indexeddb.query('i', undefined, {
         success: () => {
             alert('모든 데이터가 삭제되었습니다.');
@@ -1511,22 +1515,22 @@ function clearData(){
 
 
 // 신규 - 배열 대신 Map으로 빌드, 보기 클릭 시 O(1) 조회
-function parseBible2Data(data){
+function parseBible2Data(data) {
     const rtnMap = {};
     let tmpBibleName = '';
     let bibleId = 0;
     let bibleIdx = 0;
 
-    for(let key in data){
+    for (let key in data) {
         bibleIdx = isNaN(key[1]) ? 2 : 1;
-        if(tmpBibleName !== key.slice(0, bibleIdx)){
+        if (tmpBibleName !== key.slice(0, bibleIdx)) {
             tmpBibleName = key.slice(0, bibleIdx);
             bibleId++;
         }
         const jj = key.slice(bibleIdx).split(':'); //장절
         const mapKey = `${bibleId}_${jj[0]}`;
-        if(!rtnMap[mapKey]) rtnMap[mapKey] = [];
-        rtnMap[mapKey].push({VerseNo: +(jj[1]), BibleScript: data[key]});
+        if (!rtnMap[mapKey]) rtnMap[mapKey] = [];
+        rtnMap[mapKey].push({ VerseNo: +(jj[1]), BibleScript: data[key] });
     }
 
     return rtnMap;
@@ -1539,17 +1543,17 @@ document.querySelectorAll('[data-id="setFontSizeBtn"]').forEach((b) => {
         const curValue = +target.dataset.font;
         let newValue;
 
-        if(btnType === 0){
+        if (btnType === 0) {
             newValue = 20;
-        }else{
+        } else {
             newValue = curValue + btnType;
         }
 
-        if(newValue < 10){
+        if (newValue < 10) {
             alert('최소 사이즈입니다.');
             return;
         }
-        if(32 < newValue){
+        if (32 < newValue) {
             alert('최대 사이즈입니다.');
             return;
         }
@@ -1560,7 +1564,7 @@ document.querySelectorAll('[data-id="setFontSizeBtn"]').forEach((b) => {
     })
 })
 
-function setFontUI(val){
+function setFontUI(val) {
     document.querySelectorAll('[data-font]').forEach((t) => {
         t.dataset.font = val;
     })

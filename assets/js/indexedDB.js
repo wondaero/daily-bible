@@ -1,23 +1,23 @@
-function IndexedDB(param){
+function IndexedDB(param) {
     let db;
 
     const queryObj = {
-        c: function(value, opt, transaction, store){
+        c: function (value, opt, transaction, store) {
         },
-        r: function(value, opt, transaction, store){
+        r: function (value, opt, transaction, store) {
             // if(typeof value !== 'string' && value !== undefined) return;
-            if(typeof value === 'string'){  //단순 조회
+            if (typeof value === 'string') {  //단순 조회
                 const cmdRequest = store.get(value);
 
                 cmdRequest.onsuccess = function () {
                     const data = cmdRequest.result;
-                    if(opt && typeof opt.success === 'function') opt.success(data, value);
+                    if (opt && typeof opt.success === 'function') opt.success(data, value);
                 };
 
                 cmdRequest.onerror = function () {
                     console.error("데이터 가져오기 실패");
                 };
-            }else if(value === undefined && opt && opt.where){  //where조건 느낌
+            } else if (value === undefined && opt && opt.where) {  //where조건 느낌
                 const filteredData = [];
                 const cmdRequest = store.openCursor();
                 cmdRequest.onsuccess = function (event) {
@@ -29,15 +29,15 @@ function IndexedDB(param){
                         }
                         cursor.continue(); // 다음 데이터로 이동
                     } else {    //모든 데이터를 순회하면
-                        if(opt && typeof opt.success === 'function'){
+                        if (opt && typeof opt.success === 'function') {
                             opt.success(filteredData);
                         }
                     }
                 };
             }
         },
-        u: function(value, opt, transaction, store){
-            if(!value || !value[param.key]) return;
+        u: function (value, opt, transaction, store) {
+            if (!value || !value[param.key]) return;
 
             const cmdRequest = store.get(value[param.key]);
 
@@ -51,7 +51,7 @@ function IndexedDB(param){
 
                     updateRequest.onsuccess = function () {
                         console.log(`ID ${value[param.key]} 데이터 수정 완료`);
-                        if(opt && typeof opt.success === 'function'){
+                        if (opt && typeof opt.success === 'function') {
                             opt.success(value[param.key]);
                         }
                     };
@@ -62,12 +62,12 @@ function IndexedDB(param){
                 } else {
                     console.log(`ID ${value[param.key]} 데이터 없음`);
 
-                    if(opt && opt.upsert === true){
+                    if (opt && opt.upsert === true) {
                         console.log(value);
                         const insertRequest = store.put(value);
                         insertRequest.onsuccess = function () {
                             console.log(`ID ${value[param.key]} 데이터 등록 완료`);
-                            if(opt && typeof opt.success === 'function'){
+                            if (opt && typeof opt.success === 'function') {
                                 opt.success(value[param.key]);
                             }
                         };
@@ -83,13 +83,13 @@ function IndexedDB(param){
                 console.error(`ID ${value[param.key]} 데이터 처리 실패`);
             };
         },
-        d: function(value, opt, transaction, store){
-            if(typeof value !== 'string') return;
+        d: function (value, opt, transaction, store) {
+            if (typeof value !== 'string') return;
 
             const cmdRequest = store.delete(value);
             cmdRequest.onsuccess = function () {
                 console.log(`ID ${value} 데이터 삭제 완료`);
-                if(opt && typeof opt.success === 'function'){
+                if (opt && typeof opt.success === 'function') {
                     opt.success(value);
                 }
             };
@@ -98,7 +98,7 @@ function IndexedDB(param){
                 console.error(`ID ${value} 데이터 삭제 실패`);
             };
         },
-        b: function(value, opt, transaction, store){
+        b: function (value, opt, transaction, store) {
             const cmdRequest = store.openCursor();
             const allData = [];
 
@@ -131,7 +131,7 @@ function IndexedDB(param){
                 console.error("커서 순회 중 오류 발생");
             };
         },
-        o: function(value, opt, transaction, store){
+        o: function (value, opt, transaction, store) {
             const cmdRequest = store.openCursor();
             const allData = [];
 
@@ -141,7 +141,7 @@ function IndexedDB(param){
                     allData.push(cursor.value); // 필요한 데이터 수집
                     cursor.continue(); // 다음으로 이동
                 } else {
-                    if(opt && typeof opt.success === 'function') opt.success(allData);
+                    if (opt && typeof opt.success === 'function') opt.success(allData);
                 }
             };
 
@@ -149,12 +149,12 @@ function IndexedDB(param){
                 console.error("커서 순회 중 오류 발생");
             };
         },
-        i: function(value, opt, transaction, store){
+        i: function (value, opt, transaction, store) {
             const cmdRequest = store.clear();  // 이게 전체 데이터 삭제
 
             cmdRequest.onsuccess = () => {
                 console.log('스토어 데이터 전체 삭제 완료');
-                if(opt && typeof opt.success === 'function'){
+                if (opt && typeof opt.success === 'function') {
                     opt.success();
                 }
             };
@@ -163,7 +163,7 @@ function IndexedDB(param){
                 console.error('스토어 데이터 삭제 실패', e.target.error);
             };
         },
-        m: function(value, opt, transaction, store){
+        m: function (value, opt, transaction, store) {
             value.forEach(item => {
                 store.put(item); // 또는 store.add(item)
             });
@@ -171,7 +171,7 @@ function IndexedDB(param){
             transaction.oncomplete = () => {
                 console.log('모든 데이터 저장 완료!');
 
-                if(opt && typeof opt.success === 'function'){
+                if (opt && typeof opt.success === 'function') {
                     opt.success();
                 }
             };
@@ -182,7 +182,7 @@ function IndexedDB(param){
         },
     };
 
-    (function constructor(){
+    (function constructor() {
         // IndexedDB 연결 열기
         const openDB = indexedDB.open(param.dbNm, param.dbVersion);
 
@@ -193,37 +193,37 @@ function IndexedDB(param){
             // Object Store 생성
             if (!tempDB.objectStoreNames.contains(param.tableNm)) {
                 tempDB.createObjectStore(param.tableNm, { keyPath: param.key }); // id를 키로 사용
-            }else{
+            } else {
                 //indexedDB 업데이트 사항들 적용
                 migrate(event, param);
             }
 
         };
-        
-        openDB.onsuccess = function(event) {
+
+        openDB.onsuccess = function (event) {
             db = event.target.result;  // ← 여기서 바깥 let db에 저장
         };
-        openDB.onerror = function(event) {
-            console.error('DB 연결 실패', event.target.errror);
+        openDB.onerror = function (event) {
+            console.error('DB 연결 실패', event.target.error);
         };
     })();
 
     this.query = (cmd, value, opt) => {
-        if(!db) return;
+        if (!db) return;
 
         const cmds = 'crud-bomi'; //- 하이픈은 안씀, b는 backup, o는 overwrite, m은 multiUpdate, i는 initData
 
-        if(cmd.length !== 1 || cmds.indexOf(cmd) < 0) return;
+        if (cmd.length !== 1 || cmds.indexOf(cmd) < 0) return;
 
         const isRead = cmd === 'r';
         const transaction = db.transaction(param.tableNm, isRead ? 'readonly' : 'readwrite');
         const store = transaction.objectStore(param.tableNm);
 
-        if(typeof queryObj[cmd] === 'function') queryObj[cmd](value, opt, transaction, store);
+        if (typeof queryObj[cmd] === 'function') queryObj[cmd](value, opt, transaction, store);
 
     }
-      
-    function createFileName(){
+
+    function createFileName() {
         const now = new Date();
 
         const pad = (n) => n.toString().padStart(2, '0');

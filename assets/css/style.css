@@ -3,19 +3,21 @@
     --main-bg: #484848;
 }
 
-[data-theme="light"]{
+[data-theme="light"] {
     --theme-bg: #f5f0e8;
     --theme-color: #2c2c2c;
     --theme-color-20: #2c2c2c33;
     --theme-color-10: #2c2c2c1a;
 }
-[data-theme="dark"]{
+
+[data-theme="dark"] {
     --theme-bg: #1a1a2e;
     --theme-color: #e0e0e0;
     --theme-color-20: #e0e0e033;
     --theme-color-10: #e0e0e01a;
 }
-[data-theme="sepia"]{
+
+[data-theme="sepia"] {
     --theme-bg: #f4ecd8;
     --theme-color: #5b4636;
     --theme-color-20: #5b463633;
@@ -28,24 +30,28 @@
     font-weight: 400;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Pretendard';
     src: url('../font/Pretendard-Medium.woff') format('woff');
     font-weight: 500;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Pretendard';
     src: url('../font/Pretendard-SemiBold.woff') format('woff');
     font-weight: 600;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Pretendard';
     src: url('../font/Pretendard-Bold.woff') format('woff');
     font-weight: 700;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Pretendard';
     src: url('../font/Pretendard-ExtraBold.woff') format('woff');
@@ -53,32 +59,37 @@
     font-style: normal;
 }
 
-.mx-w600{
-    max-width: 600px;
+.mx-w1024 {
+    max-width: 1024px;
     margin: 0 auto;
 }
 
-.flex-center{
+.flex-center {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-*{box-sizing: border-box;}
+* {
+    box-sizing: border-box;
+}
 
-html, body{
+html,
+body {
     height: 100%;
     font-family: Pretendard;
-    background: var(--main-bg); /*가을*/
+    background: var(--main-bg);
+    /*가을*/
     min-width: 280px;
     -webkit-touch-callout: none;
-    -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-[data-role].hidden{
+[data-role].hidden {
     display: none;
 }
-.calendar-page{
+
+.calendar-page {
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -86,7 +97,7 @@ html, body{
     height: 100%;
 }
 
-.calendar-page > header{
+.calendar-page>header {
     background: var(--main-color);
     height: 40px;
     width: 100%;
@@ -98,7 +109,8 @@ html, body{
     flex-shrink: 0;
 
 }
-.calendar-page > header h1{
+
+.calendar-page>header h1 {
     margin: 0;
     font-size: 20px;
     color: #fff;
@@ -106,28 +118,33 @@ html, body{
     display: flex;
     align-items: center;
 }
-.calendar-page > header h1 img{
+
+.calendar-page>header h1 img {
     height: 24px;
 }
-.calendar-page > header button{
+
+.calendar-page>header button {
     padding: 0;
     background: 0;
     border: 0;
     cursor: pointer;
     transform: rotate(-2deg);
 }
-.calendar-page > header button img{
+
+.calendar-page>header button img {
     vertical-align: top;
     height: 30px;
 }
 
-.calendar-page-main-wrapper{
+.calendar-page-main-wrapper {
     max-width: 600px;
     position: relative;
     flex: 1;
-    min-height: 0;  /* 이거 안주면 height 이상함 */
+    min-height: 0;
+    /* 이거 안주면 height 이상함 */
 }
-.calendar-page-main{
+
+.calendar-page-main {
     padding: 10px 5px 60px;
     height: 100%;
     display: flex;
@@ -136,22 +153,26 @@ html, body{
     overflow-y: auto;
 }
 
-.calendar-section{
+.calendar-section {
     margin-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, .5);
 }
-.calendar-section > header{
+
+.calendar-section>header {
     margin-bottom: 20px;
     flex-direction: column;
 }
-.calendar-section > header > div{
+
+.calendar-section>header>div {
     width: 100%;
 }
-.calendar-section > header > div.today-btn-wrapper{
+
+.calendar-section>header>div.today-btn-wrapper {
     /* justify-content: flex-end; */
     margin-top: 10px;
 }
-.calendar-section > header > div.today-btn-wrapper button{
+
+.calendar-section>header>div.today-btn-wrapper button {
     width: 80px;
     height: 32px;
     color: #000;
@@ -161,10 +182,12 @@ html, body{
     box-shadow: 0 1px 4px rgba(255, 255, 255, .75);
     cursor: pointer;
 }
-.calendar-section > header .year-selection{
+
+.calendar-section>header .year-selection {
     margin: 0 10px;
 }
-.calendar-section .year-input{
+
+.calendar-section .year-input {
     width: 120px;
     height: 30px;
     box-sizing: border-box;
@@ -172,15 +195,20 @@ html, body{
     cursor: pointer;
     color: #fff;
 }
-.calendar-section .year-input span{ /*년*/
+
+.calendar-section .year-input span {
+    /*년*/
     font-size: 12px;
     margin-right: 10px;
     opacity: .7;
 }
-.calendar-section .year-input strong{   /*월*/
+
+.calendar-section .year-input strong {
+    /*월*/
     font-size: 30px;
 }
-.calendar-section .year-input:after{
+
+.calendar-section .year-input:after {
     content: '';
     width: 100%;
     height: 0;
@@ -194,7 +222,7 @@ html, body{
 }
 
 
-.calendar-section > header button.move-month-btn{
+.calendar-section>header button.move-month-btn {
     width: 30px;
     height: 30px;
     border: 0;
@@ -205,7 +233,8 @@ html, body{
     box-shadow: inset 0 0 8px rgba(255, 255, 255, .2);
     cursor: pointer;
 }
-.calendar-section > header button.move-month-btn:after{
+
+.calendar-section>header button.move-month-btn:after {
     content: '';
     width: 20px;
     height: 14px;
@@ -213,23 +242,25 @@ html, body{
     border-top: 7px solid transparent;
     border-bottom: 7px solid transparent;
 }
-.calendar-section > header button.prev-month-btn:after{
+
+.calendar-section>header button.prev-month-btn:after {
     border-right: 10px solid #fff;
     border-left: 10px solid transparent;
     transform: translateX(-5px);
 }
-.calendar-section > header button.next-month-btn:after{
+
+.calendar-section>header button.next-month-btn:after {
     border-left: 10px solid #fff;
     border-right: 10px solid transparent;
     transform: translateX(5px);
 }
 
-.calendar{
+.calendar {
     display: flex;
     justify-content: center;
 }
 
-.dim-layer{
+.dim-layer {
     position: fixed;
     top: 0;
     left: 0;
@@ -244,10 +275,12 @@ html, body{
     -webkit-backdrop-filter: blur(15px);
     min-width: 280px;
 }
-.dim-layer.active{
+
+.dim-layer.active {
     display: flex;
 }
-.every-popup{
+
+.every-popup {
     position: relative;
     display: none;
     padding: 10px;
@@ -256,14 +289,17 @@ html, body{
     background: rgba(255, 255, 255, .75);
     box-shadow: 0 0 4px rgba(0, 0, 0, .4);
 }
-.every-popup.active{
+
+.every-popup.active {
     display: block;
 }
-.every-popup > header h3{
+
+.every-popup>header h3 {
     margin: 0;
     padding: 0;
 }
-.close-btn{
+
+.close-btn {
     width: 20px;
     height: 20px;
     transform: rotate(46deg);
@@ -273,13 +309,15 @@ html, body{
     border: 0;
     outline: 0;
 }
-.every-popup .close-btn{
+
+.every-popup .close-btn {
     position: absolute;
     top: 0;
     right: 0;
 }
+
 .close-btn:before,
-.close-btn:after{
+.close-btn:after {
     content: '';
     width: 20px;
     height: 2px;
@@ -289,17 +327,21 @@ html, body{
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.close-btn:after{
+
+.close-btn:after {
     transform: translate(-50%, -50%) rotate(90deg);
 }
-.popup-main{
+
+.popup-main {
     padding: 10px 5px;
     overflow-y: auto;
 }
-.popup-footer{
+
+.popup-footer {
     margin: 0 -10px -10px;
 }
-.popup-footer button{
+
+.popup-footer button {
     height: 36px;
     background: var(--main-color);
     color: var(--main-bg);
@@ -309,7 +351,7 @@ html, body{
     flex: 1;
 }
 
-.bible-page{
+.bible-page {
     display: flex;
     flex-direction: column;
     /* padding: 8px; */
@@ -321,26 +363,28 @@ html, body{
     z-index: 1;
 }
 
-.bible-page-main{
+.bible-page-main {
     flex: 1;
     overflow-y: auto;
     padding-bottom: 80px;
 }
 
 
-.bible-page header{
+.bible-page header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     /* padding-bottom: 5px; */
     padding: 8px 8px 5px;
 }
-.bible-page .header-left{
+
+.bible-page .header-left {
     margin-right: 5px;
 }
-.bible-page .header-right{
-}
-.bible-page button{
+
+.bible-page .header-right {}
+
+.bible-page button {
     cursor: pointer;
     border: 0;
     background: 0;
@@ -350,23 +394,27 @@ html, body{
 
 
 
-.bible-page .header-left button{
+.bible-page .header-left button {
     margin-left: 10px;
     cursor: pointer;
 }
-.bible-page .header-left button.hidden{
+
+.bible-page .header-left button.hidden {
     display: none;
     pointer-events: none;
 }
-.bible-page > header > div button *{
+
+.bible-page>header>div button * {
     vertical-align: top;
 }
-.bible-page > header > div button svg{
+
+.bible-page>header>div button svg {
     height: 25px;
     width: auto;
     pointer-events: none;
 }
-.bible-page > header > div button span{
+
+.bible-page>header>div button span {
     width: 25px;
     height: 25px;
     border: 3px solid var(--theme-color);
@@ -375,23 +423,28 @@ html, body{
     animation: loading1 1s linear infinite;
 }
 
-.bible-page > header > div button .cancel-mark,
-.bible-page > header > div button span{
+.bible-page>header>div button .cancel-mark,
+.bible-page>header>div button span {
     display: none;
 }
-.bible-page > header > div button[data-status="loading"]{
+
+.bible-page>header>div button[data-status="loading"] {
     pointer-events: none;
 }
-.bible-page > header > div button[data-status="loading"] svg{
+
+.bible-page>header>div button[data-status="loading"] svg {
     display: none;
 }
-.bible-page > header > div button[data-status="loading"] span{
+
+.bible-page>header>div button[data-status="loading"] span {
     display: flex;
 }
-.bible-page > header > div button[data-status="playing"] span{
+
+.bible-page>header>div button[data-status="playing"] span {
     display: none;
 }
-.bible-page > header > div button[data-status="playing"] .cancel-mark{
+
+.bible-page>header>div button[data-status="playing"] .cancel-mark {
     display: block;
 }
 
@@ -399,11 +452,12 @@ html, body{
     opacity: .5;
     margin-top: 2px;
 } */
-.bible-page ul li > div p.hidden{
+.bible-page ul li>div p.hidden {
     display: none;
 }
+
 .dim-layer .date-popup .close-btn:before,
-.dim-layer .date-popup .close-btn:after{
+.dim-layer .date-popup .close-btn:after {
     content: '';
     width: 20px;
     height: 2px;
@@ -413,23 +467,27 @@ html, body{
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.dim-layer .date-popup .close-btn:after{
+
+.dim-layer .date-popup .close-btn:after {
     transform: translate(-50%, -50%) rotate(90deg);
 }
-.dim-layer .date-popup .popup-main{
+
+.dim-layer .date-popup .popup-main {
     display: flex;
     justify-content: center;
 }
 
 
-.dim-layer .date-popup > .popup-main > div{
+.dim-layer .date-popup>.popup-main>div {
     display: flex;
     align-items: center;
 }
-.dim-layer .date-popup > .popup-main > div:first-of-type{
+
+.dim-layer .date-popup>.popup-main>div:first-of-type {
     margin-right: 10px;
 }
-.dim-layer .date-popup ul{
+
+.dim-layer .date-popup ul {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -440,7 +498,8 @@ html, body{
     margin-right: 5px;
     overflow-y: auto;
 }
-.dim-layer .date-popup ul li{
+
+.dim-layer .date-popup ul li {
     height: 30px;
     display: flex;
     align-items: center;
@@ -449,34 +508,40 @@ html, body{
     cursor: pointer;
     box-sizing: border-box;
 }
+
 .dim-layer .date-popup ul li:hover,
-.dim-layer .date-popup ul li.active{
+.dim-layer .date-popup ul li.active {
     background: rgba(0, 0, 255, .1);
     background: #ffedb3;
     font-weight: 900;
 }
-.dim-layer .menu-popup > ul{
+
+.dim-layer .menu-popup>ul {
     margin: 0;
     padding: 0;
     list-style: none;
     /* width: 240px; */
 }
-.dim-layer .menu-popup > ul > li{
+
+.dim-layer .menu-popup>ul>li {
     margin: 0 auto;
     margin-bottom: 15px;
     padding-bottom: 10px;
     width: 220px;
     border-bottom: 1px solid rgba(0, 0, 0, .1);
-    
+
     /* text-align: center; */
 }
-.dim-layer .menu-popup > ul > li:last-of-type{
+
+.dim-layer .menu-popup>ul>li:last-of-type {
     margin-bottom: 0;
 }
-.dim-layer .menu-popup > ul button{
+
+.dim-layer .menu-popup>ul button {
     background: 0;
     border: 0;
 }
+
 /* .dim-layer .menu-popup .select-bible-field fieldset{
     border-radius: 5px;
 }
@@ -494,57 +559,66 @@ html, body{
 .dim-layer .menu-popup .select-bible-field fieldset ul li label{
     cursor: pointer;
 } */
-.dim-layer .menu-popup .group-title{
+.dim-layer .menu-popup .group-title {
     font-size: 20px;
     display: block;
     margin-bottom: 12px;
 }
-.dim-layer .menu-popup ul ul{
+
+.dim-layer .menu-popup ul ul {
     list-style: none;
     margin: 0;
     padding: 0 0 0 8px;
 }
-.dim-layer .menu-popup ul ul li{
+
+.dim-layer .menu-popup ul ul li {
     margin-bottom: 10px;
     cursor: pointer;
 }
-.dim-layer .menu-popup ul ul li:last-of-type{
+
+.dim-layer .menu-popup ul ul li:last-of-type {
     margin-bottom: 0;
 }
 
-.calendar table thead tr{
+.calendar table thead tr {
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
-.calendar table th{
+
+.calendar table th {
     font-weight: bold;
     color: rgba(255, 255, 255, 1);
     opacity: .7;
     padding-bottom: 5px;
     font-size: 18px;
 }
-.calendar table tbody tr:first-of-type{
+
+.calendar table tbody tr:first-of-type {
     padding-top: 10px;
     box-sizing: border-box;
 }
-.calendar table td{
+
+.calendar table td {
     text-align: center;
     font-weight: 900;
     cursor: pointer;
     height: 35px;
     padding: 0;
 }
-.calendar table td.on{
+
+.calendar table td.on {
     /* transform: scale(1.3) rotate(5deg); */
     /* position: relative;
     z-index: 1; */
 }
-.calendar table td.on > div{
+
+.calendar table td.on>div {
     font-weight: 900;
     opacity: 1;
     border: 3px double #fff;
     box-shadow: inset 0 0 8px #fff;
 }
-.calendar table td > div{
+
+.calendar table td>div {
     position: relative;
     box-sizing: border-box;
     width: 100%;
@@ -556,19 +630,23 @@ html, body{
     color: rgba(255, 255, 255, 1);
     opacity: .7;
 }
-.calendar table .sun{
+
+.calendar table .sun {
     color: rgba(255, 127, 1);
 }
-.calendar table .sat{
+
+.calendar table .sat {
     color: rgba(0, 255, 255, 1);
 }
-.calendar table td > div strong.today{
+
+.calendar table td>div strong.today {
     box-shadow: 0 0 8px rgba(255, 255, 255, .8);
     background: #fff;
     color: #000;
     /* font-size: 12px; */
 }
-.calendar table td > div strong{
+
+.calendar table td>div strong {
     width: 25px;
     height: 25px;
     width: 100%;
@@ -582,7 +660,7 @@ html, body{
     position: relative;
 }
 
-.calendar table td > div strong:before{
+.calendar table td>div strong:before {
     content: '';
     position: absolute;
     top: 0;
@@ -592,10 +670,12 @@ html, body{
 
     transform: scale(.8) rotate(5deg);
 }
-.calendar table td > div strong.today + span{
+
+.calendar table td>div strong.today+span {
     /* opacity: 1; */
 }
-.calendar table td > div span{
+
+.calendar table td>div span {
     opacity: 0;
     background: #fff;
     width: 25px;
@@ -608,47 +688,56 @@ html, body{
     z-index: -1;
     box-shadow: 0 0 20px #fed;
 }
-.calendar table td.clear > div{
+
+.calendar table td.clear>div {
     /* opacity: 1; */
 }
-.calendar table td.clear > div strong{
+
+.calendar table td.clear>div strong {
     background: var(--main-color);
-    
+
     /* border-radius: 50%; */
     color: #000;
 }
-.calendar table td.clear > div strong.today{
+
+.calendar table td.clear>div strong.today {
     background: linear-gradient(135deg, #fff 10px, var(--main-color) 0);
-    
+
     /* border-radius: 50%; */
     color: #000;
 }
-.calendar table td.clear > div strong.today:before{
+
+.calendar table td.clear>div strong.today:before {
     /* border: 2px solid #fff; */
 }
-.calendar table td.ing > div strong{
+
+.calendar table td.ing>div strong {
     background: #ffedb3;
-    
+
     background: linear-gradient(-45deg, var(--main-color) 50%, transparent 0);
     color: #fff;
     /* animation: reading1 .2s infinite; */
 }
-.calendar table td.ing > div strong.today{
-    
+
+.calendar table td.ing>div strong.today {
+
     background: linear-gradient(-45deg, var(--main-color) 50%, #fff 0);
     color: #000;
 }
-.calendar table td.ing > div strong:before{
+
+.calendar table td.ing>div strong:before {
     border: 2px solid var(--main-color);
 }
-.calendar table td.ing > div strong.today:before{
+
+.calendar table td.ing>div strong.today:before {
     /* border: 2px solid #fff; */
 }
 
-.calendar table td.has-memo > div strong{
+.calendar table td.has-memo>div strong {
     /* text-decoration: underline; */
 }
-.calendar table td.has-memo > div strong:after{
+
+.calendar table td.has-memo>div strong:after {
     content: '';
     display: block;
     width: 6px;
@@ -669,7 +758,7 @@ html, body{
     background: #000;
 } */
 
-.bible-section{
+.bible-section {
     background: rgba(255, 255, 255, .1);
     border-radius: 10px;
     padding: 10px;
@@ -680,39 +769,45 @@ html, body{
     font-size: 18px;
 }
 
-.bible-section header{
+.bible-section header {
     display: flex;
     color: #fff;
 }
 
-.bible-list{
+.bible-list {
     margin: 0;
     padding: 0;
     margin-top: 15px;
     list-style: none;
     color: #fff;
 }
-.bible-list li{
+
+.bible-list li {
     margin-bottom: 15px;
 }
-.bible-list li:last-of-type{
+
+.bible-list li:last-of-type {
     border-bottom: 0;
     margin-bottom: 0;
 }
-.bible-list li > div{
+
+.bible-list li>div {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-.bible-list li label{
+
+.bible-list li label {
     /* flex: 1; */
 }
-.bible-list li label .bible-range{
+
+.bible-list li label .bible-range {
     flex: 1;
     font-weight: 100;
     word-break: keep-all;
 }
-.bible-list li button{
+
+.bible-list li button {
     border: 0;
     background: 0;
     color: #fff;
@@ -722,7 +817,7 @@ html, body{
     white-space: nowrap;
 }
 
-.memo-btn{
+.memo-btn {
     display: flex;
     justify-content: center;
     background: rgba(255, 255, 255, .1);
@@ -738,7 +833,7 @@ html, body{
     font-size: 18px;
 }
 
-.memo-btn.has-memo:after{
+.memo-btn.has-memo:after {
     content: '';
     width: 6px;
     height: 6px;
@@ -750,32 +845,37 @@ html, body{
     transform: translateX(15px);
     /* box-shadow: inset 1px 1px 4px rgba(0, 0, 0, .5), 0 0 4px rgba(255, 0, 0, .5); */
 }
-    
-.dim-layer .memo-popup.active{
+
+.dim-layer .memo-popup.active {
     display: flex;
 }
-.dim-layer .memo-popup{
+
+.dim-layer .memo-popup {
     display: none;
     flex-direction: column;
     height: calc(100% - 20px);
     width: calc(100% - 10px - 10px);
     max-width: 600px;
 }
-.dim-layer .memo-popup > header{
+
+.dim-layer .memo-popup>header {
     text-align: center;
     margin-bottom: 10px;
 }
-.dim-layer .memo-popup > header span{
+
+.dim-layer .memo-popup>header span {
     font-weight: 100;
     font-size: 14px;
     opacity: .7;
 }
-.dim-layer .memo-popup > .popup-main{
+
+.dim-layer .memo-popup>.popup-main {
     padding: 0;
     flex: 1;
     margin-bottom: 10px;
 }
-.dim-layer .memo-popup textarea{
+
+.dim-layer .memo-popup textarea {
     resize: none;
     padding: 10px;
     border: 1px solid rgba(0, 0, 0, .25);
@@ -787,43 +887,51 @@ html, body{
     box-shadow: inset 0 0 8px #def;
     outline: 0;
 }
-.dim-layer .memo-popup textarea[disabled]{
+
+.dim-layer .memo-popup textarea[disabled] {
     box-shadow: none;
     border: 0;
     background: 0;
 }
-.dim-layer .memo-popup textarea:focus{
+
+.dim-layer .memo-popup textarea:focus {
     /* box-shadow: inset 0 0 2px #00e; */
     box-shadow: inset 0 0 8px var(--main-color);
     /* box-shadow: inset 0 0 8px var(--main-bg); */
 }
-.dim-layer .memo-popup .popup-footer button{
+
+.dim-layer .memo-popup .popup-footer button {
     flex: 1;
 }
-.dim-layer .memo-popup .popup-footer *.hidden{
+
+.dim-layer .memo-popup .popup-footer *.hidden {
     display: none;
 }
-.dim-layer .memo-popup .popup-footer > div{
+
+.dim-layer .memo-popup .popup-footer>div {
     width: 100%;
     display: flex;
     align-items: center;
 }
-.popup-footer button.popup-btn-v2{
+
+.popup-footer button.popup-btn-v2 {
     background: #fff;
     color: #222;
     border: 1px solid #222;
 }
 
 /*checkbox*/
-label.checkbox1{
+label.checkbox1 {
     display: flex;
     align-items: center;
     cursor: pointer;
 }
-label.checkbox1 input{
+
+label.checkbox1 input {
     display: none;
 }
-label.checkbox1 input + span{
+
+label.checkbox1 input+span {
     width: 20px;
     height: 20px;
     border: 1px solid #999;
@@ -835,12 +943,14 @@ label.checkbox1 input + span{
     border-radius: 5px;
     box-sizing: border-box;
 }
-label.checkbox1 input:checked + span{
+
+label.checkbox1 input:checked+span {
     box-shadow: inset 0 0 10px var(--main-bg);
     background: var(--main-bg);
     border: 0;
 }
-label.checkbox1 input:checked + span:after{
+
+label.checkbox1 input:checked+span:after {
     content: '';
     display: block;
     width: 10px;
@@ -851,12 +961,14 @@ label.checkbox1 input:checked + span:after{
     top: -1px;
     transform: rotate(-45deg);
 }
+
 /*checkbox*/
 
-.loading-layer.active{
+.loading-layer.active {
     display: flex;
 }
-.loading-layer{
+
+.loading-layer {
     position: fixed;
     top: 0;
     left: 0;
@@ -870,17 +982,18 @@ label.checkbox1 input:checked + span:after{
     background: var(--main-color);
     z-index: 3;
 }
-.loading-layer strong{
+
+.loading-layer strong {
     color: var(--main-bg);
     margin-top: 10px;
 }
 
-canvas.effect{
+canvas.effect {
     opacity: 1;
     transition: opacity 1s;
 }
 
-canvas{
+canvas {
     position: fixed;
     top: 0;
     left: 0;
@@ -891,54 +1004,125 @@ canvas{
     opacity: 0;
 }
 
-.bible-script > div{
+.bible-script>div {
     font-size: 20px;
     word-break: break-all;
     text-align: justify;
     padding: 10px 8px;
     border-bottom: 1px solid var(--theme-color-10);
 }
-.bible-script .verse-no{
+
+.bible-script .verse-no {
     margin-bottom: 5px;
 }
 
 
-.bible-script[data-font="10"] [data-verse-no]{font-size: 10px;}
-.bible-script[data-font="11"] [data-verse-no]{font-size: 11px;}
-.bible-script[data-font="12"] [data-verse-no]{font-size: 12px;}
-.bible-script[data-font="13"] [data-verse-no]{font-size: 13px;}
-.bible-script[data-font="14"] [data-verse-no]{font-size: 14px;}
-.bible-script[data-font="15"] [data-verse-no]{font-size: 15px;}
-.bible-script[data-font="16"] [data-verse-no]{font-size: 16px;}
-.bible-script[data-font="17"] [data-verse-no]{font-size: 17px;}
-.bible-script[data-font="18"] [data-verse-no]{font-size: 18px;}
-.bible-script[data-font="19"] [data-verse-no]{font-size: 19px;}
-.bible-script[data-font="20"] [data-verse-no]{font-size: 20px;}
-.bible-script[data-font="21"] [data-verse-no]{font-size: 21px;}
-.bible-script[data-font="22"] [data-verse-no]{font-size: 22px;}
-.bible-script[data-font="23"] [data-verse-no]{font-size: 23px;}
-.bible-script[data-font="24"] [data-verse-no]{font-size: 24px;}
-.bible-script[data-font="25"] [data-verse-no]{font-size: 25px;}
-.bible-script[data-font="26"] [data-verse-no]{font-size: 26px;}
-.bible-script[data-font="27"] [data-verse-no]{font-size: 27px;}
-.bible-script[data-font="28"] [data-verse-no]{font-size: 28px;}
-.bible-script[data-font="29"] [data-verse-no]{font-size: 29px;}
-.bible-script[data-font="30"] [data-verse-no]{font-size: 30px;}
-.bible-script[data-font="31"] [data-verse-no]{font-size: 31px;}
-.bible-script[data-font="32"] [data-verse-no]{font-size: 32px;}
-.bible-script tr th{
+.bible-script[data-font="10"] [data-verse-no] {
+    font-size: 10px;
+}
+
+.bible-script[data-font="11"] [data-verse-no] {
+    font-size: 11px;
+}
+
+.bible-script[data-font="12"] [data-verse-no] {
+    font-size: 12px;
+}
+
+.bible-script[data-font="13"] [data-verse-no] {
+    font-size: 13px;
+}
+
+.bible-script[data-font="14"] [data-verse-no] {
+    font-size: 14px;
+}
+
+.bible-script[data-font="15"] [data-verse-no] {
+    font-size: 15px;
+}
+
+.bible-script[data-font="16"] [data-verse-no] {
+    font-size: 16px;
+}
+
+.bible-script[data-font="17"] [data-verse-no] {
+    font-size: 17px;
+}
+
+.bible-script[data-font="18"] [data-verse-no] {
+    font-size: 18px;
+}
+
+.bible-script[data-font="19"] [data-verse-no] {
+    font-size: 19px;
+}
+
+.bible-script[data-font="20"] [data-verse-no] {
+    font-size: 20px;
+}
+
+.bible-script[data-font="21"] [data-verse-no] {
+    font-size: 21px;
+}
+
+.bible-script[data-font="22"] [data-verse-no] {
+    font-size: 22px;
+}
+
+.bible-script[data-font="23"] [data-verse-no] {
+    font-size: 23px;
+}
+
+.bible-script[data-font="24"] [data-verse-no] {
+    font-size: 24px;
+}
+
+.bible-script[data-font="25"] [data-verse-no] {
+    font-size: 25px;
+}
+
+.bible-script[data-font="26"] [data-verse-no] {
+    font-size: 26px;
+}
+
+.bible-script[data-font="27"] [data-verse-no] {
+    font-size: 27px;
+}
+
+.bible-script[data-font="28"] [data-verse-no] {
+    font-size: 28px;
+}
+
+.bible-script[data-font="29"] [data-verse-no] {
+    font-size: 29px;
+}
+
+.bible-script[data-font="30"] [data-verse-no] {
+    font-size: 30px;
+}
+
+.bible-script[data-font="31"] [data-verse-no] {
+    font-size: 31px;
+}
+
+.bible-script[data-font="32"] [data-verse-no] {
+    font-size: 32px;
+}
+
+.bible-script tr th {
     white-space: nowrap;
     vertical-align: top;
     text-align: right;
     padding-right: 4px;
     padding-left: 8px;
 }
-.bible-script tr td{
+
+.bible-script tr td {
     line-height: 1.5;
     padding-right: 8px;
 }
 
-.config-wrapper{
+.config-wrapper {
     position: fixed;
     bottom: 0;
     /* max-width: 600px; */
@@ -950,14 +1134,16 @@ canvas{
     justify-content: space-between;
     background: rgba(255, 255, 255, .8);
     box-shadow: 0 0 4px rgba(0, 0, 0, .25);
-    
+
     /* -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px); */
 }
-.config-wrapper.hidden{
+
+.config-wrapper.hidden {
     display: none;
 }
-.config-wrapper ul{
+
+.config-wrapper ul {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -965,13 +1151,13 @@ canvas{
     align-items: center;
 }
 
-.theme-wrapper{
-    
-}
-.theme-wrapper li + li{
+.theme-wrapper {}
+
+.theme-wrapper li+li {
     margin-left: 4px;
 }
-.theme-wrapper .btn-set-theme{
+
+.theme-wrapper .btn-set-theme {
     width: 36px;
     height: 36px;
     font-size: 0;
@@ -980,18 +1166,20 @@ canvas{
     box-shadow: inset 0 0 4px rgba(0, 0, 0, .5);
 }
 
-.theme-wrapper .btn-set-theme[data-value="light"]{
+.theme-wrapper .btn-set-theme[data-value="light"] {
     background: linear-gradient(135deg, #f5f0e8 50%, #2c2c2c 0);
 }
-.theme-wrapper .btn-set-theme[data-value="sepia"]{
+
+.theme-wrapper .btn-set-theme[data-value="sepia"] {
     background: linear-gradient(135deg, #f4ecd8 50%, #5b4636 0);
 }
-.theme-wrapper .btn-set-theme[data-value="dark"]{
+
+.theme-wrapper .btn-set-theme[data-value="dark"] {
     background: linear-gradient(135deg, #1a1a2e 50%, #e0e0e0 0);
 }
 
 
-.btn-font-wrapper .btn-set-font{
+.btn-font-wrapper .btn-set-font {
     border: 1px solid #000;
     background: 0;
     height: 40px;
@@ -1000,32 +1188,36 @@ canvas{
     color: #000;
     background: #fff;
 }
-.btn-font-wrapper li:nth-of-type(1) .btn-set-font{
+
+.btn-font-wrapper li:nth-of-type(1) .btn-set-font {
     border-radius: 8px 0 0 8px;
     font-size: 12px;
 }
-.btn-font-wrapper li:nth-of-type(3) .btn-set-font{
+
+.btn-font-wrapper li:nth-of-type(3) .btn-set-font {
     border-radius: 0 8px 8px 0;
     font-size: 28px;
 }
 
-.read-toggle-wrapper{
+.read-toggle-wrapper {
     display: flex;
     justify-content: center;
     margin-top: 20px;
     /* border-top: 1px dashed var(--theme-color);
     padding-top: 10px; */
 }
-.read-toggle-wrapper label.checkbox1 input + span{
+
+.read-toggle-wrapper label.checkbox1 input+span {
     width: 32px;
     height: 32px;
 }
-.read-toggle-wrapper strong{
+
+.read-toggle-wrapper strong {
     font-size: 32px;
 }
 
 
-.menu-wrapper{
+.menu-wrapper {
     position: absolute;
     bottom: 5px;
     right: 5px;
@@ -1036,7 +1228,8 @@ canvas{
     cursor: pointer;
     box-shadow: 0 0 4px rgba(255, 255, 255, .8);
 }
-.menu-wrapper .hamburger{
+
+.menu-wrapper .hamburger {
     width: 24px;
     height: 18px;
     position: relative;
@@ -1044,10 +1237,11 @@ canvas{
     align-items: center;
     justify-content: space-between;
     flex-direction: column;
-    
+
     /* animation: loading1 12s infinite linear; */
 }
-.menu-wrapper .hamburger > span{
+
+.menu-wrapper .hamburger>span {
     width: 24px;
     height: 2px;
     background: var(--main-bg);
@@ -1057,11 +1251,11 @@ canvas{
     border-radius: 4px;
 }
 
-.menu-wrapper .hamburger > span:nth-of-type(2){
+.menu-wrapper .hamburger>span:nth-of-type(2) {
     transform: translateX(-4px);
 }
 
-.bible-page-common-popup{
+.bible-page-common-popup {
     position: fixed;
     left: 0;
     right: 0;
@@ -1073,31 +1267,35 @@ canvas{
     display: none;
     box-shadow: 0 -1px 4px rgba(0, 0, 0, .4);
 }
-.bible-page-common-popup.active{
+
+.bible-page-common-popup.active {
     display: flex;
 }
 
-.bible-page-common-popup .btns{
+.bible-page-common-popup .btns {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
 }
-.selected-popup button{
+
+.selected-popup button {
     cursor: pointer;
     width: 50px;
 }
-.selected-popup button span{
+
+.selected-popup button span {
     display: block;
     margin-top: 5px;
 }
 
-.color-popup{
+.color-popup {
     z-index: 1;
     flex-direction: column;
     background: #eee;
 }
-.color-popup .btns button{
+
+.color-popup .btns button {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -1106,23 +1304,27 @@ canvas{
     box-shadow: inset 0 0 4px rgba(0, 0, 0, .5);
 }
 
-.bible-script [data-color="yellow"]{
+.bible-script [data-color="yellow"] {
     background: #FFF176;
     color: #333;
 }
-.bible-script [data-color="green"]{
+
+.bible-script [data-color="green"] {
     background: #CCFF90;
     color: #1B5E20;
 }
-.bible-script [data-color="blue"]{
+
+.bible-script [data-color="blue"] {
     background: #90CAF9;
     color: #0D47A1;
 }
-.bible-script [data-color="pink"]{
+
+.bible-script [data-color="pink"] {
     background: #F48FB1;
     color: #880E4F;
 }
-.bible-script [data-color="orange"]{
+
+.bible-script [data-color="orange"] {
     background: #FFCC80;
     color: #E65100;
 }
@@ -1130,67 +1332,76 @@ canvas{
 
 
 .bible-script [data-new-color="yellow"],
-.color-popup .btns button[data-color="yellow"]{
+.color-popup .btns button[data-color="yellow"] {
     background: #FFF176;
     color: #333;
 }
+
 .bible-script [data-new-color="green"],
-.color-popup .btns button[data-color="green"]{
+.color-popup .btns button[data-color="green"] {
     background: #CCFF90;
     color: #1B5E20;
 }
+
 .bible-script [data-new-color="blue"],
-.color-popup .btns button[data-color="blue"]{
+.color-popup .btns button[data-color="blue"] {
     background: #90CAF9;
     color: #0D47A1;
 }
+
 .bible-script [data-new-color="pink"],
-.color-popup .btns button[data-color="pink"]{
+.color-popup .btns button[data-color="pink"] {
     background: #F48FB1;
     color: #880E4F;
 }
+
 .bible-script [data-new-color="orange"],
-.color-popup .btns button[data-color="orange"]{
+.color-popup .btns button[data-color="orange"] {
     background: #FFCC80;
     color: #E65100;
 }
 
-.bible-script [data-new-color="none"]{
+.bible-script [data-new-color="none"] {
     background: 0;
     color: unset;
 }
 
 
 
-.color-popup .btns button[data-color="none"]{
+.color-popup .btns button[data-color="none"] {
     background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
 }
-.color-popup .btns button[data-color="none"]:after{
+
+.color-popup .btns button[data-color="none"]:after {
     content: '';
     width: 4px;
     height: 100%;
     background: #f00;
     transform: rotate(45deg);
 }
-.color-popup .bottom-btns{
+
+.color-popup .bottom-btns {
     margin-top: 15px;
     width: 100%;
 }
-.color-popup .bottom-btns button{
+
+.color-popup .bottom-btns button {
     border: 1px solid #222;
     background: #fff;
     padding: 10px;
     width: 120px;
     border-radius: 5px;
 }
-.color-popup .bottom-btns button + button{
+
+.color-popup .bottom-btns button+button {
     margin-left: 5px;
     background: var(--main-color);
 }
+
 /* .menu-wrapper .hamburger > span:first-of-type{
     transform: rotate(60deg);
 }
@@ -1198,8 +1409,8 @@ canvas{
     transform: rotate(-60deg);
 } */
 
-@media (min-width: 640px){
-    .menu-wrapper{
+@media (min-width: 640px) {
+    .menu-wrapper {
         position: fixed;
         box-shadow: unset;
         top: 0;
@@ -1208,8 +1419,8 @@ canvas{
     }
 }
 
-@media (max-width: 760px){
-    .dim-layer .every-popup{
+@media (max-width: 760px) {
+    .dim-layer .every-popup {
         position: absolute;
         bottom: 0;
         border-radius: 20px 20px 0 0;
@@ -1219,7 +1430,8 @@ canvas{
         max-height: calc(100% - 50px);
         box-shadow: 0 -2px 4px rgba(0, 0, 0, .4);
     }
-    .dim-layer .every-popup:before{
+
+    .dim-layer .every-popup:before {
         content: '';
         display: block;
         width: 60px;
@@ -1232,37 +1444,42 @@ canvas{
         pointer-events: none;
     }
 
-    .dim-layer .every-popup > header{
+    .dim-layer .every-popup>header {
         justify-content: center;
     }
-    .dim-layer .close-btn{
+
+    .dim-layer .close-btn {
         position: absolute;
         top: 8px;
         right: 8px;
         /* display: none; */
     }
 
-    .dim-layer .menu-popup > ul{
+    .dim-layer .menu-popup>ul {
         width: 100%;
     }
-    .dim-layer .menu-popup > ul > li{
+
+    .dim-layer .menu-popup>ul>li {
         width: 100%;
     }
 }
 
-@keyframes loading1{
-    0%{
+@keyframes loading1 {
+    0% {
         transform: rotate(0);
     }
-    100%{
+
+    100% {
         transform: rotate(360deg);
     }
 }
-@keyframes reading1{
-    0%{
+
+@keyframes reading1 {
+    0% {
         transform: scale(1);
     }
-    100%{
+
+    100% {
         transform: scale(.8);
     }
 }

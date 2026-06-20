@@ -190,13 +190,16 @@ function IndexedDB(param) {
         openDB.onupgradeneeded = function (event) {
             const tempDB = event.target.result;
 
+            //테이블 추가시 여기에 조건 추가 할것(나중에 자동화할 예정)
             // Object Store 생성
-            if (!tempDB.objectStoreNames.contains(param.tableNm)) {
-                tempDB.createObjectStore(param.tableNm, { keyPath: param.key }); // id를 키로 사용
-            } else {
-                //indexedDB 업데이트 사항들 적용
-                migrate(event, param);
+            if (!tempDB.objectStoreNames.contains('MyDailyBible')) {
+                tempDB.createObjectStore('MyDailyBible', { keyPath: param.key }); // id를 키로 사용
             }
+            if (!tempDB.objectStoreNames.contains('BibleVerses')) {
+                tempDB.createObjectStore('BibleVerses', { keyPath: param.key }); // id를 키로 사용
+            }
+            //indexedDB 업데이트 사항들 적용
+            migrate(event, param);
 
         };
 

@@ -4,6 +4,7 @@ let bibleMap = {};
 let bible2Map = {};
 
 let indexeddb;
+let versedb;
 let orgTxt = '';
 
 let bibleType = {
@@ -977,7 +978,6 @@ function SelectControl() {
         },
         colorPenBtn: () => {
             $t.toggleColorPopup(true);
-
         },
         copyVerseBtn: () => {
             const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
@@ -1013,19 +1013,31 @@ function SelectControl() {
         });
 
         $t.colorPopup.addEventListener('click', e => {
-            const btn = e.target.closest('[data-color]');
+            const colorBtn = e.target.closest('[data-color]');
+            const setColorBtn = e.target.closest('#setColorBtn');
+            const closeColorPopupBtn = e.target.closest('#closeColorPopupBtn');
 
-            if (!btn) return;
+            if (colorBtn) {
+                const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
+                selectedScript.forEach(el => {
+                    el.querySelector('[data-id="bibleScript"] span').dataset.newColor = colorBtn.dataset.color;
+                })
+            } else if (setColorBtn || closeColorPopupBtn) {
+                if (setColorBtn && !confirm('해당색상을 적용하시겠습니까?')) return;
 
-            const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
-            selectedScript.forEach(el => {
-                el.querySelector('[data-id="bibleScript"] span').dataset.newColor = btn.dataset.color;
-            })
+                document.querySelectorAll('[data-new-color]').forEach(el => {
+                    if (setColorBtn) {
+                        el.dataset.color = el.dataset.newColor;
+                        //indexDB에 저장할 것
+                    }
+                    el.removeAttribute('data-new-color');
+                })
 
+                $t.toggleColorPopup(false);
+            }
         })
     })();
 }
-
 
 
 bibleScriptTag.addEventListener('click', (e) => {
@@ -1118,6 +1130,12 @@ window.onload = async function () {
         dbNm: 'MyDatabase',
         dbVersion: dbVersionHistory.length + 1,
         tableNm: 'MyDailyBible',
+        key: 'id'
+    });
+    versedb = new IndexedDB({
+        dbNm: 'MyDatabase',
+        dbVersion: dbVersionHistory.length + 1,
+        tableNm: 'BibleVerses',
         key: 'id'
     });
 

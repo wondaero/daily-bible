@@ -791,7 +791,6 @@ function bibleTemplate(d, org) {
     //이부분이 [보기]버튼 눌렀을 때
     li.querySelector('button').addEventListener('click', e => {
 
-        // openPopup('biblePopup');
         openPage('biblePage');
 
         const targetInput = e.currentTarget.closest('li').querySelector('input');
@@ -846,6 +845,7 @@ function bibleTemplate(d, org) {
             const div = document.createElement('div');
             div.dataset.verseNo = dd.VerseNo;
             div.dataset.idx = idx;
+            div.dataset.bibleCode = d + ':' + dd.VerseNo;
 
             div.innerHTML = `
                 <div class="verse-wrapper" data-id="verseWrapper">
@@ -875,6 +875,17 @@ function bibleTemplate(d, org) {
 
 
         if (tts.preparedUtterances.length) document.getElementById('voiceBtn').dataset.status = 'normal';
+
+        const prefix = d + ':';
+        versedb.query('r', undefined, {
+            like: prefix,
+            success: (verseData) => {
+                verseData.forEach((dd, idx) => {
+                    const target = document.querySelector(`[data-bible-code="${dd.id}"] [data-id="bibleScript"] > span`);
+                    target.dataset.color = dd.color;
+                })
+            }
+        })
     })
 
     return li;
@@ -1025,15 +1036,32 @@ function SelectControl() {
             } else if (setColorBtn || closeColorPopupBtn) {
                 if (setColorBtn && !confirm('해당색상을 적용하시겠습니까?')) return;
 
+
+                const targetVerses = [];
+
                 document.querySelectorAll('[data-new-color]').forEach(el => {
                     if (setColorBtn) {
-                        el.dataset.color = el.dataset.newColor;
+                        const color = el.dataset.newColor;
+                        el.dataset.color = color;
                         //indexDB에 저장할 것
+
+                        targetVerses.push({
+                            id: el.closest('[data-bible-code]').dataset.bibleCode,
+                            color: color
+                        })
                     }
                     el.removeAttribute('data-new-color');
                 })
 
-                $t.toggleColorPopup(false);
+                if (setColorBtn) {
+                    versedb.query('m', targetVerses, {
+                        success: () => {
+                            $t.toggleColorPopup(false);
+                        }
+                    })
+                } else {
+                    $t.toggleColorPopup(false);
+                }
             }
         })
     })();

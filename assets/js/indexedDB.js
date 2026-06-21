@@ -34,6 +34,25 @@ function IndexedDB(param) {
                         }
                     }
                 };
+            } else if (value === undefined && opt && opt.like) {
+                const filteredData = [];
+                const prefix = opt.like;
+
+                const range = IDBKeyRange.bound(prefix, prefix + '\uffff');
+                const cmdRequest = store.openCursor(range);
+
+                cmdRequest.onsuccess = function (event) {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        const data = cursor.value;
+                        filteredData.push(cursor.value);
+                        cursor.continue(); // 다음 데이터로 이동
+                    } else {    //모든 데이터를 순회하면
+                        if (opt && typeof opt.success === 'function') {
+                            opt.success(filteredData);
+                        }
+                    }
+                };
             }
         },
         u: function (value, opt, transaction, store) {

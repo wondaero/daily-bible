@@ -160,7 +160,18 @@
                 <button id="cancelSelecteBtn">❌<span>취소</span></button>
             </div>
         </aside>
-        <aside id="colorPopup" class="bible-page-common-popup color-popup">
+        <aside id="verseMemoPopup" class="bible-page-common-popup flex-col verse-memo-popup">
+            <textarea></textarea>
+            <div class="flex-center bottom-btns">
+                <button id="closeVerseMemoPopupBtn" class="flex-center">취소</button>
+                <button id="regVerseMemoBtn" class="flex-center">적용</button>
+            </div>
+            <!-- <div class="flex-center bottom-btns">
+                <button id="closeColorPopupBtn" class="flex-center">취소</button>
+                <button id="setColorBtn" class="flex-center">적용</button>
+            </div> -->
+        </aside>
+        <aside id="colorPopup" class="bible-page-common-popup flex-col color-popup">
             <div class="btns mx-w1024">
                 <button data-color="yellow"></button>
                 <button data-color="green"></button>

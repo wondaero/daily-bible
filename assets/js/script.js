@@ -12,6 +12,9 @@ let bibleType = {
     2: true
 }
 
+const DOM = {};
+
+
 
 const bookName = [
     '창세기', '출애굽기', '레위기',
@@ -66,6 +69,9 @@ const tts = new TTS();
 // getData();
 
 window.addEventListener('DOMContentLoaded', () => {
+    //dom들 선언
+    DOM.loadingLayer = document.getElementById('loadingLayer');
+
     history.replaceState(null, '');
 
     if (!tts.isSupported) document.getElementById('voiceBtn').classList.add('hidden');
@@ -898,6 +904,8 @@ function SelectControl() {
     $t.selectedPopup = document.getElementById('selectedPopup');
     $t.configWrapper = document.getElementById('configWrapper');
     $t.colorPopup = document.getElementById('colorPopup');
+    $t.verseMemoPopup = document.getElementById('verseMemoPopup');
+    $t.memoTextarea = $t.verseMemoPopup.querySelector('textarea');
 
     // 기존
     $t.handle = (idx) => {
@@ -977,18 +985,28 @@ function SelectControl() {
         if (typeof cb === 'function') cb();
     }
 
-    $t.toggleColorPopup = (bool, cb) => {
-        // alert('준비중입니다.');
-        // return;
-        $t.colorPopup.classList.toggle('active', bool);
+    $t.togglePopup = (target, bool, cb) => {
+        const targetPopup = $t[target];
+        if (!targetPopup) return;
+        targetPopup.classList.toggle('active', bool);
+    }
+
+    $t.toggleMeomoPopup = (bool, cb) => {
+        $t.verseMemoPopup.classList.toggle('active', bool);
+
+        if (typeof cb === 'function') cb();
     }
 
     const btnFnc = {
         verseMemoBtn: () => {
-            alert('준비중입니다.');
+            $t.toggleMeomoPopup(true, () => {
+                setTimeout(() => {
+                    $t.memoTextarea.focus();
+                });
+            });
         },
         colorPenBtn: () => {
-            $t.toggleColorPopup(true);
+            $t.togglePopup('colorPopup', true);
         },
         copyVerseBtn: () => {
             const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
@@ -1023,6 +1041,28 @@ function SelectControl() {
             if (typeof fnc === 'function') fnc();
         });
 
+        $t.verseMemoPopup.addEventListener('click', e => {
+            const regVerseMemoBtn = e.target.closest('#regVerseMemoBtn');
+            const closeVerseMemoBtn = e.target.closest('#closeVerseMemoBtn');
+            const textarea = $t.memoTextarea;
+
+            if (regVerseMemoBtn) {
+                if (!textarea.value.length) {
+                    alert('내용을 입력해주세요.');
+                    textarea.focus();
+                    return;
+                }
+            } else if (closeVerseMemoBtn) {
+                if (textarea.value.length && confirm('메모 내용이 있습니다.\n그래도 취소하시겠습니까?')) {
+                    $t.toggleMeomoPopup(false, () => {
+                        textarea.value = '';
+                    });
+                } else {
+                    $t.toggleMeomoPopup(false);
+                }
+            }
+        });
+
         $t.colorPopup.addEventListener('click', e => {
             const colorBtn = e.target.closest('[data-color]');
             const setColorBtn = e.target.closest('#setColorBtn');
@@ -1035,7 +1075,6 @@ function SelectControl() {
                 })
             } else if (setColorBtn || closeColorPopupBtn) {
                 if (setColorBtn && !confirm('해당색상을 적용하시겠습니까?')) return;
-
 
                 const targetVerses = [];
 
@@ -1056,11 +1095,11 @@ function SelectControl() {
                 if (setColorBtn) {
                     versedb.query('m', targetVerses, {
                         success: () => {
-                            $t.toggleColorPopup(false);
+                            $t.togglePopup('colorPopup', false);
                         }
                     })
                 } else {
-                    $t.toggleColorPopup(false);
+                    $t.togglePopup('colorPopup', false);
                 }
             }
         })
@@ -1185,7 +1224,7 @@ window.onload = async function () {
 
         getCalendar('#calendar');
 
-        document.getElementById('loadingLayer').classList.remove('active');
+        DOM.loadingLayer.classList.remove('active');
     }).catch(err => {
         console.log(err);
     });
@@ -1422,7 +1461,26 @@ window.addEventListener('popstate', (e) => {
 
 document.getElementById('backupBtn').addEventListener('click', () => {
     const cf = confirm('데이터를 백업하시겠습니까?\n나중에 백업한 데이터를 덮어쓸 수 있습니다.');
-    if (cf) indexeddb.query('b');
+    if (cf) indexeddb.query('b', null, {
+        success: (allData) => {
+            // 다 모았으면 파일로 저장
+            const json = JSON.stringify(allData, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = createFileName();
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+
+            console.log('백업 완료!');
+
+        }
+    });
 })
 
 document.getElementById('overwriteBtn').addEventListener('click', () => {
@@ -1551,12 +1609,37 @@ function setMemo(oldMemo, newMemo) {
 }
 
 function clearData() {
-    indexeddb.query('i', undefined, {
-        success: () => {
-            alert('모든 데이터가 삭제되었습니다.');
+    DOM.loadingLayer.classList.add('active');
+
+    const clearHistory = () => {
+        return new Promise((resolve, reject) => {
+            indexeddb.query('i', undefined, {
+                success: resolve,
+                error: reject
+            });
+        })
+    }
+    const clearVerse = () => {
+        return new Promise((resolve, reject) => {
+            versedb.query('i', undefined, {
+                success: resolve,
+                error: reject
+            });
+        })
+    }
+
+    Promise.all([clearHistory(), clearVerse()])
+        .then(() => {
+            alert('모든 데이터가 성공적으로 초기화되었습니다');
             window.location.reload();
-        }
-    });
+        })
+        .catch((error) => {
+            console.error('데이터 초기화 중 에러 발생:', error);
+            alert('데이터 초기화 중 일부 오류가 발생했습니다.');
+        })
+        .finally(() => {
+            DOM.loadingLayer.classList.remove('active');
+        })
 }
 
 
@@ -1629,3 +1712,16 @@ document.querySelectorAll('[data-id="setThemeBtn"]').forEach((b) => {
         document.body.dataset.theme = themeVal;
     })
 });
+
+function createFileName() {
+    const now = new Date();
+
+    const pad = (n) => n.toString().padStart(2, '0');
+
+    const dateStr = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+    const timeStr = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+
+    const filename = `backup_${dateStr}_${timeStr}.json`;
+
+    return filename;
+}

@@ -7,13 +7,31 @@ function IndexedDB(param) {
         },
         r: function ({ responseContext, opt, store }) {
             const value = responseContext.data;
+            if (opt && opt.all === true) {
+                const allData = [];
+                const cmdRequest = store.openCursor();
+
+                cmdRequest.onsuccess = (event) => {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        allData.push(cursor.value); // 필요한 데이터 수집
+                        cursor.continue(); // 다음으로 이동
+                    } else {
+                        responseContext.data = allData;
+                    }
+                };
+
+                return;
+            }
             if (value !== undefined && value !== null) {  //단순 조회
                 const cmdRequest = store.get(value);
 
                 cmdRequest.onsuccess = function () {
                     responseContext.data = cmdRequest.result;
                 };
-            } else if (value === undefined && opt && opt.where) {  //where조건 느낌
+                return;
+            }
+            if (value === undefined && opt && opt.where) {  //where조건 느낌
                 const filteredData = [];
                 const cmdRequest = store.openCursor();
                 cmdRequest.onsuccess = function (event) {
@@ -28,7 +46,10 @@ function IndexedDB(param) {
                         responseContext.data = filteredData;
                     }
                 };
-            } else if (value === undefined && opt && opt.like) {
+
+                return;
+            }
+            if (value === undefined && opt && opt.like) {
                 const filteredData = [];
                 const prefix = opt.like;
 
@@ -44,6 +65,8 @@ function IndexedDB(param) {
                         responseContext.data = filteredData;
                     }
                 };
+
+                return;
             }
         },
         u: function ({ responseContext, opt, store }) {
@@ -78,36 +101,6 @@ function IndexedDB(param) {
 
             store.delete(value);
         },
-        //백업
-        b: function ({ responseContext, store }) {
-            const cmdRequest = store.openCursor();
-            const allData = [];
-
-            cmdRequest.onsuccess = (event) => {
-                const cursor = event.target.result;
-                if (cursor) {
-                    allData.push(cursor.value); // 필요한 데이터 수집
-                    cursor.continue(); // 다음으로 이동
-                } else {
-                    responseContext.data = allData;
-                }
-            };
-        },
-        //덮어쓰기
-        o: function ({ responseContext, store }) {
-            const cmdRequest = store.openCursor();
-            const allData = [];
-
-            cmdRequest.onsuccess = (event) => {
-                const cursor = event.target.result;
-                if (cursor) {
-                    allData.push(cursor.value); // 필요한 데이터 수집
-                    cursor.continue(); // 다음으로 이동
-                } else {
-                    responseContext.data = allData;
-                }
-            };
-        },
         i: function ({ store }) {
             store.clear();  // 이게 전체 데이터 삭제
         },
@@ -115,6 +108,14 @@ function IndexedDB(param) {
             const value = responseContext.data;
 
             if (!value || !value.length) return;
+
+            if (opt && opt.overwrite === true) {
+                value.forEach(item => {
+                    store.put(item);
+                });
+                return; // 👈 작업 예약 완료 후 즉시 탈출
+            }
+
             //기본값이 true
             const isUpsert = opt && opt.upsert === false ? false : true;
 
@@ -168,7 +169,7 @@ function IndexedDB(param) {
     this.query = (cmd, value, opt) => {
         if (!db) return;
 
-        const cmds = 'crud-bomi'; //- 하이픈은 안씀, b는 backup, o는 overwrite, m은 multiUpdate, i는 initData
+        const cmds = 'crud-mi'; //- 하이픈은 안씀, b는 backup, o는 overwrite, m은 multiUpdate, i는 initData
 
         if (cmd.length !== 1 || cmd === '-' || cmds.indexOf(cmd) < 0) return;
 

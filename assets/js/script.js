@@ -86,20 +86,23 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 async function getData() {
+    const [res1, res2, res3] = await Promise.all([
+        fetch('data/개역한글.json'),
+        fetch('data/개역개정.json'),
+        fetch('data/guide/mccheyne.json'),
+    ])
 
-    const res1 = await fetch('data/개역한글.json');
-    if (!res1.ok) throw new Error('Network response was not ok');
-    bibleMap = parseBible2Data(await res1.json());
+    if (!res1.ok || !res2.ok || !res3.ok) throw new Error('데이터 로드 실패');
 
-    const res2 = await fetch('data/개역개정.json');
-    if (!res2.ok) throw new Error('Network response was not ok');
-    bible2Map = parseBible2Data(await res2.json());
+    const [han, gae, guide] = await Promise.all([
+        res1.json(),
+        res2.json(),
+        res3.json()
+    ])
 
-
-    const res3 = await fetch('data/guide/mccheyne.json');
-    if (!res3.ok) throw new Error('Network response was not ok');
-    const guideData = await res3.json();
-    dailyData = guideData.data;
+    bibleMap = parseBible2Data(han);
+    bible2Map = parseBible2Data(gae);
+    dailyData = guide.data;
 }
 
 // function fnc_resize(){
@@ -698,8 +701,12 @@ function getCalendar(target, setDate) {
             const set = new Set(mapedData);
             const targetData = dailyData2.filter(d => set.has(d.id));
 
+            const mapedDataMap = new Map(mapedData2.map(item => [item.id, item]));
+
             targetData.forEach(dd => {
-                const targetD = mapedData2.filter(ddd => ddd.id === dd.id)[0];
+                const targetD = mapedDataMap.get(dd.id);
+
+                if (!targetD) return;
                 const withRange1 = dd.dailyChked.filter(d => d.indexOf('-') > -1);
 
                 withRange1.forEach(wr => {
@@ -1460,11 +1467,34 @@ window.addEventListener('popstate', (e) => {
 });
 
 document.getElementById('backupBtn').addEventListener('click', () => {
-    const cf = confirm('데이터를 백업하시겠습니까?\n나중에 백업한 데이터를 덮어쓸 수 있습니다.');
-    if (cf) indexeddb.query('b', null, {
-        success: (allData) => {
-            // 다 모았으면 파일로 저장
-            const json = JSON.stringify(allData, null, 2);
+    if (!confirm('데이터를 백업하시겠습니까?\n나중에 백업한 데이터를 덮어쓸 수 있습니다.')) return;
+
+    DOM.loadingLayer.classList.add('active');
+
+    const getHistory = () => new Promise((resolve, reject) => {
+        indexeddb.query('r', null, {
+            all: true,
+            success: resolve,
+            error: reject
+        })
+    })
+    const getVerse = () => new Promise((resolve, reject) => {
+        versedb.query('r', null, {
+            all: true,
+            success: resolve,
+            error: reject
+        })
+    })
+
+    Promise.all([getHistory(), getVerse()])
+        .then(([historyData, verseData]) => {
+            const backupObj = {
+                version: "1.1.0",
+                history: historyData,
+                verse: verseData,
+            }
+
+            const json = JSON.stringify(backupObj, null, 2);
             const blob = new Blob([json], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
 
@@ -1476,11 +1506,16 @@ document.getElementById('backupBtn').addEventListener('click', () => {
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
+            console.log('성경 기록 및 구절 데이터 통합 백업 성공!');
+        })
+        .catch(err => {
+            console.error('백업 실패', err);
+            alert('데이터 백업을 생성하지 못했습니다.');
 
-            console.log('백업 완료!');
-
-        }
-    });
+        })
+        .finally(() => {
+            DOM.loadingLayer.classList.remove('active');
+        })
 })
 
 document.getElementById('overwriteBtn').addEventListener('click', () => {
@@ -1501,51 +1536,51 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
 
         reader.onload = e => {
             try {
+                // 1. 로딩 화면 활성화
+                DOM.loadingLayer.classList.add('active');
+
                 const jsonTxt = e.target.result;
                 const jsonObj = JSON.parse(jsonTxt);
 
-                indexeddb.query('o', undefined, {
-                    success: (d) => {
-                        const toUpdateData = [];    //나중에 업데이트 예정
-                        let merged = [...d];  //기존 데이터
+                const promiseArr = [];
 
-                        //step1(중복 아닌것 찾기)
-                        jsonObj.forEach((dd) => {   //파일 데이터
-                            const overwrapData = merged.filter(m => m.id === dd.id);
-                            if (overwrapData.length) {    //중복
 
-                                let tmpChkedArr = [];
-                                if (overwrapData[0].dailyChked && overwrapData[0].dailyChked.length) {
-                                    tmpChkedArr = [...overwrapData[0].dailyChked];
-                                }
-
-                                toUpdateData.push({
-                                    id: dd.id,
-                                    dailyChked: [...new Set([...dd.dailyChked, ...tmpChkedArr])],
-                                    memo: setMemo(overwrapData[0].memo, dd.memo)
-                                });
-
-                            } else {
-                                merged.push(dd);
-                            }
-                        })
-
-                        toUpdateData.forEach((tud) => {
-                            merged = merged.map(mg => mg.id === tud.id ? { ...mg, dailyChked: tud.dailyChked, memo: tud.memo } : mg)
-                        })
-
-                        indexeddb.query('m', merged, {
-                            success: () => {
-                                alert('모든 데이터를 불러왔습니다.');
-                                window.location.reload();
-                            }
+                if (jsonObj.history) {
+                    const historyData = new Promise((resolve, reject) => {
+                        indexeddb.query('m', jsonObj, {
+                            success: resolve,
+                            error: reject
                         });
-                    }
-                });
+                    })
 
-                // console.log(jsonTxt, jsonObj);
+                    promiseArr.push(historyData);
+                }
+                if (jsonObj.verse) {
+                    const verseData = new Promise((resolve, reject) => {
+                        versedb.query('m', jsonObj, {
+                            success: resolve,
+                            error: reject
+                        });
+                    })
+
+                    promiseArr.push(verseData);
+                }
+
+                Promise.all(promiseArr)
+                    .then(() => {
+                        alert('모든 데이터를 성공적으로 불러왔습니다.');
+                        window.location.reload();
+                    })
+                    .catch(err => {
+                        console.error('복원 중 DB 저장 오류:', err);
+                        alert('데이터를 불러오지 못했습니다.');
+                    })
+                    .finally(() => {
+                        DOM.loadingLayer.classList.remove('active');
+                    })
             } catch (err) {
-                console.error('JSON parsing 오류!');
+                console.error('JSON parsing 오류!', err);
+                alert('올바른 백업파일이 아닙니다.');
             } finally {
                 tmpInput.remove();
             }
@@ -1559,16 +1594,12 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
         reader.readAsText(file, 'utf-8');
     };
 
-    tmpInput.remove();
 
-    // const cf = confirm('해당 데이터를 덮어쓰시겠습니까?\n기존 데이터는 삭제됩니다.');
-    // if(cf) indexeddb.query('o');
+    tmpInput.remove();
 })
 
 document.getElementById('clearDataBtn').addEventListener('click', () => {
-    const cf = confirm('모든 데이터를 삭제하시겠습니까?');
-
-    if (cf) clearData();
+    if (confirm('모든 데이터를 삭제하시겠습니까?')) clearData();
 });
 document.getElementById('downloadBtn').addEventListener('click', () => {
     const cf = confirm('어플(android)을 다운 받으시겠습니까?\nWi-Fi에 연결되지 않은 경우, 데이터 요금이 발생할 수 있습니다.');

@@ -1547,7 +1547,7 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
 
                 if (jsonObj.history) {
                     const historyData = new Promise((resolve, reject) => {
-                        indexeddb.query('m', jsonObj, {
+                        indexeddb.query('m', jsonObj.history, {
                             success: resolve,
                             error: reject
                         });
@@ -1557,7 +1557,7 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
                 }
                 if (jsonObj.verse) {
                     const verseData = new Promise((resolve, reject) => {
-                        versedb.query('m', jsonObj, {
+                        versedb.query('m', jsonObj.verse, {
                             success: resolve,
                             error: reject
                         });
@@ -1574,9 +1574,10 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
                     .catch(err => {
                         console.error('복원 중 DB 저장 오류:', err);
                         alert('데이터를 불러오지 못했습니다.');
+                        DOM.loadingLayer.classList.remove('active');
                     })
                     .finally(() => {
-                        DOM.loadingLayer.classList.remove('active');
+                        // DOM.loadingLayer.classList.remove('active');
                     })
             } catch (err) {
                 console.error('JSON parsing 오류!', err);
@@ -1667,9 +1668,10 @@ function clearData() {
         .catch((error) => {
             console.error('데이터 초기화 중 에러 발생:', error);
             alert('데이터 초기화 중 일부 오류가 발생했습니다.');
+            DOM.loadingLayer.classList.remove('active');
         })
         .finally(() => {
-            DOM.loadingLayer.classList.remove('active');
+            // DOM.loadingLayer.classList.remove('active');
         })
 }
 

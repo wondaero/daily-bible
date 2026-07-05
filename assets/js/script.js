@@ -1548,6 +1548,7 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
                 if (jsonObj.history) {
                     const historyData = new Promise((resolve, reject) => {
                         indexeddb.query('m', jsonObj.history, {
+                            overwrite: true,
                             success: resolve,
                             error: reject
                         });
@@ -1558,6 +1559,7 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
                 if (jsonObj.verse) {
                     const verseData = new Promise((resolve, reject) => {
                         versedb.query('m', jsonObj.verse, {
+                            overwrite: true,
                             success: resolve,
                             error: reject
                         });

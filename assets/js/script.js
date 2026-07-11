@@ -685,9 +685,7 @@ function getCalendar(target, setDate) {
     }
 
     indexeddb.query('r', undefined, {
-        where: (d) => {
-            return d.id.indexOf(`${date.getFullYear()}_${date.getMonth() + 1}`) === 0
-        },
+        like: `${date.getFullYear()}_${date.getMonth() + 1}_`,
         success: (data) => {
             const mapedData = data.map(d => {
                 const copyId = d.id.split('_').slice(1);
@@ -896,6 +894,15 @@ function bibleTemplate(d, org) {
                 verseData.forEach((dd, idx) => {
                     const target = document.querySelector(`[data-bible-code="${dd.id}"] [data-id="bibleScript"] > span`);
                     target.dataset.color = dd.color;
+
+
+                    const wrapper = document.querySelector(`[data-bible-code="${dd.id}"] [data-id="verseWrapper"]`);
+                    const targetUl = document.createElement('ul');
+                    wrapper.append(targetUl);
+
+                    if (dd.memos) dd.memos.reverse().forEach((memo) => {
+                        createMemo(targetUl, memo);
+                    })
                 })
             }
         })
@@ -1059,6 +1066,74 @@ function SelectControl() {
                     textarea.focus();
                     return;
                 }
+
+                if (!confirm('메모를 등록하시겠습니까?')) return;
+
+                const selectedScript = bibleScriptTag.querySelectorAll('[data-selected="true"]');
+                const len = selectedScript.length;
+                const bibleInfo = bibleName.dataset.mnName;
+                const verseInfo = selectedScript[0].dataset.verseNo + (len > 1 ? `-${String(selectedScript[len - 1].dataset.verseNo)}` : '');
+                let verseInfo2 = `[${bibleInfo}:${verseInfo}]`;
+
+
+                const now = new Date();
+
+                // const memoData = [...selectedScript].map((el) => ({
+                //     id: el.dataset.bibleCode,
+                //     memos: [
+                //         {
+                //             memoId: now.getTime(),
+                //             verseInfo: verseInfo2,
+                //             text: textarea.value
+                //         }
+                //     ]
+                // }));
+                const targetIds = [...selectedScript].map((el) => el.dataset.bibleCode);
+
+
+                versedb.query('r', targetIds, {
+                    success: (data) => {
+                        targetIds.forEach(targetId => {
+                            const oldData = data.find(item => item.id === targetId) || { id: targetId };
+                            const oldMemos = oldData.memos && Array.isArray(oldData.memos) ? oldData.memos : [];
+                            oldMemos.push({
+                                memoId: now.getTime(),
+                                verseInfo: verseInfo2,
+                                text: textarea.value
+                            })
+
+
+                            versedb.query('u', {
+                                ...oldData,
+                                memos: oldMemos,
+                            }, {
+                                upsert: true,
+                                success: (d) => {
+                                    console.log(d, oldMemos);
+
+                                    const wrapper = document.querySelector(`[data-bible-code="${d}"] [data-id="verseWrapper"]`);
+                                    let targetUl = wrapper.querySelector('ul');
+                                    if (targetUl) {
+                                        targetUl.innerHTML = '';
+                                    } else {
+                                        targetUl = document.createElement('ul');
+                                        wrapper.append(targetUl);
+                                    }
+
+
+                                    oldMemos.reverse().forEach((memo) => {
+                                        createMemo(targetUl, memo);
+                                    })
+                                }
+                            });
+                        })
+
+                        alert('메모등록이 완료되었습니다.');
+                        $t.togglePopup('verseMemoPopup', false);
+                        $t.handle();
+                    }
+                })
+
             } else if (closeVerseMemoBtn) {
                 if (textarea.value.length && confirm('메모 내용이 있습니다.\n그래도 취소하시겠습니까?')) {
                     $t.toggleMeomoPopup(false, () => {
@@ -1102,11 +1177,14 @@ function SelectControl() {
                 if (setColorBtn) {
                     versedb.query('m', targetVerses, {
                         success: () => {
+                            alert('해당색상적용이 완료되었습니다.');
                             $t.togglePopup('colorPopup', false);
+                            $t.handle();
                         }
                     })
                 } else {
                     $t.togglePopup('colorPopup', false);
+                    $t.handle();
                 }
             }
         })
@@ -1759,4 +1837,27 @@ function createFileName() {
     const filename = `backup_${dateStr}_${timeStr}.json`;
 
     return filename;
+}
+
+function formatDateTime(d) {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const week = ['일', '월', '화', '수', '목', '금', '토'];
+    const day = week[d.getDay()];
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${yyyy}.${mm}.${dd}(${day}) ${hh}:${min}`;
+}
+
+function createMemo(target, memo) {
+    const li = document.createElement('li');
+    li.innerHTML = `
+        <div data-id="memoDate">${formatDateTime(new Date(memo.memoId))}</div>
+        <div data-id="memoVerseInfo">${memo.verseInfo}</div>
+        <p data-id="memoText">${memo.text}</p>
+    `;
+
+    li.dataset.memoId = memo.memoId;
+    target.appendChild(li);
 }

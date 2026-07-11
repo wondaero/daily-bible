@@ -7,6 +7,23 @@ function IndexedDB(param) {
         },
         r: function ({ responseContext, opt, store }) {
             const value = responseContext.data;
+
+            if (Array.isArray(value)) {
+                const results = [];
+
+                value.forEach(id => {
+                    const cmdRequest = store.get(id); // 각 ID마다 직접 조회
+                    cmdRequest.onsuccess = function () {
+                        if (cmdRequest.result !== undefined && cmdRequest.result !== null) {
+                            results.push(cmdRequest.result);
+                        }
+                    };
+                });
+                responseContext.data = results; // 참조값 전달
+
+                return;
+            }
+
             if (opt && opt.all === true) {
                 const allData = [];
                 const cmdRequest = store.openCursor();
@@ -23,6 +40,7 @@ function IndexedDB(param) {
 
                 return;
             }
+
             if (value !== undefined && value !== null) {  //단순 조회
                 const cmdRequest = store.get(value);
 
@@ -31,24 +49,7 @@ function IndexedDB(param) {
                 };
                 return;
             }
-            if (value === undefined && opt && opt.where) {  //where조건 느낌
-                const filteredData = [];
-                const cmdRequest = store.openCursor();
-                cmdRequest.onsuccess = function (event) {
-                    const cursor = event.target.result;
-                    if (cursor) {
-                        const data = cursor.value;
-                        if (opt.where(data)) {  // 조건에 확인
-                            filteredData.push(data);
-                        }
-                        cursor.continue(); // 다음 데이터로 이동
-                    } else {    //모든 데이터를 순회하면
-                        responseContext.data = filteredData;
-                    }
-                };
 
-                return;
-            }
             if (value === undefined && opt && opt.like) {
                 const filteredData = [];
                 const prefix = opt.like;

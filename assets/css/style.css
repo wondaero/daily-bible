@@ -1020,6 +1020,34 @@ canvas {
     margin-bottom: 5px;
 }
 
+.bible-script ul {
+    margin: 5px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.bible-script ul li {
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid currentColor;
+    box-shadow: inset 4px 0 0px currentColor;
+    padding-left: 14px;
+}
+
+
+.bible-script ul li+li {
+    margin-top: 5px;
+}
+
+.bible-script ul li div {
+    opacity: .5;
+    font-size: .6em;
+}
+
+.bible-script ul li p {
+    margin: 5px 0 0;
+}
+
 
 .bible-script[data-font="10"] [data-verse-no] {
     font-size: 10px;
@@ -1113,18 +1141,6 @@ canvas {
     font-size: 32px;
 }
 
-.bible-script tr th {
-    white-space: nowrap;
-    vertical-align: top;
-    text-align: right;
-    padding-right: 4px;
-    padding-left: 8px;
-}
-
-.bible-script tr td {
-    line-height: 1.5;
-    padding-right: 8px;
-}
 
 .config-wrapper {
     position: fixed;

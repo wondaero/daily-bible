@@ -165,8 +165,9 @@ function openPopup(popupId, cb) {
 
 function closePopup(cb) {
     tts.stopTTS();
+
     document.querySelectorAll('[data-verse-no]').forEach((v) => {
-        v.classList.remove('active');
+        v.removeAttribute('data-selected');
     })
 
     // document.getElementById('voiceBtn').dataset.status = 'normal';
@@ -979,11 +980,16 @@ function SelectControl() {
 
             } else {
                 $t.scripts.forEach((el, i) => {
-                    const ifCase = $t.currDir ? newIdx < i : i < newIdx;
+                    const ifCase = $t.currDir ? newIdx <= i : i <= newIdx;
                     if (ifCase) el.removeAttribute('data-selected');
                 });
 
+                if (!bibleScriptTag.querySelectorAll('[data-selected="true"]').length) {
+                    $t.toggleSelectPopup(false);
+                    return;
+                }
             }
+
             $t.toggleSelectPopup(true);
         }
     }
@@ -1005,15 +1011,21 @@ function SelectControl() {
         targetPopup.classList.toggle('active', bool);
     }
 
-    $t.toggleMeomoPopup = (bool, cb) => {
+    $t.toggleMemoPopup = (bool, cb) => {
         $t.verseMemoPopup.classList.toggle('active', bool);
 
         if (typeof cb === 'function') cb();
     }
 
+    $t.closeAllPopup = () => {
+        $t.togglePopup('selectedPopup', false);
+        $t.togglePopup('colorPopup', false);
+        $t.togglePopup('verseMemoPopup', false);
+    }
+
     const btnFnc = {
         verseMemoBtn: () => {
-            $t.toggleMeomoPopup(true, () => {
+            $t.toggleMemoPopup(true, () => {
                 setTimeout(() => {
                     $t.memoTextarea.focus();
                 });
@@ -1057,7 +1069,7 @@ function SelectControl() {
 
         $t.verseMemoPopup.addEventListener('click', e => {
             const regVerseMemoBtn = e.target.closest('#regVerseMemoBtn');
-            const closeVerseMemoBtn = e.target.closest('#closeVerseMemoBtn');
+            const closeVerseMemoPopupBtn = e.target.closest('#closeVerseMemoPopupBtn');
             const textarea = $t.memoTextarea;
 
             if (regVerseMemoBtn) {
@@ -1109,8 +1121,6 @@ function SelectControl() {
                             }, {
                                 upsert: true,
                                 success: (d) => {
-                                    console.log(d, oldMemos);
-
                                     const wrapper = document.querySelector(`[data-bible-code="${d}"] [data-id="verseWrapper"]`);
                                     let targetUl = wrapper.querySelector('ul');
                                     if (targetUl) {
@@ -1132,15 +1142,15 @@ function SelectControl() {
                         $t.togglePopup('verseMemoPopup', false);
                         $t.handle();
                     }
-                })
+                });
 
-            } else if (closeVerseMemoBtn) {
+            } else if (closeVerseMemoPopupBtn) {
                 if (textarea.value.length && confirm('메모 내용이 있습니다.\n그래도 취소하시겠습니까?')) {
-                    $t.toggleMeomoPopup(false, () => {
+                    $t.toggleMemoPopup(false, () => {
                         textarea.value = '';
                     });
                 } else {
-                    $t.toggleMeomoPopup(false);
+                    $t.toggleMemoPopup(false);
                 }
             }
         });
@@ -1184,7 +1194,6 @@ function SelectControl() {
                     })
                 } else {
                     $t.togglePopup('colorPopup', false);
-                    $t.handle();
                 }
             }
         })
@@ -1193,6 +1202,8 @@ function SelectControl() {
 
 
 bibleScriptTag.addEventListener('click', (e) => {
+    if (e.target.closest('[data-id="delMemoBtn"]')) return; //메모삭제버튼에서는 안눌리게
+
     const target = e.target.closest('[data-id="verseWrapper"]');
     if (!target) return;
 
@@ -1476,9 +1487,6 @@ document.getElementById('voiceBtn').addEventListener('click', e => {
     const target = e.currentTarget;
     if (target.dataset.status === 'playing') {
         tts.stopTTS();
-        document.querySelectorAll('[data-verse-no]').forEach((v) => {
-            v.classList.remove('active');
-        })
         target.dataset.status = 'normal';
         return;
     }
@@ -1492,18 +1500,8 @@ document.getElementById('voiceBtn').addEventListener('click', e => {
 
         tts.playTTS(() => {
             target.dataset.status = 'normal';
-            document.querySelectorAll('[data-verse-no]').forEach((v) => {
-                v.classList.remove('active');
-                if (v.dataset.verseNo === verseNo) v.classList.add('active');
-            })
         }, (utterance) => {
             target.dataset.status = 'playing';
-            const verseNo = utterance.text.split('!,')[0];
-
-            document.querySelectorAll('[data-verse-no]').forEach((v) => {
-                v.classList.remove('active');
-                if (v.dataset.verseNo === verseNo) v.classList.add('active');
-            })
         });
     }
 })
@@ -1511,9 +1509,6 @@ document.getElementById('voiceBtn').addEventListener('click', e => {
 
 window.addEventListener('beforeunload', () => {
     tts.stopTTS();
-    document.querySelectorAll('[data-verse-no]').forEach((v) => {
-        v.classList.remove('active');
-    })
 });
 
 
@@ -1521,9 +1516,6 @@ document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
         // 탭이 백그라운드로 갔거나 화면이 꺼졌을 가능성이 있음
         tts.stopTTS();
-        document.querySelectorAll('[data-verse-no]').forEach((v) => {
-            v.classList.remove('active');
-        })
         document.getElementById('voiceBtn').dataset.status = 'normal';
     }
 });
@@ -1531,6 +1523,7 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('popstate', (e) => {
     if (e.state === null) {
         closePopup();
+        selectControl.closeAllPopup();
         closePage(() => {
             document.getElementById('calendarPage').classList.remove('hidden');
         });
@@ -1852,11 +1845,35 @@ function formatDateTime(d) {
 
 function createMemo(target, memo) {
     const li = document.createElement('li');
+
     li.innerHTML = `
+        <button data-id="delMemoBtn">삭제</button>
         <div data-id="memoDate">${formatDateTime(new Date(memo.memoId))}</div>
         <div data-id="memoVerseInfo">${memo.verseInfo}</div>
         <p data-id="memoText">${memo.text}</p>
     `;
+
+    li.querySelector('[data-id="delMemoBtn"]').onclick = (e) => {
+        if (!confirm('해당메모를 삭제하시겠습니까?')) return;
+
+        const verseId = target.closest('[data-bible-code]').dataset.bibleCode;
+
+        versedb.query('r', verseId, {
+            success: (data) => {
+                data.memos.filter(d => d.memoId !== memo.memoId);
+
+                versedb.query('u', {
+                    ...data,
+                    memos: data.memos.filter(d => d.memoId !== memo.memoId),
+                }, {
+                    success: (d) => {
+                        li.remove();
+                        alert('해당메모삭제가 완료되었습니다.');
+                    }
+                });
+            }
+        })
+    }
 
     li.dataset.memoId = memo.memoId;
     target.appendChild(li);

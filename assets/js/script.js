@@ -861,7 +861,9 @@ function bibleTemplate(d, org) {
 
             div.innerHTML = `
                 <div class="verse-wrapper" data-id="verseWrapper">
-                    <div class="verse-no">${dd.VerseNo}</div>
+                    <div class="verse-top-wrapper" data-id="verseTopWrapper">
+                        <div class="verse-no">${dd.VerseNo}</div>
+                    </div>
                     <div data-id="bibleScript"><span>${dd.BibleScript}</span></div>
                 </div>
             `;
@@ -892,16 +894,17 @@ function bibleTemplate(d, org) {
         versedb.query('r', undefined, {
             like: prefix,
             success: (verseData) => {
-                verseData.forEach((dd, idx) => {
+                verseData.forEach((dd) => {
                     const target = document.querySelector(`[data-bible-code="${dd.id}"] [data-id="bibleScript"] > span`);
                     target.dataset.color = dd.color;
 
-
                     const wrapper = document.querySelector(`[data-bible-code="${dd.id}"] [data-id="verseWrapper"]`);
                     const targetUl = document.createElement('ul');
+                    targetUl.classList.add('hidden');
                     wrapper.append(targetUl);
 
                     if (dd.memos) dd.memos.reverse().forEach((memo) => {
+                        createMemoToggleBtn(wrapper.querySelector('[data-id="verseTopWrapper"]'));
                         createMemo(targetUl, memo);
                     })
                 })
@@ -1120,10 +1123,12 @@ function SelectControl() {
                                         wrapper.append(targetUl);
                                     }
 
-
                                     oldMemos.reverse().forEach((memo) => {
+                                        createMemoToggleBtn(wrapper.querySelector('[data-id="verseTopWrapper"]'));
                                         createMemo(targetUl, memo);
                                     })
+                                    wrapper.querySelector('[data-id="memoToggle"] input').checked = true;
+                                    targetUl.classList.remove('hidden');
                                 }
                             });
                         })
@@ -1855,14 +1860,19 @@ function createMemo(target, memo) {
 
         versedb.query('r', verseId, {
             success: (data) => {
-                data.memos.filter(d => d.memoId !== memo.memoId);
+                const filteredMemos = data.memos.filter(d => d.memoId !== memo.memoId);
 
                 versedb.query('u', {
                     ...data,
-                    memos: data.memos.filter(d => d.memoId !== memo.memoId),
+                    memos: filteredMemos,
                 }, {
                     success: (d) => {
                         li.remove();
+                        if (!filteredMemos.length) {
+                            target.closest('[data-bible-code]').querySelector('[data-id="memoToggle"]').remove();
+                            target.closest('[data-bible-code]').querySelector('ul').remove();
+
+                        }
                         alert('해당메모삭제가 완료되었습니다.');
                     }
                 });
@@ -1872,4 +1882,25 @@ function createMemo(target, memo) {
 
     li.dataset.memoId = memo.memoId;
     target.appendChild(li);
+}
+
+function createMemoToggleBtn(target) {
+    const oldBtn = target.querySelector('[data-id="memoToggle"]');
+    oldBtn?.remove();
+
+    const label = document.createElement('label');
+    label.dataset.id = ('memoToggle');
+    label.classList.add('checkbox1');
+    label.innerHTML = `
+        <input type="checkbox" />
+        <span></span>
+        <strong>메모보기</strong>
+    `;
+    target.appendChild(label);
+
+    label.querySelector('input').onchange = (e) => {
+        const isChked = e.currentTarget.checked;
+        label.closest('[data-id="verseWrapper"]').querySelector('ul').classList[isChked ? 'remove' : 'add']('hidden');
+    }
+
 }

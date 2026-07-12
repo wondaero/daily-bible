@@ -1016,14 +1016,36 @@ canvas {
     border-bottom: 1px solid var(--theme-color-10);
 }
 
-.bible-script .verse-no {
+.bible-script .verse-top-wrapper {
     margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
+
+.bible-script .verse-top-wrapper label {}
+
+.bible-script .verse-top-wrapper label input+span {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.bible-script .verse-top-wrapper label input~strong {
+    font-weight: 400;
+    font-size: 1em;
+}
+
+/* .bible-script .verse-no {
+} */
 
 .bible-script ul {
     margin: 10px 0 0;
     padding: 0;
     list-style: none;
+}
+
+.bible-script ul.hidden {
+    display: none;
 }
 
 .bible-script ul li {

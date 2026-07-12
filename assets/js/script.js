@@ -1021,6 +1021,8 @@ function SelectControl() {
         $t.togglePopup('selectedPopup', false);
         $t.togglePopup('colorPopup', false);
         $t.togglePopup('verseMemoPopup', false);
+
+        $t.memoTextarea.value = '';
     }
 
     const btnFnc = {
@@ -1090,18 +1092,7 @@ function SelectControl() {
 
                 const now = new Date();
 
-                // const memoData = [...selectedScript].map((el) => ({
-                //     id: el.dataset.bibleCode,
-                //     memos: [
-                //         {
-                //             memoId: now.getTime(),
-                //             verseInfo: verseInfo2,
-                //             text: textarea.value
-                //         }
-                //     ]
-                // }));
                 const targetIds = [...selectedScript].map((el) => el.dataset.bibleCode);
-
 
                 versedb.query('r', targetIds, {
                     success: (data) => {
@@ -1112,8 +1103,7 @@ function SelectControl() {
                                 memoId: now.getTime(),
                                 verseInfo: verseInfo2,
                                 text: textarea.value
-                            })
-
+                            });
 
                             versedb.query('u', {
                                 ...oldData,
@@ -1139,18 +1129,23 @@ function SelectControl() {
                         })
 
                         alert('메모등록이 완료되었습니다.');
+                        textarea.value = '';
                         $t.togglePopup('verseMemoPopup', false);
                         $t.handle();
                     }
                 });
 
             } else if (closeVerseMemoPopupBtn) {
-                if (textarea.value.length && confirm('메모 내용이 있습니다.\n그래도 취소하시겠습니까?')) {
+                if (textarea.value.length) {
+                    if (!confirm('메모 내용이 있습니다.\n그래도 취소하시겠습니까?')) return;
                     $t.toggleMemoPopup(false, () => {
                         textarea.value = '';
                     });
                 } else {
-                    $t.toggleMemoPopup(false);
+                    // if (!confirm('메모를 취소하시겠습니까?')) return;
+                    $t.toggleMemoPopup(false, () => {
+                        textarea.value = '';
+                    });
                 }
             }
         });
@@ -1840,7 +1835,7 @@ function formatDateTime(d) {
     const day = week[d.getDay()];
     const hh = String(d.getHours()).padStart(2, '0');
     const min = String(d.getMinutes()).padStart(2, '0');
-    return `${yyyy}.${mm}.${dd}(${day}) ${hh}:${min}`;
+    return `${yyyy}. ${mm}. ${dd}(${day}) ${hh}:${min}`;
 }
 
 function createMemo(target, memo) {

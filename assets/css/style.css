@@ -718,14 +718,14 @@ body {
 .calendar table td.ing>div strong {
     background: #ffedb3;
 
-    background: linear-gradient(-45deg, var(--main-color) 50%, transparent 0);
+    background: linear-gradient(0, var(--main-color) 50%, transparent 0);
     color: #fff;
     /* animation: reading1 .2s infinite; */
 }
 
 .calendar table td.ing>div strong.today {
 
-    background: linear-gradient(-45deg, var(--main-color) 50%, #fff 0);
+    background: linear-gradient(0, var(--main-color) 50%, #fff 0);
     color: #000;
 }
 

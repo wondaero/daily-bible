@@ -279,10 +279,25 @@
         </div>
         <div id="bibleVersionPopup" class="bible-version-popup every-popup">
             <button class="close-btn" data-id="closePopupBtn"></button>
-            <ul>
-                <li>개역한글</li>
-                <li>개역개정</li>
-            </ul>
+            <header><strong>성경선택</strong></header>
+            <div class="popup-main">
+                <ul>
+                    <li>
+                        <label class="checkbox1">
+                            <input type="radio" name="bibleVersion" value="han" checked />
+                            <span></span>
+                            <strong>개역한글</strong>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="checkbox1">
+                            <input type="radio" name="bibleVersion" value="gae" />
+                            <span></span>
+                            <strong>개역개정</strong>
+                        </label>
+                    </li>
+                </ul>
+            </div>
         </div>
     </aside>
     <aside id="loadingLayer" class="loading-layer active">

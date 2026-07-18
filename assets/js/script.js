@@ -85,25 +85,29 @@ window.addEventListener('DOMContentLoaded', () => {
     //테마 적용
     const savedTheme = window.localStorage.getItem('theme');
     if (savedTheme) document.body.dataset.theme = savedTheme;
+
+    //성경버전 적용
+    const savedBibleVersion = window.localStorage.getItem('bibleVersion');
+    if (savedBibleVersion) document.querySelector(`input[value="${savedBibleVersion}"]`)?.checked = true;
 });
 
 async function getData() {
     const [res1, res2, res3] = await Promise.all([
         fetch('data/개역한글.json'),
-        fetch('data/개역개정.json'),
+        isApp ? fetch('data/개역개정.json') : undefined,
         fetch('data/guide/mccheyne.json'),
     ])
 
-    if (!res1.ok || !res2.ok || !res3.ok) throw new Error('데이터 로드 실패');
+    if (!res1.ok || (isApp && !res2.ok) || !res3.ok) throw new Error('데이터 로드 실패');
 
     const [han, gae, guide] = await Promise.all([
         res1.json(),
-        res2.json(),
+        isApp ? res2.json() : undefined,
         res3.json()
     ])
 
     bibleMap = parseBible2Data(han);
-    bible2Map = parseBible2Data(gae);
+    if (isApp) bible2Map = parseBible2Data(gae);
     dailyData = guide.data;
 }
 
@@ -154,10 +158,15 @@ function closePage(cb) {
     if (cb && typeof cb === 'function') cb();
 }
 
-function openPopup(popupId, cb) {
+function openPopup(popupId, cb, isReplace = false) {
     closePopup();
 
-    history.pushState({ type: 'popup', id: popupId }, '');
+    if (isReplace) {
+        history.replaceState({ type: 'popup', id: popupId }, '');
+    } else {
+        history.pushState({ type: 'popup', id: popupId }, '');
+    }
+
 
     document.getElementById('dimLayer').classList.add('active');
     document.getElementById(popupId).classList.add('active');
@@ -341,45 +350,10 @@ document.getElementById('nextMonthBtn').addEventListener('click', () => {
 })
 
 document.getElementById('hamburger').addEventListener('click', () => {
-    // openPopup('menuPopup', () => {
-    //     const btn = document.getElementById('chkAllDataBtn');
-    //     const thisYear = document.getElementById('yearInput').querySelector('span').textContent;
-    //     const thisMonth = document.getElementById('yearInput').querySelector('strong').textContent;
-    //     btn.querySelector('strong').textContent = thisMonth;
-
-    //     btn.dataset.month = thisMonth;
-    //     btn.dataset.year = thisYear;
-    // });
     openPopup('menuPopup', () => {
 
     });
 })
-
-
-// document.querySelectorAll('#menuPopup [name="bibleType"]').forEach((bt) => {
-//     bt.addEventListener('change', (e) => {
-//         const val = e.target.value;
-//         const isChked = e.target.checked;
-
-//         bibleType[val] = isChked;
-
-//         let anyChked = isChked;
-
-//         if(!isChked){
-//             for(let key in bibleType){
-//                 if(bibleType[key]) anyChked = true;
-//             }
-//         }
-
-//         if(!anyChked){
-//             alert('적어도 1개는 선택되어야 합니다.');
-//             e.target.checked = !isChked;
-//             bibleType[val] = !bibleType[val];
-//         }
-
-//         window.localStorage.setItem('bibleType', JSON.stringify(bibleType));
-//     })
-// })
 
 
 
@@ -804,13 +778,13 @@ function bibleTemplate(d, org) {
 
     //이부분이 [보기]버튼 눌렀을 때
     li.querySelector('button').addEventListener('click', e => {
+        const bibleVersion = isApp ? (window.localStorage.getItem('bibleVersion') || 'han') : 'han';
 
         openPage('biblePage');
 
         const targetInput = e.currentTarget.closest('li').querySelector('input');
 
-        const isChked = targetInput.checked;
-        document.querySelector('#biblePage input').checked = isChked;
+        document.querySelector('#biblePage input').checked = targetInput.checked;
 
         document.querySelector('#biblePage input').onchange = e => {
             targetInput.checked = e.currentTarget.checked;
@@ -849,7 +823,7 @@ function bibleTemplate(d, org) {
 
         tts.initData();
 
-        thisBible.forEach((dd, idx) => {
+        (bibleVersion === 'han' ? thisBible : thisBible2).forEach((dd, idx) => {
             // const tr = document.createElement('tr');
             // tr.dataset.verseNo = dd.VerseNo;
             // tr.innerHTML = `
@@ -870,18 +844,6 @@ function bibleTemplate(d, org) {
                 </div>
             `;
             bibleScriptTag.appendChild(div);
-
-
-            // const li = document.createElement('li');
-            // li.dataset.verseNo = dd.VerseNo;
-            // li.innerHTML = `
-            //     <strong>${dd.VerseNo}</strong>
-            //     <div>
-            //         <p class="${bibleType[1] ? '' : 'hidden'}">${dd.BibleScript}</p>
-            //         <p class="${bibleType[2] ? '' : 'hidden'}">${thisBible2[idx].BibleScript}</p>
-            //     </div>
-            // `;
-            // document.getElementById('bibleScript2').appendChild(li);
 
             tts.pushArray(tts.createSpeechUtterance(dd.VerseNo, dd.BibleScript));
         });
@@ -1304,18 +1266,6 @@ window.onload = async function () {
         key: 'id'
     });
 
-    // const curBibleType = window.localStorage.getItem('bibleType');
-
-    // if(curBibleType){
-    //     bibleType = JSON.parse(curBibleType);
-
-    //     for(let key in bibleType){
-    //         document.querySelector('#menuPopup [value="' + key + '"]').checked = bibleType[key];
-    //     }
-    // }else{
-    //     window.localStorage.setItem('bibleType', JSON.stringify({1: true, 2: false}));
-    //     document.querySelector('#menuPopup [value="1"]').checked = true;
-    // }
 
     getData().then(() => {
         dailyData2 = dailyData.map(d => ({ id: `${d.month}_${d.day}`, dailyChked: d.readings.split('/') }));
@@ -1450,36 +1400,6 @@ function deleteDatabase() { //테스트용
 }
 
 
-// if (!Kakao.isInitialized()) {
-//     Kakao.init('e14b339e334e3a9bb5d3a6b66a9859fa'); // 사용하려는 앱의 JavaScript 키 입력
-// }
-
-// document.getElementById('shareBtn').addEventListener('click', () => {
-//     Kakao.Share.sendDefault({
-//         objectType: 'feed',
-//         content: {
-//         title: '매일성경',
-//         description: `#매일성경 #매일감동 #일상`,
-//         link: {
-//             // [내 애플리케이션] > [플랫폼] 에서 등록한 사이트 도메인과 일치해야 함
-//             mobileWebUrl: 'https://developers.kakao.com',
-//             webUrl: 'https://developers.kakao.com',
-//         },
-//         },
-
-//         buttons: [
-//         {
-//             title: '읽기',
-//             link: {
-//             mobileWebUrl: 'https://wondaero.github.io/daily-bible',
-//             webUrl: 'https://wondaero.github.io/daily-bible',
-//             },
-//         },
-//         ],
-//     });
-// })
-
-
 function addCommasToNumbers(input) {
     // 숫자 앞뒤에 쉼표 추가
     return input.replace(/(\d+)/g, (match) => `,${match},`).replace(/^,|,$/g, '');
@@ -1524,13 +1444,11 @@ document.addEventListener('visibilitychange', () => {
 
 window.addEventListener('popstate', (e) => {
     if (e.state === null) {
-        closePopup();
         selectControl.closeAllPopup();
         closePage(() => {
             document.getElementById('calendarPage').classList.remove('hidden');
         });
     } else if (e.state.type === 'page') {
-        closePopup();
         closePage(() => {
             document.getElementById('calendarPage').classList.remove('hidden');
         });
@@ -1540,7 +1458,11 @@ window.addEventListener('popstate', (e) => {
 });
 
 document.getElementById('setBibleVersion').addEventListener('click', () => {
-    alert(`준비중입니다.${isApp ? '..' : ''}`);
+    if (isApp) {
+        openPopup('bibleVersionPopup', undefined, true);
+    } else {
+        alert('웹은 성경선택이 불가능합니다.');
+    }
 });
 
 document.getElementById('backupBtn').addEventListener('click', () => {
@@ -1700,16 +1622,6 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
 
 });
 
-// document.getElementById('chkAllDataBtn').addEventListener('click', (e) => {
-//     const thisYear = e.currentTarget.dataset.year;
-//     const thisMonth = e.currentTarget.dataset.month;
-
-//     const cf = confirm(`${thisYear}년 ${thisMonth}월의 모든데이터를 체크하시겠습니까?`);
-
-//     if(cf){
-
-//     }
-// })
 
 function setMemo(oldMemo, newMemo) {
     if (oldMemo && newMemo) {
@@ -1908,5 +1820,10 @@ function createMemoToggleBtn(target) {
         const isChked = e.currentTarget.checked;
         label.closest('[data-id="verseWrapper"]').querySelector('ul').classList[isChked ? 'remove' : 'add']('hidden');
     }
-
 }
+
+document.getElementById('bibleVersionPopup').addEventListener('change', e => {
+    window.localStorage.setItem('bibleVersion', e.target.value);
+    alert('성경 버전이 변경되었습니다');
+    history.back();
+})

@@ -7,6 +7,8 @@ let indexeddb;
 let versedb;
 let orgTxt = '';
 
+const isApp = typeof window !== 'undefined' && !!window.Capacitor;
+
 let bibleType = {
     1: false,
     2: true
@@ -1535,6 +1537,10 @@ window.addEventListener('popstate', (e) => {
     } else {
 
     }
+});
+
+document.getElementById('setBibleVersion').addEventListener('click', () => {
+    alert(`준비중입니다.${isApp ? '..' : ''}`);
 });
 
 document.getElementById('backupBtn').addEventListener('click', () => {

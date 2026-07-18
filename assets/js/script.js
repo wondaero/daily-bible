@@ -88,7 +88,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     //성경버전 적용
     const savedBibleVersion = window.localStorage.getItem('bibleVersion');
-    if (savedBibleVersion) document.querySelector(`input[value="${savedBibleVersion}"]`)?.checked = true;
+    if (savedBibleVersion) document.querySelector(`input[value="${savedBibleVersion}"]`).checked = true;
 });
 
 async function getData() {

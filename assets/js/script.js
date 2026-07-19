@@ -1025,9 +1025,14 @@ function SelectControl() {
             const verseInfo = selectedScript[0].dataset.verseNo + (len > 1 ? `-${String(selectedScript[len - 1].dataset.verseNo)}` : '');
             let txt = `[${bibleInfo}:${verseInfo}]`;
 
-            selectedScript.forEach((el) => {
-                txt += '\n' + el.dataset.verseNo + ' ' + el.querySelector('[data-id="bibleScript"]').textContent.trim();
-            })
+
+            if (len > 1) {
+                selectedScript.forEach((el) => {
+                    txt += '\n' + el.dataset.verseNo + ' ' + el.querySelector('[data-id="bibleScript"]').textContent.trim();
+                })
+            } else {
+                txt += '\n' + selectedScript[0].querySelector('[data-id="bibleScript"]').textContent.trim();
+            }
 
             navigator.clipboard.writeText(txt)
                 .then(() => alert('클립보드에 복사했습니다.'))

@@ -89,6 +89,21 @@ window.addEventListener('DOMContentLoaded', () => {
     //성경버전 적용
     const savedBibleVersion = window.localStorage.getItem('bibleVersion');
     if (savedBibleVersion) document.querySelector(`input[value="${savedBibleVersion}"]`).checked = true;
+
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const hours = now.getHours();
+
+    let season = 'winter';
+
+    if (month >= 3 && month <= 5) season = 'spring';
+    else if (month >= 6 && month <= 8) season = 'summer';
+    else if (month >= 9 && month <= 11) season = 'autumn';
+
+    const timeMode = (hours >= 6 && hours < 18) ? 'light' : 'night';
+
+    document.body.dataset.bg = `${season}-${timeMode}`;
+
 });
 
 async function getData() {
@@ -1824,6 +1839,6 @@ function createMemoToggleBtn(target) {
 
 document.getElementById('bibleVersionPopup').addEventListener('change', e => {
     window.localStorage.setItem('bibleVersion', e.target.value);
-    alert('성경 버전이 변경되었습니다');
+    alert('성경 버전이 변경되었습니다.');
     history.back();
 })

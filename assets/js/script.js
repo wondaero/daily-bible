@@ -90,8 +90,26 @@ window.addEventListener('DOMContentLoaded', () => {
     const savedBibleVersion = window.localStorage.getItem('bibleVersion');
     if (savedBibleVersion) document.querySelector(`input[value="${savedBibleVersion}"]`).checked = true;
 
+    preloadImages();
+    setBackGround();
+
+});
+
+function preloadImages() {
+    const seasons = ['spring', 'summer', 'autumn', 'winter']
+    const modes = ['light', 'night']
+
+    seasons.forEach(s => {
+        modes.forEach(m => {
+            const img = new Image();
+            img.src = `./assets/imgs/bg_${s}_${m}.webp`;
+        })
+    })
+}
+
+function setBackGround(targetMonth) {
     const now = new Date();
-    const month = now.getMonth() + 1;
+    const month = targetMonth || now.getMonth() + 1;
     const hours = now.getHours();
 
     let season = 'winter';
@@ -103,8 +121,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const timeMode = (hours >= 6 && hours < 18) ? 'light' : 'night';
 
     document.body.dataset.bg = `${season}-${timeMode}`;
+}
 
-});
 
 async function getData() {
     const [res1, res2, res3] = await Promise.all([
@@ -472,6 +490,7 @@ function getCalendar(target, setDate) {
     //ui초기화
     calendarTarget.innerHTML = '';
 
+
     const memoBtn = document.querySelector('[data-id="memoBtn"]');
     if (memoBtn) memoBtn.remove();
 
@@ -480,6 +499,10 @@ function getCalendar(target, setDate) {
     const nowD = date.getDate();	//index아님
     const tmpDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     const lastDay = tmpDate.getDate();	//마지막일
+
+
+    //배경 변경
+    setBackGround(date.getMonth() + 1);
 
     tmpDate.setDate(1);
     const dayFirst = tmpDate.getDay();	//금월 첫 요일

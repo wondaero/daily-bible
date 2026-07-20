@@ -128,6 +128,10 @@ body[data-bg="winter-night"] {
     background-image: url('../imgs/bg_winter_night.webp');
 }
 
+body {
+    /* transition: background .5s; */
+}
+
 [data-role].hidden {
     display: none;
 }

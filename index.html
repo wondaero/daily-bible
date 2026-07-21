@@ -83,6 +83,11 @@
             </aside>
         </div>
     </section>
+    <!-- <section id="searchBiblePage" data-role="page" class="search-bible-page hidden">
+        <ul id="searchBookList"></ul>
+        <ul id="searchChapterList"></ul>
+        <ul id="searchVerseList"></ul>
+    </section> -->
 
     <section id="biblePage" data-role="page" class="bible-page hidden">
         <header>
@@ -130,8 +135,8 @@
                 <button class="close-btn" data-id="closePageBtn"></button>
             </div>
         </header>
-        <div class="bible-page-main mx-w1024">
-            <div id="bibleScript" class="bible-script" data-font="20"></div>
+        <div class="bible-page-main">
+            <div id="bibleScript" class="bible-script mx-w1024" data-font="20"></div>
             <div class="read-toggle-wrapper">
                 <label class="checkbox1">
                     <input type="checkbox" />
@@ -166,10 +171,6 @@
                 <button id="closeVerseMemoPopupBtn" class="flex-center">취소</button>
                 <button id="regVerseMemoBtn" class="flex-center">적용</button>
             </div>
-            <!-- <div class="flex-center bottom-btns">
-                <button id="closeColorPopupBtn" class="flex-center">취소</button>
-                <button id="setColorBtn" class="flex-center">적용</button>
-            </div> -->
         </aside>
         <aside id="colorPopup" class="bible-page-common-popup flex-col color-popup">
             <div class="btns mx-w1024">

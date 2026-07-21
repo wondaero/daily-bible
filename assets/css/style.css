@@ -184,20 +184,21 @@ body {
 }
 
 .calendar-page-main-wrapper {
-    max-width: 600px;
     position: relative;
     flex: 1;
-    min-height: 0;
+    overflow-y: auto;
+    /* min-height: 0; */
+    width: 100%;
     /* 이거 안주면 height 이상함 */
 }
 
 .calendar-page-main {
+    max-width: 600px;
+    margin: 0 auto;
     padding: 10px 10px 60px;
-    height: 100%;
     display: flex;
     align-items: center;
     flex-direction: column;
-    overflow-y: auto;
 }
 
 .calendar-section {
@@ -813,7 +814,7 @@ body {
     top: 2px;
     right: 2px;
     /* transform: translateX(-50%); */
-    box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+    box-shadow: 0 0 8px rgba(255, 0, 0, .8);
     background: red;
 }
 
@@ -1344,15 +1345,15 @@ canvas {
 
 
 .menu-wrapper {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
+    position: fixed;
+    top: 0;
+    right: 0;
+
     width: 40px;
     height: 40px;
     border-radius: 50%;
     background: #fff;
     cursor: pointer;
-    box-shadow: 0 0 4px rgba(0, 0, 0, .5);
 }
 
 .menu-wrapper .hamburger {
@@ -1568,16 +1569,6 @@ canvas {
 .menu-wrapper .hamburger > span:last-of-type{
     transform: rotate(-60deg);
 } */
-
-@media (min-width: 640px) {
-    .menu-wrapper {
-        position: fixed;
-        box-shadow: unset;
-        top: 0;
-        right: 0;
-        bottom: unset;
-    }
-}
 
 @media (max-width: 760px) {
     .dim-layer .every-popup {

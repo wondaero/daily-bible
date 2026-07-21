@@ -3,6 +3,8 @@ let dailyData2;
 let bibleMap = {};
 let bible2Map = {};
 
+const bibleMeta = [];
+
 let indexeddb;
 let versedb;
 let orgTxt = '';
@@ -91,8 +93,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (savedBibleVersion) document.querySelector(`input[value="${savedBibleVersion}"]`).checked = true;
 
     preloadImages();
-    setBackGround();
-
 });
 
 function preloadImages() {
@@ -107,7 +107,7 @@ function preloadImages() {
     })
 }
 
-function setBackGround(targetMonth) {
+function setBackground(targetMonth) {
     const now = new Date();
     const month = targetMonth || now.getMonth() + 1;
     const hours = now.getHours();
@@ -502,7 +502,7 @@ function getCalendar(target, setDate) {
 
 
     //배경 변경
-    setBackGround(date.getMonth() + 1);
+    setBackground(date.getMonth() + 1);
 
     tmpDate.setDate(1);
     const dayFirst = tmpDate.getDay();	//금월 첫 요일
@@ -1218,11 +1218,6 @@ bibleScriptTag.addEventListener('click', (e) => {
 })
 
 
-
-
-
-
-
 document.getElementById('allChker').addEventListener('change', e => {
     const inps = document.querySelectorAll('#bibleList input');
 
@@ -1313,7 +1308,10 @@ window.onload = async function () {
     getData().then(() => {
         dailyData2 = dailyData.map(d => ({ id: `${d.month}_${d.day}`, dailyChked: d.readings.split('/') }));
 
+        getBibleMeta();
         getCalendar('#calendar');
+
+        // createBookList();
 
         DOM.loadingLayer.classList.remove('active');
     }).catch(err => {
@@ -1870,3 +1868,48 @@ document.getElementById('bibleVersionPopup').addEventListener('change', e => {
     alert('성경 버전이 변경되었습니다.');
     history.back();
 })
+
+function getBibleMeta() {
+
+    bookName.forEach((name, idx) => {
+        const bookId = idx + 1;
+        bibleMeta[idx] = { name: name, chapters: [] };
+
+        let chapter = 1;
+        while (true) {
+            const verses = bibleMap[`${bookId}_${chapter}`];
+            if (!verses) break;
+
+            bibleMeta[idx].chapters[chapter - 1] = verses.length;
+            chapter++;
+        }
+    })
+}
+
+function searchItem(content, name, cb) {
+    const li = document.createElement('li');
+
+    li.innerHTML = `
+        <label>
+            <input type="radio" name="${name}" />
+            <strong>${content}<strong>
+        </label>
+    `;
+
+    if (typeof cb === 'function') {
+        li.querySelector('input').onchange = e => cb(e);
+    }
+
+    return li;
+}
+function createBookList() {
+    const target = document.getElementById('searchBookList');
+
+    target.innerHTML = '';
+
+    bibleMeta.forEach(b => {
+        const li = searchItem(b.name, 'searchBook');
+        li.querySelector('input').dataset.id = b.id;
+        target.appendChild(li);
+    })
+}

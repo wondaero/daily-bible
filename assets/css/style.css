@@ -551,6 +551,9 @@ body {
     height: 150px;
     margin-right: 5px;
     overflow-y: auto;
+    /* 위쪽에 연도를 추가할 때 브라우저가 스크롤 위치를 자동 보정하면
+       JS의 보정과 겹쳐 위치가 튄다. 보정은 JS가 직접 한다. */
+    overflow-anchor: none;
 }
 
 .dim-layer .date-popup ul li {

@@ -3,6 +3,19 @@ let dailyData2;
 let bibleMap = {};
 let bible2Map = {};
 
+//읽기표를 '월_일'로 바로 찾기 위한 색인(매 클릭마다 365건을 훑지 않도록)
+let dailyDataMap = new Map();
+
+//연/월 선택 팝업의 선택 상태.
+//목록을 잘라내도 선택이 사라지지 않도록 DOM(li.active)이 아니라 여기서 들고 있는다.
+let selectedYear = null;
+let selectedMonth = null;
+
+const YEAR_INIT_RANGE = 50;    //팝업을 열 때 현재 연도 기준 앞뒤로 만드는 범위
+const YEAR_PAGE = 30;          //끝에 가까워질 때마다 더 만드는 연도 수
+const YEAR_KEEP_MAX = 150;     //목록에 유지하는 최대 개수(넘으면 반대쪽 끝을 잘라낸다)
+const YEAR_PREFETCH = 8;       //끝에서 이만큼(칸 수) 남았을 때 미리 채운다
+
 //이미 받아둔 권. bookId -> 로딩 Promise
 const loadedBooks = new Map();
 
@@ -283,123 +296,165 @@ document.getElementById('todayBtn').addEventListener('click', () => {
     getCalendar('#calendar');
 })
 
-function addListItemClick(li, targets) {
+//li 한 칸 높이를 CSS에 맞춰 하드코딩하지 않고 실제 값을 읽는다
+function getListItemHeight(list) {
+    const first = list.querySelector('li');
+    return (first && first.offsetHeight) || 30;
+}
+
+//선택한 항목이 목록 한가운데 오도록 스크롤한다.
+//칸 수를 가정하지 않고 실제 높이로 계산하므로 팝업/칸 크기가 바뀌어도 맞는다.
+function centerListItem(list, idx) {
+    const itemHeight = getListItemHeight(list);
+    const viewHeight = list.clientHeight || itemHeight * 5;
+
+    list.scrollTop = (idx * itemHeight) - ((viewHeight - itemHeight) / 2);
+}
+
+function addListItemClick(li, onSelect) {
     li.addEventListener('click', e => {
-        const lis2 = document.querySelectorAll(targets);
         const targetLi = e.currentTarget;
+        const list = targetLi.closest('ul');
 
-        let currIdx;
+        //전체를 훑지 않고 현재 선택된 항목만 해제한다
+        const prevActive = list.querySelector('li.active');
+        if (prevActive) prevActive.classList.remove('active');
 
-        lis2.forEach((li2, idx) => {
-            li2.classList.remove('active');
-
-            if (targetLi.textContent === li2.textContent) currIdx = idx;
-        });
-
-        targetLi.closest('ul').scrollTop = (currIdx - 2) * 30;
         targetLi.classList.add('active');
-    })
 
+        centerListItem(list, [...list.children].indexOf(targetLi));
+
+        if (typeof onSelect === 'function') onSelect(+targetLi.textContent);
+    })
+}
+
+function createYearLi(year) {
+    const li = document.createElement('li');
+
+    li.textContent = year;
+    if (year === selectedYear) li.classList.add('active');
+
+    addListItemClick(li, v => selectedYear = v);
+
+    return li;
+}
+
+//목록이 무한정 늘어나지 않도록 반대쪽 끝을 잘라낸다.
+//선택 상태는 selectedYear가 들고 있으므로, 잘라낸 연도로 다시 스크롤하면 active가 복원된다.
+function trimYearList(list, side) {
+    const lis = list.querySelectorAll('li');
+    const over = lis.length - YEAR_KEEP_MAX;
+
+    if (over <= 0) return;
+
+    for (let i = 0; i < over; i++) {
+        (side === 'top' ? lis[i] : lis[lis.length - 1 - i]).remove();
+    }
 }
 
 document.getElementById('yearInput').addEventListener('click', (e) => {
     openPopup('datePopup');
 
+    const yearInput = e.currentTarget;
+
+    //현재 달력이 보고 있는 연/월을 선택 상태의 출발점으로 삼는다
+    selectedYear = +yearInput.querySelector('span').textContent;
+    selectedMonth = +yearInput.querySelector('strong').textContent;
+
     const yearList = document.getElementById('yearList');
-
     yearList.innerHTML = '';
-    for (let i = 0; i < 101; i++) {
-        const li = document.createElement('li');
-        //현재 연도 기준
-        const thisYear = +e.currentTarget.querySelector('span').textContent;
-        li.textContent = thisYear - 50 + i;
 
-        if (i === 50) li.classList.add('active');
+    const startYear = Math.max(0, selectedYear - YEAR_INIT_RANGE);
 
-        addListItemClick(li, '#yearList li');
-
-        yearList.appendChild(li);
+    const fragment = document.createDocumentFragment();
+    for (let y = startYear; y <= selectedYear + YEAR_INIT_RANGE; y++) {
+        fragment.appendChild(createYearLi(y));
     }
+    yearList.appendChild(fragment);
 
-    yearList.scrollTop = 30 * 49;
+    centerListItem(yearList, selectedYear - startYear);
 
-    const monthList = document.querySelector('#monthList');
+    const monthList = document.getElementById('monthList');
 
     monthList.querySelectorAll('li').forEach((li, idx) => {
-        li.classList.remove('active');
-        if (+li.textContent === +e.currentTarget.querySelector('strong').textContent) {
-            li.classList.add('active');
-            monthList.scrollTop = 30 * (idx - 1);
-        }
+        const isActive = +li.textContent === selectedMonth;
+
+        li.classList.toggle('active', isActive);
+        if (isActive) centerListItem(monthList, idx);
     })
 })
 
+//목록을 고치는 동안 발생하는 scroll 이벤트로 다시 들어오지 않게 막는다
+let isGrowingYearList = false;
+
 document.getElementById('yearList').addEventListener('scroll', e => {
+    if (isGrowingYearList) return;
+
     const yearList = e.currentTarget;
-    const currScroll = yearList.scrollTop;
 
-    const case1 = currScroll < 1 ? 1 : currScroll + e.currentTarget.clientHeight + 1 > e.currentTarget.scrollHeight ? 2 : 0;
-    if (case1 === 0) return;
+    //끝에 완전히 닿고 나서 채우면 스크롤이 한 번 멈췄다가 다시 출발해 끊겨 보인다.
+    //벽에 닿기 전에 미리 채운다.
+    const threshold = getListItemHeight(yearList) * YEAR_PREFETCH;
+    const atTop = yearList.scrollTop < threshold;
+    const atBottom = yearList.scrollTop + yearList.clientHeight > yearList.scrollHeight - threshold;
 
-    const lis = e.currentTarget.querySelectorAll('li');
-    const mnYear = lis[0].textContent;
-    const mxYear = lis[lis.length - 1].textContent;
-    const yearCnt = 50;
+    if (!atTop && !atBottom) return;
 
-    if (case1 === 1) {
-        for (let i = 0; i < yearCnt; i++) {
-            const li = document.createElement('li');
-            const thisYear = mnYear - 1 - i;
-            if (thisYear < 0) break;
+    const lis = yearList.querySelectorAll('li');
+    const fragment = document.createDocumentFragment();
 
-            li.textContent = thisYear;
+    isGrowingYearList = true;
 
-            addListItemClick(li, '#yearList li');
+    try {
+        if (atTop) {
+            const mnYear = +lis[0].textContent;
+            const from = Math.max(0, mnYear - YEAR_PAGE);
 
-            yearList.prepend(li);
-            yearList.scrollTop = 30 * yearCnt;
+            if (from >= mnYear) return;   //0년까지 왔으면 더 만들 게 없다
+
+            for (let y = from; y < mnYear; y++) fragment.appendChild(createYearLi(y));
+
+            //위쪽에 붙으면 보던 위치가 아래로 밀린다. 실제로 늘어난 높이만큼만 되돌린다.
+            const before = yearList.scrollHeight;
+            yearList.prepend(fragment);
+            yearList.scrollTop += yearList.scrollHeight - before;
+
+            trimYearList(yearList, 'bottom');   //아래쪽은 화면 밖이라 보정 불필요
+        } else {
+            const mxYear = +lis[lis.length - 1].textContent;
+
+            for (let y = mxYear + 1; y <= mxYear + YEAR_PAGE; y++) fragment.appendChild(createYearLi(y));
+
+            yearList.appendChild(fragment);     //아래쪽은 보정 불필요
+
+            //위쪽을 잘라내면 보던 위치가 위로 튄다. 줄어든 높이만큼 빼준다.
+            const before = yearList.scrollHeight;
+            trimYearList(yearList, 'top');
+            yearList.scrollTop -= before - yearList.scrollHeight;
         }
-
-    } else if (case1 === 2) {
-
-        for (let i = 0; i < yearCnt; i++) {
-            const li = document.createElement('li');
-            const thisYear = +mxYear + 1 + i;
-
-            li.textContent = thisYear;
-
-            addListItemClick(li, '#yearList li');
-
-            yearList.appendChild(li);
-        }
-
+    } finally {
+        isGrowingYearList = false;
     }
-
 });
 
 document.querySelectorAll('#monthList li').forEach(li => {
-    addListItemClick(li, '#monthList li');
+    addListItemClick(li, v => selectedMonth = v);
 })
 
 document.getElementById('applyDateBtn').addEventListener('click', () => {
-    const yearList = document.getElementById('yearList');
-    const monthList = document.getElementById('monthList');
-
-    const selectedYear = yearList.querySelector('li.active');
-    const selectedMonth = monthList.querySelector('li.active');
-
-    if (!selectedYear) {
+    //목록을 잘라내도 선택이 유지되도록 DOM이 아니라 변수를 읽는다
+    if (selectedYear === null) {
         alert('year을 선택해주세요.');
         return;
     }
-    if (!selectedMonth) {
+    if (selectedMonth === null) {
         alert('month를 선택해주세요.');
         return;
     }
 
     history.back();
 
-    getCalendar('#calendar', { y: selectedYear.textContent, m: selectedMonth.textContent, d: 1 });
+    getCalendar('#calendar', { y: selectedYear, m: selectedMonth, d: 1 });
 })
 
 document.getElementById('prevMonthBtn').addEventListener('click', () => {
@@ -455,7 +510,7 @@ regMemoBtn.addEventListener('click', () => {
         success: () => {
             history.back();
 
-            const targetTd = document.querySelector(`#calendar [data-date="${thisDate2.split('_')[2]}"]`);
+            const targetTd = getCalendarCell(thisDate2);
             const memoBtn = document.querySelector('[data-id="memoBtn"]');
 
             if (textarea.value !== '') {
@@ -508,6 +563,26 @@ function parseBook(txt) {
     })
 
     return bookArr2;
+}
+
+//'19b3-7' -> ['19b3','19b4','19b5','19b6','19b7']. 범위 표기가 아니면 그대로 한 건만 돌려준다.
+//절 범위는 '-'가 아니라 '~'를 쓰므로(19b119:1~8) 여기 걸리지 않는다.
+function expandRange(code) {
+    const [book, range] = code.split('b');
+
+    if (!range || range.indexOf('-') < 0) return [code];
+
+    const [from, to] = range.split('-');
+    const list = [];
+
+    for (let i = +from; i <= +to; i++) list.push(`${book}b${i}`);
+
+    return list;
+}
+
+//'2026_9_24' 또는 '9_24' 형태에서 달력의 해당 날짜 칸을 찾는다
+function getCalendarCell(dateId) {
+    return document.querySelector(`#calendar td[data-date="${dateId.split('_').pop()}"]`);
 }
 
 function isEqualArr(a, b) {
@@ -577,35 +652,38 @@ function getCalendar(target, setDate) {
     }
 
     //아래 컨텐츠
+    //만든 칸을 그대로 들고 있는다. 매번 document 전체에서 다시 찾지 않기 위함.
+    const allCells = [];        //data-block-idx 순서
+    const dayCells = [];        //날짜(1~말일)로 찾기
+
     const tBodyTag = document.createElement('TBODY');
     tableTag.appendChild(tBodyTag);
     for (let i = 0; i < rowCnt; i++) {
         const trTag = appendTag(tBodyTag, 'TR');
 
         for (let j = 0; j < 7; j++) {
-            const tdTag = appendTag(trTag, 'TD', {
+            allCells.push(appendTag(trTag, 'TD', {
                 attr: { 'data-block-idx': ((i * 7) + (j + 1)) }
-            });
+            }));
         }
     }
 
     for (let i = 0; i < lastDay; i++) {
-        const blockTarget = document.querySelector('[data-block-idx="' + (i + dayFirst + 1) + '"]');
+        const blockTarget = allCells[i + dayFirst];
+        dayCells[i + 1] = blockTarget;
         blockTarget.addEventListener('click', e => {
             cancelAnimationFrame(raf);
             const oldSnow = document.querySelector('[data-effect="snow"]');
             if (oldSnow) oldSnow.remove();
 
-            const allBlock = document.querySelectorAll('[data-block-idx]');
-
-            allBlock.forEach(block => block.classList.remove('on'));
+            allCells.forEach(block => block.classList.remove('on'));
             blockTarget.classList.add('on');
 
             const thisYear = +document.getElementById('yearInput').querySelector('span').textContent;
             const thisMonth = +document.getElementById('yearInput').querySelector('strong').textContent;
             const thisDate = +e.currentTarget.dataset.date;
 
-            const nowData = dailyData.filter(d => d.month === thisMonth && d.day === thisDate);
+            const nowData = dailyDataMap.get(`${thisMonth}_${thisDate}`);
 
             const oldBibleList = document.getElementById('bibleList');
             if (oldBibleList) oldBibleList.remove();
@@ -620,18 +698,11 @@ function getCalendar(target, setDate) {
             document.getElementById('bibleSection').appendChild(bibleListTag);
 
             //맥체인 가이드는 365일치라 2/29 같은 날은 데이터가 없다. 이 경우 빈 목록으로 둔다.
-            if (nowData.length) nowData[0].readings.split('/').forEach(d => {
-                const withRange1 = d.split('-');
+            if (nowData) nowData.readings.split('/').forEach(d => {
+                const expanded = expandRange(d);
+                const org = expanded.length > 1 ? d : undefined;   //범위에서 펼쳐진 항목만 원본 표기를 남긴다
 
-                if (withRange1.length === 2) {
-                    const start = withRange1[0].split('b')[1];
-                    const bibleCnt = +withRange1[1] - +start;
-                    for (let i = 0; i < bibleCnt + 1; i++) {
-                        bibleListTag.appendChild(bibleTemplate(withRange1[0].split('b')[0] + 'b' + (+start + i), d));
-                    }
-                } else {
-                    bibleListTag.appendChild(bibleTemplate(d));
-                }
+                expanded.forEach(code => bibleListTag.appendChild(bibleTemplate(code, org)));
             });
 
             const memo = () => {
@@ -721,8 +792,8 @@ function getCalendar(target, setDate) {
     }
 
     for (let i = 0; i < 6; i++) {	//토일 색 변경
-        const redTarget = document.querySelector('[data-block-idx="' + ((i * 7) + 1) + '"]');
-        const blueTarget = document.querySelector('[data-block-idx="' + ((i * 7) + 7) + '"]');
+        const redTarget = allCells[i * 7];
+        const blueTarget = allCells[(i * 7) + 6];
 
         // if(redTarget) redTarget.style.color = '#f0f';
         // if(blueTarget) blueTarget.style.color = '#0ff';
@@ -734,14 +805,13 @@ function getCalendar(target, setDate) {
     const nowD2 = new Date();
     if (+nowD2.getFullYear() === +document.getElementById('yearInput').querySelector('span').textContent
         && +(nowD2.getMonth() + 1) === +document.getElementById('yearInput').querySelector('strong').textContent) {
-        const todayTarget = document.querySelector('[data-date="' + nowD2.getDate() + '"]');
+        const todayTarget = dayCells[nowD2.getDate()];
         todayTarget.querySelector('strong').classList.add('today');
     }
 
     if (!setDate) {   //투데이 자동 클릭
         setTimeout(() => {
-            const todayTarget = document.querySelector('[data-date="' + nowD + '"]');
-            todayTarget.click();
+            dayCells[nowD].click();
         })
     }
 
@@ -761,40 +831,23 @@ function getCalendar(target, setDate) {
             })
 
             const set = new Set(mapedData);
-            const targetData = dailyData2.filter(d => set.has(d.id));
 
-            const mapedDataMap = new Map(mapedData2.map(item => [item.id, item]));
+            //그날 가이드가 요구하는 읽기 목록을 범위까지 펼쳐 날짜별로 보관한다.
+            //원본 dailyData2를 고쳐 쓰지 않도록 새 배열로 만든다.
+            const guideChkedMap = new Map(
+                dailyData2
+                    .filter(d => set.has(d.id))
+                    .map(d => [d.id, d.dailyChked.flatMap(expandRange)])
+            );
 
-            targetData.forEach(dd => {
-                const targetD = mapedDataMap.get(dd.id);
-
-                if (!targetD) return;
-                const withRange1 = dd.dailyChked.filter(d => d.indexOf('-') > -1);
-
-                withRange1.forEach(wr => {
-                    dd.dailyChked = dd.dailyChked.filter(ddd => ddd !== wr);
-                    const parsedData = wr.split('b');
-                    const ranged = parsedData[1].split('-');
-                    const bookCnt = +ranged[1] - +ranged[0];
-
-                    const splittedArr = [];
-                    for (let i = 0; i < (bookCnt + 1); i++) {
-                        splittedArr.push(parsedData[0] + 'b' + (+ranged[0] + i));
-                    }
-
-                    dd.dailyChked = [...dd.dailyChked, ...splittedArr];
-                })
-            })
-
-            //가공 후
             mapedData2.forEach(d => {   //여기서 다 담아라
-                const targetTd = document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`);
+                const targetTd = dayCells[+d.id.split('_')[1]];
                 if (!targetTd) return;  //해당 날짜 칸이 없으면(말일 차이 등) 건너뛴다
 
                 if (d.dailyChked && d.dailyChked.length > 0) {
-                    const matched = targetData.filter(td => td.id === d.id)[0];
+                    const guideChked = guideChkedMap.get(d.id);
                     let clsNm = 'ing';
-                    if (matched && isEqualArr(d.dailyChked, matched.dailyChked)) clsNm = 'clear';
+                    if (guideChked && isEqualArr(d.dailyChked, guideChked)) clsNm = 'clear';
                     targetTd.classList.add(clsNm);
                 }
 
@@ -848,7 +901,7 @@ function bibleTemplate(d, org) {
             }
         })
 
-        const targetTd = document.querySelector(`#calendar [data-date="${thisDate.split('_')[2]}"]`);
+        const targetTd = getCalendarCell(thisDate);
 
         targetTd.classList.remove('clear');
         targetTd.classList.remove('ing');
@@ -925,13 +978,11 @@ function bibleTemplate(d, org) {
 
         tts.initData();
 
+        //절마다 appendChild하면 절 수만큼 레이아웃이 다시 계산된다(시편 119편은 176절).
+        //조각에 모았다가 마지막에 한 번만 붙인다.
+        const verseFragment = document.createDocumentFragment();
+
         (bibleVersion === 'han' ? thisBible : thisBible2).forEach((dd, idx) => {
-            // const tr = document.createElement('tr');
-            // tr.dataset.verseNo = dd.VerseNo;
-            // tr.innerHTML = `
-            //     <th>${dd.VerseNo}</th>
-            //     <td class="">${dd.BibleScript}</td>
-            // `;
             const div = document.createElement('div');
             div.dataset.verseNo = dd.VerseNo;
             div.dataset.idx = idx;
@@ -949,11 +1000,13 @@ function bibleTemplate(d, org) {
                     <div data-id="bibleScript"><span>${dd.BibleScript}</span></div>
                 </div>
             `;
-            bibleScriptTag.appendChild(div);
+            verseFragment.appendChild(div);
 
             //'(없음)'만 적힌 절은 소리 내어 읽지 않는다
             if (!dd.Omitted) tts.pushArray(tts.createSpeechUtterance(dd.VerseNo, dd.BibleScript));
         });
+
+        bibleScriptTag.appendChild(verseFragment);
 
         selectControl.scripts = bibleScriptTag.querySelectorAll('[data-verse-no]');
         selectControl.init();
@@ -1318,7 +1371,7 @@ document.getElementById('allChker').addEventListener('change', e => {
     }
 
     const thisDate = document.getElementById('bibleList').dataset.date;
-    const targetTd = document.querySelector(`#calendar [data-date="${thisDate.split('_')[2]}"]`);
+    const targetTd = getCalendarCell(thisDate);
 
     targetTd.classList.remove('clear');
     targetTd.classList.remove('ing');
@@ -1399,6 +1452,7 @@ window.onload = async function () {
     //성경 데이터 + DB 연결이 모두 끝난 뒤에 달력을 그린다
     Promise.all([getData(), indexeddb.ready, versedb.ready]).then(() => {
         dailyData2 = dailyData.map(d => ({ id: `${d.month}_${d.day}`, dailyChked: d.readings.split('/') }));
+        dailyDataMap = new Map(dailyData.map(d => [`${d.month}_${d.day}`, d]));
 
         getCalendar('#calendar');
 

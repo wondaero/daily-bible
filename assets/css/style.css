@@ -844,18 +844,16 @@ body {
 .bible-list {
     margin: 0;
     padding: 0;
-    margin-top: 15px;
     list-style: none;
     color: #000;
 }
 
 .bible-list li {
-    margin-bottom: 15px;
+    margin-top: 15px;
 }
 
 .bible-list li:last-of-type {
     border-bottom: 0;
-    margin-bottom: 0;
 }
 
 .bible-list li>div {

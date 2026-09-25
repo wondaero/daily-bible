@@ -1,5 +1,9 @@
 function IndexedDB(param) {
     let db;
+    let resolveReady;
+
+    //DB 연결이 끝나야 query가 동작하도록 보장(연결 실패 시에도 resolve, db는 undefined)
+    this.ready = new Promise(resolve => { resolveReady = resolve; });
 
     const queryObj = {
         c: function ({ responseContext, opt, store }) {
@@ -161,18 +165,29 @@ function IndexedDB(param) {
 
         openDB.onsuccess = function (event) {
             db = event.target.result;  // ← 여기서 바깥 let db에 저장
+            resolveReady(db);
         };
         openDB.onerror = function (event) {
             console.error('DB 연결 실패', event.target.error);
+            resolveReady(undefined);
         };
     })();
 
     this.query = (cmd, value, opt) => {
-        if (!db) return;
-
         const cmds = 'crud-mi'; //- 하이픈은 안씀, b는 backup, o는 overwrite, m은 multiUpdate, i는 initData
 
         if (cmd.length !== 1 || cmd === '-' || cmds.indexOf(cmd) < 0) return;
+
+        //DB 연결 완료 후 실행(트랜잭션은 반드시 이 시점 이후에 생성)
+        this.ready.then(() => this.queryNow(cmd, value, opt));
+    }
+
+    this.queryNow = (cmd, value, opt) => {
+        if (!db) {
+            console.error('DB가 연결되지 않아 쿼리를 실행할 수 없습니다.');
+            if (opt && typeof opt.error === 'function') opt.error(new Error('DB not connected'));
+            return;
+        }
 
         const isRead = cmd === 'r';
         const transaction = db.transaction(param.tableNm, isRead ? 'readonly' : 'readwrite');

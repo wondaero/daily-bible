@@ -3,11 +3,18 @@ let dailyData2;
 let bibleMap = {};
 let bible2Map = {};
 
+//이미 받아둔 권. bookId -> 로딩 Promise
+const loadedBooks = new Map();
+
 const bibleMeta = [];
 
 let indexeddb;
 let versedb;
 let orgTxt = '';
+
+//현재 달력이 그리고 있는 달(예: '2026_9'). 렌더 시점에 갱신되고,
+//비동기로 돌아온 DB 결과는 이 값과 같을 때만 DOM에 반영한다.
+let currentCalendarKey = '';
 
 const isApp = typeof window !== 'undefined' && !!window.Capacitor;
 
@@ -124,24 +131,53 @@ function setBackground(targetMonth) {
 }
 
 
+//시작할 때는 읽기표와 성경 메타 정보만 받는다.
+//본문(권당 30~300KB)은 [보기]를 누른 권만 loadBook으로 받는다.
 async function getData() {
-    const [res1, res2, res3] = await Promise.all([
-        fetch('data/개역한글.json'),
-        isApp ? fetch('data/개역개정.json') : undefined,
+    const [guideRes, metaRes] = await Promise.all([
         fetch('data/guide/mccheyne.json'),
+        fetch('data/bible/meta.json'),
     ])
 
-    if (!res1.ok || (isApp && !res2.ok) || !res3.ok) throw new Error('데이터 로드 실패');
+    if (!guideRes.ok || !metaRes.ok) throw new Error('데이터 로드 실패');
 
-    const [han, gae, guide] = await Promise.all([
-        res1.json(),
-        isApp ? res2.json() : undefined,
-        res3.json()
+    const [guide, meta] = await Promise.all([
+        guideRes.json(),
+        metaRes.json()
     ])
 
-    bibleMap = parseBible2Data(han);
-    if (isApp) bible2Map = parseBible2Data(gae);
     dailyData = guide.data;
+
+    bibleMeta.length = 0;
+    meta.forEach(m => bibleMeta.push(m));
+}
+
+//권 단위 본문 로딩. 같은 권을 두 번 누르면 이미 받은 Promise를 그대로 돌려준다.
+function loadBook(bookId) {
+    if (loadedBooks.has(bookId)) return loadedBooks.get(bookId);
+
+    const task = Promise.all([
+        fetch(`data/bible/han/${bookId}.json`),
+        isApp ? fetch(`data/bible/gae/${bookId}.json`) : undefined,
+    ]).then(([hanRes, gaeRes]) => {
+        if (!hanRes.ok || (isApp && !gaeRes.ok)) throw new Error(`${bookId}번 권 본문 로드 실패`);
+
+        return Promise.all([
+            hanRes.json(),
+            isApp ? gaeRes.json() : undefined
+        ]);
+    }).then(([han, gae]) => {
+        //기존 조회 형태(`${bookId}_${chapter}`)를 그대로 유지한다
+        for (const chapter in han) bibleMap[`${bookId}_${chapter}`] = han[chapter];
+        if (gae) for (const chapter in gae) bible2Map[`${bookId}_${chapter}`] = gae[chapter];
+    }).catch(err => {
+        loadedBooks.delete(bookId);   //실패한 권은 다음에 다시 시도할 수 있게 캐시에서 뺀다
+        throw err;
+    });
+
+    loadedBooks.set(bookId, task);
+
+    return task;
 }
 
 // function fnc_resize(){
@@ -299,7 +335,8 @@ document.getElementById('yearInput').addEventListener('click', (e) => {
 })
 
 document.getElementById('yearList').addEventListener('scroll', e => {
-    const currScroll = e.currentTarget.scrollTop;
+    const yearList = e.currentTarget;
+    const currScroll = yearList.scrollTop;
 
     const case1 = currScroll < 1 ? 1 : currScroll + e.currentTarget.clientHeight + 1 > e.currentTarget.scrollHeight ? 2 : 0;
     if (case1 === 0) return;
@@ -407,7 +444,7 @@ modOnBtn.addEventListener('click', () => {
     }, 200);
 });
 
-initMemoBtn.addEventListener('click', () => {
+document.getElementById('initMemoBtn').addEventListener('click', () => {
     history.back();
 })
 
@@ -500,6 +537,10 @@ function getCalendar(target, setDate) {
     const tmpDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     const lastDay = tmpDate.getDate();	//마지막일
 
+    //이번 렌더가 담당하는 달을 고정(이후 도착하는 이전 달의 응답을 걸러내기 위함)
+    const renderKey = `${date.getFullYear()}_${date.getMonth() + 1}`;
+    currentCalendarKey = renderKey;
+
 
     //배경 변경
     setBackground(date.getMonth() + 1);
@@ -578,7 +619,8 @@ function getCalendar(target, setDate) {
 
             document.getElementById('bibleSection').appendChild(bibleListTag);
 
-            nowData[0].readings.split('/').forEach(d => {
+            //맥체인 가이드는 365일치라 2/29 같은 날은 데이터가 없다. 이 경우 빈 목록으로 둔다.
+            if (nowData.length) nowData[0].readings.split('/').forEach(d => {
                 const withRange1 = d.split('-');
 
                 if (withRange1.length === 2) {
@@ -651,15 +693,19 @@ function getCalendar(target, setDate) {
 
                     if (d && d.dailyChked) {
                         d.dailyChked.forEach((c) => {
-                            bibleListTag.querySelector(`input[value="${c}"]`).checked = true;
+                            const targetInput = bibleListTag.querySelector(`input[value="${c}"]`);
+                            if (targetInput) targetInput.checked = true;  //가이드가 바뀌어 없는 항목이면 건너뛴다
                         })
                     }
 
-                    bibleListTag.querySelectorAll('input').forEach(input => {
+                    const inputs = bibleListTag.querySelectorAll('input');
+
+                    inputs.forEach(input => {
                         if (!input.checked) isAllChked = false;
                     })
 
-                    if (isAllChked) document.getElementById('allChker').checked = true;
+                    //읽을 본문이 없는 날은 전체선택도 없다
+                    if (inputs.length && isAllChked) document.getElementById('allChker').checked = true;
                 }
             });
 
@@ -700,8 +746,11 @@ function getCalendar(target, setDate) {
     }
 
     indexeddb.query('r', undefined, {
-        like: `${date.getFullYear()}_${date.getMonth() + 1}_`,
+        like: `${renderKey}_`,
         success: (data) => {
+            //내가 그린 달이 이미 다른 달로 바뀌었으면 이 응답은 버린다
+            if (renderKey !== currentCalendarKey) return;
+
             const mapedData = data.map(d => {
                 const copyId = d.id.split('_').slice(1);
                 return copyId.join('_');
@@ -739,15 +788,17 @@ function getCalendar(target, setDate) {
 
             //가공 후
             mapedData2.forEach(d => {   //여기서 다 담아라
+                const targetTd = document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`);
+                if (!targetTd) return;  //해당 날짜 칸이 없으면(말일 차이 등) 건너뛴다
+
                 if (d.dailyChked && d.dailyChked.length > 0) {
+                    const matched = targetData.filter(td => td.id === d.id)[0];
                     let clsNm = 'ing';
-                    if (isEqualArr(d.dailyChked, targetData.filter(td => td.id === d.id)[0].dailyChked)) clsNm = 'clear';
-                    document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`).classList.add(clsNm);
+                    if (matched && isEqualArr(d.dailyChked, matched.dailyChked)) clsNm = 'clear';
+                    targetTd.classList.add(clsNm);
                 }
 
-                if (d.memo) {
-                    document.querySelector(`#calendar td[data-date="${d.id.split('_')[1]}"]`).classList.add('has-memo');
-                }
+                if (d.memo) targetTd.classList.add('has-memo');
             })
         }
     });
@@ -815,12 +866,27 @@ function bibleTemplate(d, org) {
     })
 
     //이부분이 [보기]버튼 눌렀을 때
-    li.querySelector('button').addEventListener('click', e => {
+    li.querySelector('button').addEventListener('click', async e => {
         const bibleVersion = isApp ? (window.localStorage.getItem('bibleVersion') || 'han') : 'han';
 
-        openPage('biblePage');
-
         const targetInput = e.currentTarget.closest('li').querySelector('input');
+        const parseData = d.split('b');
+        const bookId = +parseData[0];
+
+        //아직 안 받은 권이면 여기서 받는다(처음 한 번만 네트워크/디스크 접근)
+        if (!loadedBooks.has(bookId)) DOM.loadingLayer.classList.add('active');
+
+        try {
+            await loadBook(bookId);
+        } catch (err) {
+            console.error(err);
+            alert('본문을 불러오지 못했습니다.\n네트워크 상태를 확인한 뒤 다시 시도해주세요.');
+            return;
+        } finally {
+            DOM.loadingLayer.classList.remove('active');
+        }
+
+        openPage('biblePage');
 
         document.querySelector('#biblePage input').checked = targetInput.checked;
 
@@ -829,8 +895,6 @@ function bibleTemplate(d, org) {
             const changeEvent = new Event('change');
             targetInput.dispatchEvent(changeEvent);
         };
-
-        const parseData = d.split('b');
 
         let thisBible;  //개역한글
         let thisBible2; //개역개정
@@ -873,17 +937,22 @@ function bibleTemplate(d, org) {
             div.dataset.idx = idx;
             div.dataset.bibleCode = d + ':' + dd.VerseNo;
 
+            //번역본 특성 표시(CSS에서 흐리게 처리하는 등에 쓸 수 있다)
+            if (dd.Omitted) div.dataset.omitted = 'true';       //번역에서 빠진 절
+            if (dd.SameAs) div.dataset.sameAs = dd.SameAs;      //앞 절과 본문이 같은 절
+
             div.innerHTML = `
                 <div class="verse-wrapper" data-id="verseWrapper">
                     <div class="verse-top-wrapper" data-id="verseTopWrapper">
-                        <div class="verse-no">${dd.VerseNo}</div>
+                        <div class="verse-no">${dd.VerseLabel || dd.VerseNo}</div>
                     </div>
                     <div data-id="bibleScript"><span>${dd.BibleScript}</span></div>
                 </div>
             `;
             bibleScriptTag.appendChild(div);
 
-            tts.pushArray(tts.createSpeechUtterance(dd.VerseNo, dd.BibleScript));
+            //'(없음)'만 적힌 절은 소리 내어 읽지 않는다
+            if (!dd.Omitted) tts.pushArray(tts.createSpeechUtterance(dd.VerseNo, dd.BibleScript));
         });
 
         selectControl.scripts = bibleScriptTag.querySelectorAll('[data-verse-no]');
@@ -1104,15 +1173,18 @@ function SelectControl() {
 
                 const targetIds = [...selectedScript].map((el) => el.dataset.bibleCode);
 
+                const memoText = textarea.value;
+
                 versedb.query('r', targetIds, {
                     success: (data) => {
-                        targetIds.forEach(targetId => {
+                        //구절별 저장을 Promise로 감싸서, 전부 끝난 뒤에만 완료를 알린다
+                        const saveTasks = targetIds.map(targetId => new Promise((resolve, reject) => {
                             const oldData = data.find(item => item.id === targetId) || { id: targetId };
                             const oldMemos = oldData.memos && Array.isArray(oldData.memos) ? oldData.memos : [];
                             oldMemos.push({
                                 memoId: now.getTime(),
                                 verseInfo: verseInfo2,
-                                text: textarea.value
+                                text: memoText
                             });
 
                             versedb.query('u', {
@@ -1122,6 +1194,11 @@ function SelectControl() {
                                 upsert: true,
                                 success: (d) => {
                                     const wrapper = document.querySelector(`[data-bible-code="${d}"] [data-id="verseWrapper"]`);
+                                    if (!wrapper) {   //다른 장으로 이동한 뒤 저장이 끝난 경우
+                                        resolve(d);
+                                        return;
+                                    }
+
                                     let targetUl = wrapper.querySelector('ul');
                                     if (targetUl) {
                                         targetUl.innerHTML = '';
@@ -1136,14 +1213,28 @@ function SelectControl() {
                                     })
                                     wrapper.querySelector('[data-id="memoToggle"] input').checked = true;
                                     targetUl.classList.remove('hidden');
-                                }
-                            });
-                        })
 
-                        alert('메모등록이 완료되었습니다.');
-                        textarea.value = '';
-                        $t.togglePopup('verseMemoPopup', false);
-                        $t.handle();
+                                    resolve(d);
+                                },
+                                error: reject
+                            });
+                        }));
+
+                        Promise.all(saveTasks)
+                            .then(() => {
+                                alert('메모등록이 완료되었습니다.');
+                                textarea.value = '';
+                                $t.togglePopup('verseMemoPopup', false);
+                                $t.handle();
+                            })
+                            .catch(err => {
+                                console.error('구절 메모 저장 실패', err);
+                                alert('메모를 저장하지 못했습니다.\n다시 시도해주세요.');
+                            });
+                    },
+                    error: (err) => {
+                        console.error('구절 메모 조회 실패', err);
+                        alert('메모를 저장하지 못했습니다.\n다시 시도해주세요.');
                     }
                 });
 
@@ -1305,17 +1396,19 @@ window.onload = async function () {
     });
 
 
-    getData().then(() => {
+    //성경 데이터 + DB 연결이 모두 끝난 뒤에 달력을 그린다
+    Promise.all([getData(), indexeddb.ready, versedb.ready]).then(() => {
         dailyData2 = dailyData.map(d => ({ id: `${d.month}_${d.day}`, dailyChked: d.readings.split('/') }));
 
-        getBibleMeta();
         getCalendar('#calendar');
 
         // createBookList();
 
         DOM.loadingLayer.classList.remove('active');
     }).catch(err => {
-        console.log(err);
+        console.error('초기 데이터 로드 실패', err);
+        DOM.loadingLayer.classList.remove('active');
+        alert('데이터를 불러오지 못했습니다.\n네트워크 상태를 확인한 뒤 다시 실행해주세요.');
     });
 
 };
@@ -1562,6 +1655,7 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
     const tmpInput = document.createElement('input');
     tmpInput.type = 'file';
     tmpInput.accept = '.json';
+    tmpInput.style.display = 'none';
     document.body.appendChild(tmpInput);
     tmpInput.click();
 
@@ -1637,8 +1731,8 @@ document.getElementById('overwriteBtn').addEventListener('click', () => {
         reader.readAsText(file, 'utf-8');
     };
 
-
-    tmpInput.remove();
+    //remove()는 동기라 여기서 호출하면 파일 선택 전에 사라진다.
+    //제거는 onchange/onerror 처리 안에서만 한다.
 })
 
 document.getElementById('clearDataBtn').addEventListener('click', () => {
@@ -1707,28 +1801,6 @@ function clearData() {
         })
 }
 
-
-// 신규 - 배열 대신 Map으로 빌드, 보기 클릭 시 O(1) 조회
-function parseBible2Data(data) {
-    const rtnMap = {};
-    let tmpBibleName = '';
-    let bibleId = 0;
-    let bibleIdx = 0;
-
-    for (let key in data) {
-        bibleIdx = isNaN(key[1]) ? 2 : 1;
-        if (tmpBibleName !== key.slice(0, bibleIdx)) {
-            tmpBibleName = key.slice(0, bibleIdx);
-            bibleId++;
-        }
-        const jj = key.slice(bibleIdx).split(':'); //장절
-        const mapKey = `${bibleId}_${jj[0]}`;
-        if (!rtnMap[mapKey]) rtnMap[mapKey] = [];
-        rtnMap[mapKey].push({ VerseNo: +(jj[1]), BibleScript: data[key] });
-    }
-
-    return rtnMap;
-}
 
 document.querySelectorAll('[data-id="setFontSizeBtn"]').forEach((b) => {
     b.addEventListener('click', (e) => {
@@ -1807,10 +1879,15 @@ function createMemo(target, memo) {
 
     li.innerHTML = `
         <button data-id="delMemoBtn">삭제</button>
-        <div data-id="memoDate">${formatDateTime(new Date(memo.memoId))}</div>
-        <div data-id="memoVerseInfo">${memo.verseInfo}</div>
-        <p data-id="memoText">${memo.text}</p>
+        <div data-id="memoDate"></div>
+        <div data-id="memoVerseInfo"></div>
+        <p data-id="memoText"></p>
     `;
+
+    //외부에서 복원한 백업 파일의 내용이 HTML로 해석되지 않도록 textContent로 넣는다
+    li.querySelector('[data-id="memoDate"]').textContent = formatDateTime(new Date(memo.memoId));
+    li.querySelector('[data-id="memoVerseInfo"]').textContent = memo.verseInfo || '';
+    li.querySelector('[data-id="memoText"]').textContent = memo.text || '';
 
     li.querySelector('[data-id="delMemoBtn"]').onclick = (e) => {
         if (!confirm('해당메모를 삭제하시겠습니까?')) return;
@@ -1868,23 +1945,6 @@ document.getElementById('bibleVersionPopup').addEventListener('change', e => {
     alert('성경 버전이 변경되었습니다.');
     history.back();
 })
-
-function getBibleMeta() {
-
-    bookName.forEach((name, idx) => {
-        const bookId = idx + 1;
-        bibleMeta[idx] = { name: name, chapters: [] };
-
-        let chapter = 1;
-        while (true) {
-            const verses = bibleMap[`${bookId}_${chapter}`];
-            if (!verses) break;
-
-            bibleMeta[idx].chapters[chapter - 1] = verses.length;
-            chapter++;
-        }
-    })
-}
 
 function searchItem(content, name, cb) {
     const li = document.createElement('li');
